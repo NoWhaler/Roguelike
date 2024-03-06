@@ -9,5 +9,7 @@ namespace Game.Spawners.EnemySpawnerModels
         [field: SerializeField] public Collider GroundCollider { get; set; }
         
         [field: SerializeField] public int EnemiesAmount { get; set; }
+        
+        [field: SerializeField] public int[] ObstaclesLayers { get; set; }
     }
 }

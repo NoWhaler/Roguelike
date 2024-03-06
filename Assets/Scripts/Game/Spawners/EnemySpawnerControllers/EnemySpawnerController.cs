@@ -29,8 +29,8 @@ namespace Game.Spawners.EnemySpawnerControllers
 
             for (var i = 0; i < spawnPositions.Count; i++)
             {
-                var position = new Vector3(spawnPositions[i].x,1.5f, spawnPositions[i].z);
-                _diContainer.InstantiatePrefab(_enemySpawnerModel.GameObjectPrefab, position, Quaternion.identity, _enemySpawnerModel.GroundCollider.transform);
+                var position = new Vector3(spawnPositions[i].x, 1.5f, spawnPositions[i].z);
+                _diContainer.InstantiatePrefab(_enemySpawnerModel.GameObjectPrefab, position, Quaternion.identity, _enemySpawnerModel.transform);
             }
         }
 
@@ -43,7 +43,7 @@ namespace Game.Spawners.EnemySpawnerControllers
                 var isValidPosition = false;
                 var newPosition = Vector3.zero;
 
-                var maxAttempts = 100;
+                var maxAttempts = 1000;
                 var attempts = 0;
 
                 while (!isValidPosition && attempts < maxAttempts)
@@ -69,8 +69,21 @@ namespace Game.Spawners.EnemySpawnerControllers
 
         private bool IsPositionValid(Vector3 position, IEnumerable<Vector3> existingPositions)
         {
-            return existingPositions.All(existingPosition =>
-                !(Vector3.Distance(position, existingPosition) < 2f));
+            var colliders = Physics.OverlapSphere(position, 2f);
+            
+            foreach (var collider in colliders)
+            {
+                foreach (var obstaclesLayer in _enemySpawnerModel.ObstaclesLayers)
+                {
+                    if ((collider != null && collider.gameObject.layer == obstaclesLayer) 
+                                         || !existingPositions.All(existingPosition => Vector3.Distance(position, existingPosition) > 2f))
+                    { 
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
         }
     }
 }

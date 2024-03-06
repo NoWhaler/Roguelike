@@ -25,6 +25,8 @@ namespace Game.Inputs.Common.Controllers
         private InputModel _inputModel;
 
         private CameraModel _cameraModel;
+
+        private bool HandleAttackButtonClick() => Input.GetKeyDown(KeyCode.T);
         
         [Inject]
         private void Constructor(CameraModel cameraModel, InputModel inputModel)
@@ -38,6 +40,7 @@ namespace Game.Inputs.Common.Controllers
             _inputModel.OnGetHorizontalKeyboardAxis += HandleHorizontalInputKeyboardAxis;
             _inputModel.OnGetVerticalKeyboardAxis += HandleVerticalInputKeyboardAxis;
             _inputModel.OnDashButtonClicked += HandleDashButtonClick;
+            _inputModel.OnAttackButtonClicked += HandleAttackButtonClick;
         }
 
         private void DisposeKeyboardInput()
@@ -45,6 +48,7 @@ namespace Game.Inputs.Common.Controllers
             _inputModel.OnGetHorizontalKeyboardAxis -= HandleHorizontalInputKeyboardAxis;
             _inputModel.OnGetVerticalKeyboardAxis -= HandleVerticalInputKeyboardAxis;
             _inputModel.OnDashButtonClicked -= HandleDashButtonClick;
+            _inputModel.OnAttackButtonClicked -= HandleAttackButtonClick;
         }
         
         private void InitializeMouseInput()

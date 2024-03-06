@@ -3,7 +3,7 @@ using Game.CameraConfig.Common.Model;
 using UnityEngine;
 using Zenject;
 
-namespace Game.CameraConfig.Common
+namespace Game.CameraConfig.Common.Controller
 {
     public class CameraController: IInitializable, IDisposable, ILateTickable
     {

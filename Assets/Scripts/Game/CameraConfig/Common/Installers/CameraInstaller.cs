@@ -1,3 +1,4 @@
+using Game.CameraConfig.Common.Controller;
 using Game.CameraConfig.Common.Model;
 using UnityEngine;
 using Zenject;
