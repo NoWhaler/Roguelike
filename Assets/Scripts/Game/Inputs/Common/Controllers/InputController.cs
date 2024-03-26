@@ -9,6 +9,9 @@ namespace Game.Inputs.Common.Controllers
     public class InputController: IInitializable, IDisposable
     {
         private Vector3 HandleOnGetMousePosition() => _cameraModel.GetMainCamera().ScreenToWorldPoint(Input.mousePosition);
+
+        private Ray HandleOnGetMouseRay() => _cameraModel.GetMainCamera().ScreenPointToRay(Input.mousePosition);
+        
         private float HandleHorizontalInputMouseAxis() => Input.GetAxis("Mouse X");
         private float HandleVerticalInputMouseAxis() => Input.GetAxis("Mouse Y");
 

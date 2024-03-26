@@ -1,6 +1,6 @@
-using System;
+using System.Threading;
 using Core.ObjectPooling.Pools;
-using Game.Inputs.Common.Model;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -8,37 +8,68 @@ namespace Core.ObjectPooling
 {
     public class Arrow: MonoBehaviour
     {
+        [SerializeField] private float _maxLifetime;
         
-        [SerializeField] private float _currentLifeTime;
-
-        [SerializeField] private float _maxLifetime = 5;
-
         private ArrowsPool _arrowsPool;
+        
+        private Rigidbody _rigidBody;
 
-        private InputModel _inputModel;
-
+        private CancellationTokenSource _cancellationTokenSource;
+        
         [Inject]
-        private void Constructor(ArrowsPool arrowsPool, InputModel inputModel)
+        private void Constructor(ArrowsPool arrowsPool)
         {
             _arrowsPool = arrowsPool;
-            _inputModel = inputModel;
+        }
+
+        private void OnEnable()
+        {
+            _rigidBody = GetComponent<Rigidbody>();
+        }
+
+        private void MoveArrow(RaycastHit hit)
+        {
+            var position = hit.point;
+            
+            var direction = position - transform.position;
+
+            direction.y = 1f;
+            
+            direction.Normalize();
+
+            var forceMagnitude = 25f;
+
+            Vector3 movementForce = direction * forceMagnitude;
+            
+            _rigidBody.AddForce(movementForce, ForceMode.Impulse);
+        }
+
+        private async UniTask MoveArrowTowardsPosition(RaycastHit hit)
+        {
+            var elapsedTime = 0f;
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            
+            MoveArrow(hit);
+            while (elapsedTime <= _maxLifetime)
+            {
+                elapsedTime += Time.deltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, _cancellationTokenSource.Token);
+            }
+            _arrowsPool.ReturnToPool(this);
         }
         
-        private void Update()
+        public async void ShootArrow(RaycastHit hit)
         {
-            _currentLifeTime += Time.deltaTime;
-
-            if (_currentLifeTime >= _maxLifetime)
-            {
-                _currentLifeTime = 0f;
-                _arrowsPool.ReturnToPool(this);
-            }
+            _rigidBody.velocity = Vector3.zero;
+            _cancellationTokenSource?.Cancel();
+            await MoveArrowTowardsPosition(hit);
         }
 
-
-        private void MoveTowardsPosition()
+        private void OnTriggerEnter(Collider other)
         {
-            transform.position = _inputModel.MousePosition;
+            _cancellationTokenSource?.Cancel();
+            _arrowsPool.ReturnToPool(this);
         }
     }
 }

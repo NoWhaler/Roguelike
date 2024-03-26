@@ -9,6 +9,7 @@ namespace Game.Inputs.Common.Installers
         public override void InstallBindings()
         {
             Container.Bind<InputModel>().AsSingle();
+            
             Container.BindInterfacesAndSelfTo<InputController>().AsSingle();
         }
     }

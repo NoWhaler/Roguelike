@@ -1,4 +1,5 @@
 using System;
+using Core.ObjectPooling;
 using Game.Characters.Player.Stats.Models;
 using UnityEngine;
 using Zenject;
@@ -19,12 +20,12 @@ namespace Game.Characters.Enemies.EnemyMovement.Models
         
         private void OnTriggerEnter(Collider other)
         {
-            OnTakeDamage?.Invoke(_playerStatsModel.Damage);
-        }
-
-        private void OnMouseDown()
-        {
-            OnTakeDamage?.Invoke(_playerStatsModel.Damage);
+            var arrow = other.GetComponent<Arrow>();
+            
+            if (arrow != null)
+            {
+                OnTakeDamage?.Invoke(_playerStatsModel.Damage);
+            }
         }
     }
 }

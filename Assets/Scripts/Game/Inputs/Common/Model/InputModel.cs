@@ -21,7 +21,7 @@ namespace Game.Inputs.Common.Model
 
         public event Func<bool> OnLeftMouseButtonClicked;
 
-        public event Func<bool> OnRightMouseButtonClicked; 
+        public event Func<bool> OnRightMouseButtonClicked;
 
         public bool DashButtonInputClick => OnDashButtonClicked?.Invoke() ?? false;
 
@@ -40,6 +40,5 @@ namespace Game.Inputs.Common.Model
         public bool RightMouseButtonInputClick => OnRightMouseButtonClicked?.Invoke() ?? false;
         
         public Vector3 MousePosition => OnGetMousePosition?.Invoke() ?? Vector3.zero;
-        
     }
 }

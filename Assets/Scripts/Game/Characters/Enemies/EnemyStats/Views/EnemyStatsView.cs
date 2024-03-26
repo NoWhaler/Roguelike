@@ -29,7 +29,6 @@ namespace Game.Characters.Enemies.EnemyStats.Views
 
         public void OnEnable()
         {
-            Debug.Log("Stats initialized");
             _enemyModel = GetComponentInParent<EnemyModel>();
             _enemyStatModel = new EnemyStatModel(Random.Range(10, 40));
             _enemyStatModel.CurrentHealthPoints = _enemyStatModel.MaxHealthPoints;
