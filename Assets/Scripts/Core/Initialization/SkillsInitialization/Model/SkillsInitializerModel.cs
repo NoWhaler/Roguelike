@@ -15,10 +15,10 @@ namespace Core.Initialization.SkillsInitialization.Model
             foreach (var skillView in _allSkills)
             {
                 SkillModel skillModel = new SkillModel(skillView);
-                
                 SkillPresenter skillPresenter = new SkillPresenter(skillModel);
                 
                 skillView.Init(skillPresenter);
+                skillView.SetSkill();
             }
         }
     }

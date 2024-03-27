@@ -1,4 +1,6 @@
 using Game.Skills.Models;
+using TMPro;
+using Image = UnityEngine.UI.Image;
 
 namespace Game.Skills.Presenter
 {
@@ -11,11 +13,11 @@ namespace Game.Skills.Presenter
             _skillModel = skillModel;
         }
         
-        public void SetSkill(SkillModel skillModel)
+        public void SetSkill(TMP_Text skillDescription, TMP_Text skillName, Image skillImage)
         {
-            _skillDescription.text = skillModel.Description;
-            _skillImage.sprite = skillModel.SkillIcon;
-            _skillName.text = skillModel.Name;
+            skillDescription.text = _skillModel.Description;
+            skillImage.sprite = _skillModel.SkillIcon;
+            skillName.text = _skillModel.Name;
         }
     }
 }

@@ -21,11 +21,9 @@ namespace Game.Skills.Views
             _skillPresenter = skillPresenter;
         }
         
-        public void SetSkill(SkillModel skillModel)
+        public void SetSkill()
         {
-            _skillDescription.text = skillModel.Description;
-            _skillImage.sprite = skillModel.SkillIcon;
-            _skillName.text = skillModel.Name;
+            _skillPresenter.SetSkill(_skillDescription, _skillName, _skillImage);
         }
     }
 }
