@@ -1,0 +1,52 @@
+{
+  "skills": [
+    {
+      "SkillName": "First skill",
+      "Description": "1",
+      "ItemSpriteName": "firstSkill.png",
+      "UniqueIdentifier": 1
+    },
+    {
+      "SkillName": "Second skill",
+      "Description": "2",
+      "ItemSpriteName": "secondSkill.png",
+      "UniqueIdentifier": 2
+    },
+    {
+      "SkillName": "Third skill",
+      "Description": "3",
+      "ItemSpriteName": "thirdSkill.png",
+      "UniqueIdentifier": 3
+    },
+    {
+      "SkillName": "Fourth skill",
+      "Description": "4",
+      "ItemSpriteName": "fourthSkill.png",
+      "UniqueIdentifier": 4
+    },
+    {
+      "SkillName": "Fifth skill",
+      "Description": "5",
+      "ItemSpriteName": "fifthSkill.png",
+      "UniqueIdentifier": 5
+    },
+    {
+      "SkillName": "Sixth skill",
+      "Description": "6",
+      "ItemSpriteName": "sixthSkill.png",
+      "UniqueIdentifier": 6
+    },
+    {
+      "SkillName": "Seventh skill",
+      "Description": "7",
+      "ItemSpriteName": "seventhSkill.png",
+      "UniqueIdentifier": 7
+    },
+    {
+      "SkillName": "Eighth skill",
+      "Description": "8",
+      "ItemSpriteName": "eighthSkill.png",
+      "UniqueIdentifier": 8
+    }
+  ]
+}

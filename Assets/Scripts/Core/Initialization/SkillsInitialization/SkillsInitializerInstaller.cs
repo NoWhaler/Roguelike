@@ -11,7 +11,7 @@ namespace Core.Initialization.SkillsInitialization
         public override void InstallBindings()
         {
             Container.BindInstance(_skillsInitializerModel).AsSingle();
-            _skillsInitializerModel.Init();
+            // _skillsInitializerModel.Init();
         }
     }
 }

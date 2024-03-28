@@ -15,7 +15,7 @@ namespace Game.Skills.Views
         [SerializeField] private Image _skillImage;
 
         private SkillPresenter _skillPresenter;
-
+        
         public void Init(SkillPresenter skillPresenter)
         {
             _skillPresenter = skillPresenter;

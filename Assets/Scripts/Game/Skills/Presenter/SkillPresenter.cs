@@ -17,7 +17,7 @@ namespace Game.Skills.Presenter
         {
             skillDescription.text = _skillModel.Description;
             skillImage.sprite = _skillModel.SkillIcon;
-            skillName.text = _skillModel.Name;
+            skillName.text = _skillModel.SkillName;
         }
     }
 }
