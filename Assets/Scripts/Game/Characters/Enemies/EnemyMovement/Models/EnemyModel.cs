@@ -1,6 +1,6 @@
 using System;
 using Core.ObjectPooling;
-using Game.Characters.Player.Stats.Models;
+using Game.Characters.Player.Stats.Model;
 using UnityEngine;
 using Zenject;
 
@@ -10,13 +10,7 @@ namespace Game.Characters.Enemies.EnemyMovement.Models
     {
         public event Action<float> OnTakeDamage;
 
-        private PlayerStatsModel _playerStatsModel;
-        
-        [Inject]
-        private void Constructor(PlayerStatsModel playerStatsModel)
-        {
-            _playerStatsModel = playerStatsModel;
-        }
+        // private PlayerStatsModel _playerStatsModel;
         
         private void OnTriggerEnter(Collider other)
         {
@@ -24,7 +18,7 @@ namespace Game.Characters.Enemies.EnemyMovement.Models
             
             if (arrow != null)
             {
-                OnTakeDamage?.Invoke(_playerStatsModel.Damage);
+                // OnTakeDamage?.Invoke(_playerStatsModel.Damage);
             }
         }
     }

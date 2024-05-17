@@ -1,6 +1,7 @@
 using System.Threading;
 using Core.ObjectPooling.Pools;
 using Cysharp.Threading.Tasks;
+using Game.Skills.SkillsSelection.Models;
 using UnityEngine;
 using Zenject;
 
@@ -15,11 +16,13 @@ namespace Core.ObjectPooling
         private Rigidbody _rigidBody;
 
         private CancellationTokenSource _cancellationTokenSource;
+        private SkillSelectorModel _skillSelectorModel;
         
         [Inject]
-        private void Constructor(ArrowsPool arrowsPool)
+        private void Constructor(ArrowsPool arrowsPool, SkillSelectorModel skillSelectorModel)
         {
             _arrowsPool = arrowsPool;
+            _skillSelectorModel = skillSelectorModel;
         }
 
         private void OnEnable()

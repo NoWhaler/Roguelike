@@ -1,7 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Game.Characters.Player.PlayerMovement.Models
@@ -20,13 +18,13 @@ namespace Game.Characters.Player.PlayerMovement.Models
         
         public Vector3 MovementDirection { get; set; }
 
-        [field: SerializeField] public Vector3 PlayerFacingDirection { get; set; }
+        public Vector3 PlayerFacingDirection { get; set; }
         
         public Quaternion TargetRotation { get; set; }
 
         public event Action<Vector3, RaycastHit> OnRotateTowardsTarget;
 
-        [field: SerializeField] public bool IsTurningForAttack { get; set; } = false;
+        public bool IsTurningForAttack { get; set; } = false;
 
         public CancellationTokenSource CancellationTokenSource { get; set; }
         

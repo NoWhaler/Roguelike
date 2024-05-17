@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Core.Repository.Interfaces;
-using Game.Skills.Models;
+using Game.Skills.SkillsBook.Models;
 using UnityEngine;
 
 namespace Core.Repository

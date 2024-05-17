@@ -1,10 +1,10 @@
-using System;
 using Core.ObjectPooling.Pools;
 using Game.CameraConfig.Common.Model;
 using Game.Characters.Player.PlayerAttack.Models;
 using Game.Characters.Player.PlayerMovement.Models;
 using Game.Inputs.Common.Model;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
 namespace Game.Characters.Player.PlayerAttack.Controllers
@@ -29,6 +29,11 @@ namespace Game.Characters.Player.PlayerAttack.Controllers
         
         public void Tick()
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            
             if (_inputModel.LeftMouseButtonInputClick)
             {
                 _playerModel.CancelRotationTowardsTarget();

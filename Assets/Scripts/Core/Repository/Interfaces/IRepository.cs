@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Game.Skills.Models;
+using Game.Skills.SkillsBook.Models;
 
 namespace Core.Repository.Interfaces
 {
