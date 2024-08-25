@@ -10,7 +10,6 @@ namespace Core.Initialization.SkillsInitialization.Installers
         public override void InstallBindings()
         {
             Container.BindInstance(_skillsInitializerModel).AsSingle();
-            // _skillsInitializerModel.Init();
         }
     }
 }
