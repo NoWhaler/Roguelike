@@ -1,34 +1,54 @@
 using System;
+using Game.WorldGeneration.ChunkGeneration.Model;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.WorldGeneration.RandomGenerator.Models
 {
     public class GeneratorModel: MonoBehaviour
     {
-        [field: SerializeField] public int MapWidth { get; set; } = 100;
-        [field: SerializeField] public int MapHeight { get; set; } = 100;
+        [field: Range(1, 255)]
+        [field: SerializeField] public int ChunkSize { get; set; }
+        
+        [field: Range(1, 16)]
+        [field: SerializeField] public int ChunksPerSide { get; set; }
         
         [field: Range(0, 50f)]
-        [field: SerializeField] public float NoiseScale { get; set; } = 0.3f;
+        [field: SerializeField] public float NoiseScale { get; set; }
+        
         [field: Range(0, 7f)]
-        [field: SerializeField] public int Octaves { get; set; } = 4;
+        [field: SerializeField] public int Octaves { get; set; }
+        
         [field: Range(0, 1f)]
-        [field: SerializeField] public float Persistence { get; set; } = 0.5f;
+        [field: SerializeField] public float Persistence { get; set; }
+        
         [field: Range(0, 10f)]
-        [field: SerializeField] public float Lacunarity { get; set; } = 2f;
-        [field: Range(1, 20f)]
-        [field: SerializeField] public float HeightMultiplier { get; set; } = 10f; 
+        [field: SerializeField] public float Lacunarity { get; set; }
+        
+        [field: Range(0, 30f)]
+        [field: SerializeField] public float HeightMultiplier { get; set; } 
+        
+        [field: Range(0, 30)]
+        [field: SerializeField] public int CoastlineSmoothPasses { get; set; }
+        
+        [field: Range(2, 20)]
+        [field: SerializeField] public int SmoothNormalsPasses { get; set; }
+        
+        [field: Range(1, 255)]
+        [field: SerializeField] public int SeedValue { get; set; }
+        
         [field: SerializeField] public AnimationCurve HeightCurve { get; set; }
+        
         [field: SerializeField] public TerrainType[] Regions { get; set; }
         
         [field: SerializeField] public bool UseFalloffMap { get; set; } = true;
-        public bool isValidateAvailable;
         
-        [field: SerializeField] public MeshFilter MapMeshFilter;
+        [field: SerializeField] public Material ChunkMaterial { get; set; }
 
-        [field: SerializeField]  public MeshCollider MapMeshCollider;
 
+        [field: SerializeField] public ChunkModel ChunkPrefab { get; set; }
+
+        public Transform GenerationModelTransform => transform;
+        
         public Action OnGenerateMap;
     }
     

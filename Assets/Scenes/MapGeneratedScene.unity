@@ -133,9 +133,6 @@ GameObject:
   m_Component:
   - component: {fileID: 52153081}
   - component: {fileID: 52153080}
-  - component: {fileID: 52153084}
-  - component: {fileID: 52153083}
-  - component: {fileID: 52153082}
   m_Layer: 0
   m_Name: MapGenerator
   m_TagString: Untagged
@@ -155,13 +152,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 659db72269a44c699dae7df15522f7aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <MapWidth>k__BackingField: 100
-  <MapHeight>k__BackingField: 100
+  <ChunkSize>k__BackingField: 64
+  <ChunksPerSide>k__BackingField: 3
   <NoiseScale>k__BackingField: 30
   <Octaves>k__BackingField: 4
   <Persistence>k__BackingField: 0.5
   <Lacunarity>k__BackingField: 2
-  <HeightMultiplier>k__BackingField: 15
+  <HeightMultiplier>k__BackingField: 17
+  <CoastlineSmoothPasses>k__BackingField: 15
+  <ErosionIterations>k__BackingField: 0
+  <ErosionStrength>k__BackingField: 0.01
+  <SmoothNormalsPasses>k__BackingField: 5
+  <SeedValue>k__BackingField: 171
   <HeightCurve>k__BackingField:
     serializedVersion: 2
     m_Curve:
@@ -207,8 +209,8 @@ MonoBehaviour:
     color: {r: 1, g: 1, b: 1, a: 0}
   <UseFalloffMap>k__BackingField: 0
   isValidateAvailable: 0
-  MapMeshFilter: {fileID: 52153084}
-  MapMeshCollider: {fileID: 52153082}
+  <ChunkMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
+  <ChunkPrefab>k__BackingField: {fileID: 6816338561572193657, guid: d1c80c32eae06a04fade22d9c68cf290, type: 3}
 --- !u!4 &52153081
 Transform:
   m_ObjectHideFlags: 0
@@ -224,78 +226,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &52153082
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 52153079}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
---- !u!23 &52153083
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 52153079}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &52153084
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 52153079}
-  m_Mesh: {fileID: 0}
 --- !u!1 &653201418
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,13 +311,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 653201418}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.4760326, y: -0, z: -0, w: 0.8794276}
+  m_LocalPosition: {x: 61.5, y: 118.7, z: -27.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 56.853, y: 0, z: 0}
 --- !u!1 &1110441217
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,7 +526,7 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1110441219}
   - {fileID: 653201421}
   - {fileID: 1689441409}
-  - {fileID: 1110441219}
   - {fileID: 52153081}

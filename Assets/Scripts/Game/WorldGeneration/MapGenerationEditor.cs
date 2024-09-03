@@ -10,8 +10,7 @@ namespace Game.WorldGeneration
         public override void OnInspectorGUI()
         {
             GeneratorModel mapGen = (GeneratorModel)target;
-            Debug.Log(mapGen);
-    
+            
             if (DrawDefaultInspector())
             {
                 mapGen.OnGenerateMap?.Invoke();
