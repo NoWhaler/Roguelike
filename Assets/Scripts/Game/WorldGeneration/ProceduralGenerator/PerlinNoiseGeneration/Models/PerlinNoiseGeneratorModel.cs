@@ -2,9 +2,9 @@ using System;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using UnityEngine;
 
-namespace Game.WorldGeneration.RandomGenerator.Models
+namespace Game.WorldGeneration.ProceduralGenerator.PerlinNoiseGeneration.Models
 {
-    public class GeneratorModel: MonoBehaviour
+    public class PerlinNoiseGeneratorModel: MonoBehaviour
     {
         [field: Range(1, 255)]
         [field: SerializeField] public int ChunkSize { get; set; }

@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Game.WorldGeneration.ChunkGeneration.Model;
-using Game.WorldGeneration.RandomGenerator.Models;
+using Game.WorldGeneration.ProceduralGenerator.GeneratorsScripts;
+using Game.WorldGeneration.ProceduralGenerator.SimplexNoiseGeneration.Models;
 using UnityEngine;
 using Zenject;
 
-namespace Game.WorldGeneration.RandomGenerator.Controllers
+namespace Game.WorldGeneration.ProceduralGenerator.SimplexNoiseGeneration.Controllers
 {
-    public class GeneratorController : IInitializable, IDisposable
+    public class SimplexNoiseGeneratorController: IInitializable, IDisposable
     {
-        private GeneratorModel _generatorModel;
+        private SimplexNoiseGeneratorModel _simplexNoiseGeneratorModel;
         private DiContainer _diContainer;
         private readonly Dictionary<Vector2Int, ChunkModel> _chunkMeshes = new Dictionary<Vector2Int, ChunkModel>();
         private float[,] _globalNoiseMap;
@@ -17,18 +18,18 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
         public void Initialize()
         {
             GenerateMap();
-            _generatorModel.OnGenerateMap += GenerateMap;
+            _simplexNoiseGeneratorModel.OnGenerateMap += GenerateMap;
         }
 
         public void Dispose()
         {
-            _generatorModel.OnGenerateMap -= GenerateMap;
+            _simplexNoiseGeneratorModel.OnGenerateMap -= GenerateMap;
         }
 
         [Inject]
-        private void Constructor(GeneratorModel generatorModel, DiContainer diContainer)
+        private void Constructor(SimplexNoiseGeneratorModel simplexNoiseGeneratorModel, DiContainer diContainer)
         {
-            _generatorModel = generatorModel;
+            _simplexNoiseGeneratorModel = simplexNoiseGeneratorModel;
             _diContainer = diContainer;
         }
 
@@ -36,48 +37,46 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
         {
             ClearChunks();
 
-            int totalSize = _generatorModel.ChunksPerSide * _generatorModel.ChunkSize + 1;
+            int totalSize = _simplexNoiseGeneratorModel.ChunksPerSide * _simplexNoiseGeneratorModel.ChunkSize + 1;
             _globalNoiseMap = GenerateGlobalNoiseMap(totalSize);
-            
-            for (int chunkY = 0; chunkY < _generatorModel.ChunksPerSide; chunkY++)
+
+            for (int chunkY = 0; chunkY < _simplexNoiseGeneratorModel.ChunksPerSide; chunkY++)
             {
-                for (int chunkX = 0; chunkX < _generatorModel.ChunksPerSide; chunkX++)
+                for (int chunkX = 0; chunkX < _simplexNoiseGeneratorModel.ChunksPerSide; chunkX++)
                 {
                     GenerateChunk(chunkX, chunkY);
                 }
             }
-            
+
             SmoothBorders();
         }
 
         private void GenerateChunk(int chunkX, int chunkY)
         {
             float[,] noiseMap = ExtractNoiseMapForChunk(_globalNoiseMap, chunkX, chunkY);
-            
-            noiseMap = SmoothCoastline(noiseMap, _generatorModel.CoastlineSmoothPasses);
-            
+            noiseMap = SmoothCoastline(noiseMap, _simplexNoiseGeneratorModel.CoastlineSmoothPasses);
             Color[] colorMap = GenerateColorMap(noiseMap);
             MeshData meshData = GenerateTerrainMesh(noiseMap, chunkX, chunkY);
-            
+
             Mesh mesh = meshData.CreateMesh();
             mesh.RecalculateNormals();
-    
-            ChunkModel chunkObject = _diContainer.InstantiatePrefabForComponent<ChunkModel>(_generatorModel.ChunkPrefab,
-                new Vector3(chunkX * _generatorModel.ChunkSize, 0, chunkY * _generatorModel.ChunkSize),
-                Quaternion.identity, _generatorModel.GenerationModelTransform);
-            
+
+            ChunkModel chunkObject = _diContainer.InstantiatePrefabForComponent<ChunkModel>(
+                _simplexNoiseGeneratorModel.ChunkPrefab,
+                new Vector3(chunkX * _simplexNoiseGeneratorModel.ChunkSize, 0, chunkY * _simplexNoiseGeneratorModel.ChunkSize),
+                Quaternion.identity, _simplexNoiseGeneratorModel.GenerationModelTransform);
+
             _chunkMeshes[new Vector2Int(chunkX, chunkY)] = chunkObject;
             chunkObject.gameObject.name = $"Chunk_{chunkX}_{chunkY}";
             chunkObject.ChunkMeshFilter.mesh = mesh;
             chunkObject.ChunkMeshCollider.sharedMesh = mesh;
-            
-            chunkObject.ChunkMeshRenderer.material = _generatorModel.ChunkMaterial;
+            chunkObject.ChunkMeshRenderer.material = _simplexNoiseGeneratorModel.ChunkMaterial;
             ApplyColorToMesh(mesh, colorMap);
         }
-        
+
         private void SmoothBorders()
         {
-            int smoothingPasses = _generatorModel.SmoothNormalsPasses;
+            int smoothingPasses = _simplexNoiseGeneratorModel.SmoothNormalsPasses;
             for (int pass = 0; pass < smoothingPasses; pass++)
             {
                 foreach (var chunkEntry in _chunkMeshes)
@@ -98,7 +97,7 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
                     Vector3[] vertices = chunkMesh.vertices;
                     Vector3[] normals = chunkMesh.normals;
 
-                    int chunkSize = _generatorModel.ChunkSize;
+                    int chunkSize = _simplexNoiseGeneratorModel.ChunkSize;
 
                     if (leftChunk != null)
                     {
@@ -129,9 +128,10 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
             }
         }
         
+        
         private void HandleCornerVertices(Vector2Int chunkCoord, Vector3[] vertices, Vector3[] normals)
         {
-            int chunkSize = _generatorModel.ChunkSize + 1;
+            int chunkSize = _simplexNoiseGeneratorModel.ChunkSize + 1;
         
             Vector2Int[] cornerOffsets = {
                 new(-1, -1), new(1, -1),
@@ -176,7 +176,7 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
         
         private void SmoothVerticalEdge(Vector3[] vertices, Vector3[] normals, Vector3[] neighborVertices, Vector3[] neighborNormals, int localX, int neighborX)
         {
-            int chunkSize = _generatorModel.ChunkSize + 1;
+            int chunkSize = _simplexNoiseGeneratorModel.ChunkSize + 1;
             for (int i = 0; i < chunkSize; i++)
             {
                 int index1 = i * chunkSize + localX;
@@ -194,7 +194,7 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
 
         private void SmoothHorizontalEdge(Vector3[] vertices, Vector3[] normals, Vector3[] neighborVertices, Vector3[] neighborNormals, int localY, int neighborY)
         {
-            int chunkSize = _generatorModel.ChunkSize + 1;
+            int chunkSize = _simplexNoiseGeneratorModel.ChunkSize + 1;
             for (int i = 0; i < chunkSize; i++)
             {
                 int index1 = localY * chunkSize + i;
@@ -209,24 +209,29 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
                 neighborNormals[index2] = averageNormal;
             }
         }
-        
+
         private float[,] GenerateGlobalNoiseMap(int size)
         {
-            System.Random prng = new System.Random(_generatorModel.SeedValue);
-            Vector2 randomOffset = new Vector2(prng.Next(-100000, 100000), prng.Next(-100000, 100000));
+             var noiseMap = CombinedGenerator.GenerateCombinedMap(
+                    size,
+                    _simplexNoiseGeneratorModel.SimplexWeight,
+                    _simplexNoiseGeneratorModel.WorleyWeight,
+                    _simplexNoiseGeneratorModel.DiamondSquareWeight,
+                    _simplexNoiseGeneratorModel.VoronoiWeight,
+                    _simplexNoiseGeneratorModel.NoiseScale,
+                    _simplexNoiseGeneratorModel.Octaves,
+                    _simplexNoiseGeneratorModel.Persistence,
+                    _simplexNoiseGeneratorModel.Lacunarity,
+                    _simplexNoiseGeneratorModel.WorleyNoiseScale,
+                    _simplexNoiseGeneratorModel.DiamondSquareRoughness,
+                    _simplexNoiseGeneratorModel.SeedValue,
+                    _simplexNoiseGeneratorModel.VoronoiSitesNumber
+                );
             
-            float[,] noiseMap = Noise.GenerateNoiseMap(
-                size, size,
-                _generatorModel.NoiseScale, 
-                _generatorModel.Octaves,
-                _generatorModel.Persistence, 
-                _generatorModel.Lacunarity, 
-                randomOffset
-            );
             
-            if (_generatorModel.UseFalloffMap)
+            if (_simplexNoiseGeneratorModel.UseFalloffMap)
             {
-                float[,] falloffMap = FalloffGenerator.GenerateFalloffMap(size);
+                float[,] falloffMap = FalloffGenerator.GenerateFalloffMap(size, _simplexNoiseGeneratorModel.FalloffRadius);
                 for (int y = 0; y < size; y++)
                 {
                     for (int x = 0; x < size; x++)
@@ -235,13 +240,13 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
                     }
                 }
             }
-
+            
             return noiseMap;
         }
         
         private float[,] ExtractNoiseMapForChunk(float[,] globalNoiseMap, int chunkX, int chunkY)
         {
-            int chunkSize = _generatorModel.ChunkSize;
+            int chunkSize = _simplexNoiseGeneratorModel.ChunkSize;
             float[,] chunkNoiseMap = new float[chunkSize + 1, chunkSize + 1];
 
             for (int y = 0; y <= chunkSize; y++)
@@ -255,6 +260,7 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
             }
 
             return chunkNoiseMap;
+
         }
 
         private void ClearChunks()
@@ -273,7 +279,7 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
             float[,] smoothedMap = new float[mapSize, mapSize];
             Array.Copy(heightMap, smoothedMap, heightMap.Length);
         
-            float waterThreshold = _generatorModel.Regions[0].height;
+            float waterThreshold = _simplexNoiseGeneratorModel.Regions[0].height;
         
             for (int pass = 0; pass < smoothingPasses; pass++)
             {
@@ -291,7 +297,7 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
         
             return smoothedMap;
         }
-
+        
         private bool IsCoastalTile(float[,] heightMap, int x, int y, float waterThreshold)
         {
             bool isWater = heightMap[x, y] <= waterThreshold;
@@ -357,26 +363,26 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
 
             return colorMap;
         }
-        
+
         private Color CalculateColor(float height)
         {
-            for (int i = 0; i < _generatorModel.Regions.Length; i++)
+            for (int i = 0; i < _simplexNoiseGeneratorModel.Regions.Length; i++)
             {
-                if (height <= _generatorModel.Regions[i].height)
+                if (height <= _simplexNoiseGeneratorModel.Regions[i].height)
                 {
-                    if (i == 0) return _generatorModel.Regions[i].color;
+                    if (i == 0) return _simplexNoiseGeneratorModel.Regions[i].color;
     
-                    float t = Mathf.InverseLerp(_generatorModel.Regions[i - 1].height, _generatorModel.Regions[i].height, height);
-                    return Color.Lerp(_generatorModel.Regions[i - 1].color, _generatorModel.Regions[i].color, t);
+                    float t = Mathf.InverseLerp(_simplexNoiseGeneratorModel.Regions[i - 1].height, _simplexNoiseGeneratorModel.Regions[i].height, height);
+                    return Color.Lerp(_simplexNoiseGeneratorModel.Regions[i - 1].color, _simplexNoiseGeneratorModel.Regions[i].color, t);
                 }
             }
     
-            return _generatorModel.Regions[_generatorModel.Regions.Length - 1].color;
+            return _simplexNoiseGeneratorModel.Regions[_simplexNoiseGeneratorModel.Regions.Length - 1].color;
         }
 
         private MeshData GenerateTerrainMesh(float[,] heightMap, int chunkX, int chunkY)
         {
-            int chunkSize = _generatorModel.ChunkSize;
+            int chunkSize = _simplexNoiseGeneratorModel.ChunkSize;
             int meshSize = chunkSize + 1;
             MeshData meshData = new MeshData(meshSize, meshSize);
             int vertexIndex = 0;
@@ -389,8 +395,8 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
                     Vector3 vertex = new Vector3(x, height, y);
 
                     meshData.vertices[vertexIndex] = vertex;
-                    meshData.uvs[vertexIndex] = new Vector2((x + chunkX * chunkSize) / (float)(chunkSize * _generatorModel.ChunksPerSide), 
-                                                           (y + chunkY * chunkSize) / (float)(chunkSize * _generatorModel.ChunksPerSide));
+                    meshData.uvs[vertexIndex] = new Vector2((x + chunkX * chunkSize) / (float)(chunkSize * _simplexNoiseGeneratorModel.ChunksPerSide), 
+                                                           (y + chunkY * chunkSize) / (float)(chunkSize * _simplexNoiseGeneratorModel.ChunksPerSide));
 
                     if (x < chunkSize && y < chunkSize)
                     {
@@ -404,120 +410,18 @@ namespace Game.WorldGeneration.RandomGenerator.Controllers
 
             return meshData;
         }
-
+        
         private float CalculateVertexHeight(float noiseValue, int chunkX, int chunkY, int localX, int localY)
         {
-            int globalX = chunkX * _generatorModel.ChunkSize + localX;
-            int globalY = chunkY * _generatorModel.ChunkSize + localY;
+            int globalX = chunkX * _simplexNoiseGeneratorModel.ChunkSize + localX;
+            int globalY = chunkY * _simplexNoiseGeneratorModel.ChunkSize + localY;
             float globalNoiseValue = _globalNoiseMap[globalX, globalY];
-            return _generatorModel.HeightCurve.Evaluate(globalNoiseValue) * _generatorModel.HeightMultiplier;
+            return _simplexNoiseGeneratorModel.HeightCurve.Evaluate(globalNoiseValue) * _simplexNoiseGeneratorModel.HeightMultiplier;
         }
 
         private void ApplyColorToMesh(Mesh mesh, Color[] colorMap)
         {
             mesh.colors = colorMap;
-        }
-
-    }
-    
-    public static class Noise
-    {
-        public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, float scale, int octaves, float persistence, float lacunarity, Vector2 offset)
-        {
-            float[,] noiseMap = new float[mapWidth, mapHeight];
-
-            if (scale <= 0)
-            {
-                scale = 0.0001f;
-            }
-
-            Vector2[] octaveOffsets = new Vector2[octaves];
-            System.Random prng = new System.Random(42);
-            for (int i = 0; i < octaves; i++)
-            {
-                float offsetX = prng.Next(-100000, 100000) + offset.x;
-                float offsetY = prng.Next(-100000, 100000) + offset.y;
-                octaveOffsets[i] = new Vector2(offsetX, offsetY);
-            }
-
-            float maxNoiseHeight = float.MinValue;
-            float minNoiseHeight = float.MaxValue;
-
-            float halfWidth = mapWidth / 2f;
-            float halfHeight = mapHeight / 2f;
-
-            for (int y = 0; y < mapHeight; y++)
-            {
-                for (int x = 0; x < mapWidth; x++)
-                {
-                    float amplitude = 1;
-                    float frequency = 1;
-                    float noiseHeight = 0;
-
-                    for (int i = 0; i < octaves; i++)
-                    {
-                        float sampleX = (x - halfWidth) / scale * frequency + octaveOffsets[i].x;
-                        float sampleY = (y - halfHeight) / scale * frequency + octaveOffsets[i].y;
-
-                        float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
-                        noiseHeight += perlinValue * amplitude;
-
-                        amplitude *= persistence;
-                        frequency *= lacunarity;
-                    }
-
-                    if (noiseHeight > maxNoiseHeight)
-                    {
-                        maxNoiseHeight = noiseHeight;
-                    }
-                    else if (noiseHeight < minNoiseHeight)
-                    {
-                        minNoiseHeight = noiseHeight;
-                    }
-
-                    noiseMap[x, y] = noiseHeight;
-                }
-            }
-
-            for (int y = 0; y < mapHeight; y++)
-            {
-                for (int x = 0; x < mapWidth; x++)
-                {
-                    noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
-                }
-            }
-
-            return noiseMap;
-        }
-    }
-    
-    public static class FalloffGenerator
-    {
-        public static float[,] GenerateFalloffMap(int size)
-        {
-            float[,] map = new float[size, size];
-
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    float xNorm = x / (float)size * 2 - 1;
-                    float yNorm = y / (float)size * 2 - 1;
-
-                    float value = Mathf.Max(Mathf.Abs(xNorm), Mathf.Abs(yNorm));
-                    map[x, y] = Evaluate(value);
-                }
-            }
-
-            return map;
-        }
-        
-        private static float Evaluate(float value)
-        {
-            float a = 3;
-            float b = 2.2f;
-    
-            return Mathf.Pow(value, a) / (Mathf.Pow(value, a) + Mathf.Pow(b - b * value, a));
         }
     }
 }

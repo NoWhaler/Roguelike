@@ -1,15 +1,16 @@
-using Game.WorldGeneration.RandomGenerator.Models;
+using Game.WorldGeneration.ProceduralGenerator.SimplexNoiseGeneration.Models;
 using UnityEditor;
 using UnityEngine;
 
-namespace Game.WorldGeneration
+namespace Game.WorldGeneration.EditorConfiguration
 {
-    [CustomEditor(typeof(GeneratorModel))]
-    public class MapGenerationEditor: Editor
+    
+    [CustomEditor(typeof(SimplexNoiseGeneratorModel))]
+    public class SimplexMapGenerationEditor: Editor
     {
         public override void OnInspectorGUI()
         {
-            GeneratorModel mapGen = (GeneratorModel)target;
+            SimplexNoiseGeneratorModel mapGen = (SimplexNoiseGeneratorModel)target;
             
             if (DrawDefaultInspector())
             {

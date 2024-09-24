@@ -134,12 +134,12 @@ GameObject:
   - component: {fileID: 52153081}
   - component: {fileID: 52153080}
   m_Layer: 0
-  m_Name: MapGenerator
+  m_Name: PerlinMapGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &52153080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,8 +160,6 @@ MonoBehaviour:
   <Lacunarity>k__BackingField: 2
   <HeightMultiplier>k__BackingField: 17
   <CoastlineSmoothPasses>k__BackingField: 15
-  <ErosionIterations>k__BackingField: 0
-  <ErosionStrength>k__BackingField: 0.01
   <SmoothNormalsPasses>k__BackingField: 5
   <SeedValue>k__BackingField: 171
   <HeightCurve>k__BackingField:
@@ -208,7 +206,6 @@ MonoBehaviour:
     height: 1
     color: {r: 1, g: 1, b: 1, a: 0}
   <UseFalloffMap>k__BackingField: 0
-  isValidateAvailable: 0
   <ChunkMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
   <ChunkPrefab>k__BackingField: {fileID: 6816338561572193657, guid: d1c80c32eae06a04fade22d9c68cf290, type: 3}
 --- !u!4 &52153081
@@ -218,6 +215,157 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 52153079}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &167282363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 167282365}
+  - component: {fileID: 167282366}
+  m_Layer: 0
+  m_Name: SimplexMapGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &167282365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167282363}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &167282366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167282363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891a13bde98a4833afa7542347f8b3fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <SeedValue>k__BackingField: 181
+  <ChunksPerSide>k__BackingField: 4
+  <ChunkSize>k__BackingField: 64
+  <NoiseScale>k__BackingField: 30
+  <Octaves>k__BackingField: 4
+  <Persistence>k__BackingField: 0.5
+  <Lacunarity>k__BackingField: 2
+  <HeightMultiplier>k__BackingField: 25
+  <CoastlineSmoothPasses>k__BackingField: 15
+  <SmoothNormalsPasses>k__BackingField: 5
+  <WorleyNoiseScale>k__BackingField: 30
+  <LakeThreshold>k__BackingField: 0
+  <MinLakeSize>k__BackingField: 1
+  <LakeMergeDistance>k__BackingField: 1
+  <DiamondSquareRoughness>k__BackingField: 0.9
+  <SimplexWeight>k__BackingField: 0.15
+  <WorleyWeight>k__BackingField: 0
+  <DiamondSquareWeight>k__BackingField: 0.85
+  <VoronoiWeight>k__BackingField: 0
+  <VoronoiSitesNumber>k__BackingField: 60
+  <FalloffRadius>k__BackingField: 0.55
+  <UseFalloffMap>k__BackingField: 0
+  <HeightCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.7441703
+      value: 0.13336399
+      inSlope: 0.8924568
+      outSlope: 0.8924568
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.055809278
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  <Regions>k__BackingField:
+  - name: 
+    height: 0.3
+    color: {r: 0, g: 0.078431375, b: 1, a: 0}
+  - name: 
+    height: 0.4
+    color: {r: 0, g: 0.5372549, b: 1, a: 0}
+  - name: 
+    height: 0.45
+    color: {r: 1, g: 0.8352941, b: 0, a: 0}
+  - name: 
+    height: 0.55
+    color: {r: 0.003921569, g: 0.48235294, b: 0, a: 0}
+  - name: 
+    height: 0.85
+    color: {r: 0.54901963, g: 0.25490198, b: 0.07450981, a: 0}
+  - name: 
+    height: 1
+    color: {r: 1, g: 1, b: 1, a: 0}
+  <ChunkPrefab>k__BackingField: {fileID: 5368435053788269231, guid: d1c80c32eae06a04fade22d9c68cf290, type: 3}
+  <ChunkMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
+--- !u!1 &289456275
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 289456277}
+  m_Layer: 0
+  m_Name: WorleyMapGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &289456277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289456275}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -350,6 +498,7 @@ MonoBehaviour:
   _scriptableObjectInstallers: []
   _monoInstallers:
   - {fileID: 2053202021}
+  - {fileID: 1862220367}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -381,6 +530,56 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2053202020}
+  - {fileID: 1862220368}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1182919973
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1182919975}
+  - component: {fileID: 1182919974}
+  m_Layer: 0
+  m_Name: Voronoi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1182919974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182919973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40f1c888561a4b06a7173583314adca3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 256
+  height: 256
+  seed: 10000000
+  sitesNumber: 150
+  voronoiMaterial: {fileID: 2100000, guid: 1c1fac55d73f8bb4aa8db5ed039f4c19, type: 2}
+--- !u!4 &1182919975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182919973}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1689441407
@@ -477,6 +676,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1862220366
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1862220368}
+  - component: {fileID: 1862220367}
+  m_Layer: 0
+  m_Name: SimplexGeneratorInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1862220367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862220366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9ba1ed6ee94ea9bcfe5bf87e539480, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  perlinNoiseGeneratorModel: {fileID: 167282366}
+--- !u!4 &1862220368
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862220366}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1110441219}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053202019
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,7 +732,7 @@ GameObject:
   - component: {fileID: 2053202020}
   - component: {fileID: 2053202021}
   m_Layer: 0
-  m_Name: GeneratorInstaller
+  m_Name: PerlinGeneratorInstaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -521,7 +765,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061d72bb4b7542648eec68f5128afe4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generatorModel: {fileID: 52153080}
+  perlinNoiseGeneratorModel: {fileID: 52153080}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -530,3 +774,6 @@ SceneRoots:
   - {fileID: 653201421}
   - {fileID: 1689441409}
   - {fileID: 52153081}
+  - {fileID: 167282365}
+  - {fileID: 289456277}
+  - {fileID: 1182919975}
