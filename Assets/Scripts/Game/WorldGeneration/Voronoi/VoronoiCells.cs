@@ -5,12 +5,12 @@ namespace Game.WorldGeneration.Voronoi
 {
     public class VoronoiCells: MonoBehaviour
     {
-        public int width = 256;           // Width of the Voronoi map
-        public int height = 256;          // Height of the Voronoi map
-        public int seed = 12345;          // Seed for randomness
-        public int sitesNumber = 10;      // Number of sites for Voronoi generation
-        public Material voronoiMaterial;  // Material to display the Voronoi texture
-    
+        [SerializeField] private int width = 256;          
+        [SerializeField] private int height = 256; 
+        [SerializeField] private int seed = 12345;          
+        [SerializeField] private int sitesNumber = 10;      
+        [SerializeField] private Material voronoiMaterial;
+        
         private void Start()
         {
             float[,] voronoiMap = VoronoiGenerator.GenerateVoronoiMap(width, height, seed, sitesNumber);
@@ -31,7 +31,7 @@ namespace Game.WorldGeneration.Voronoi
                 for (int x = 0; x < voronoiMap.GetLength(0); x++)
                 {
                     float value = voronoiMap[x, y];
-                    colors[y * voronoiMap.GetLength(0) + x] = new Color(value, value, value); // Grayscale
+                    colors[y * voronoiMap.GetLength(0) + x] = new Color(value, value, value);
                 }
             }
     
@@ -43,9 +43,9 @@ namespace Game.WorldGeneration.Voronoi
         private void CreateDisplayQuad(Texture2D texture)
         {
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.transform.position = Vector3.zero; // Position the Quad at the origin
-            quad.transform.localScale = new Vector3(width / 10f, height / 10f, 1); // Adjust size
-            quad.GetComponent<Renderer>().material = voronoiMaterial; // Assign the material with the texture
+            quad.transform.position = Vector3.zero;
+            quad.transform.localScale = new Vector3(width / 10f, height / 10f, 1); 
+            quad.GetComponent<Renderer>().material = voronoiMaterial;
         }
     }
 }

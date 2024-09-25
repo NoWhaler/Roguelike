@@ -343,37 +343,6 @@ MonoBehaviour:
     color: {r: 1, g: 1, b: 1, a: 0}
   <ChunkPrefab>k__BackingField: {fileID: 5368435053788269231, guid: d1c80c32eae06a04fade22d9c68cf290, type: 3}
   <ChunkMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
---- !u!1 &289456275
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 289456277}
-  m_Layer: 0
-  m_Name: WorleyMapGenerator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &289456277
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289456275}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &653201418
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,6 +435,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 56.853, y: 0, z: 0}
+--- !u!1 &889457315
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 889457317}
+  - component: {fileID: 889457316}
+  m_Layer: 0
+  m_Name: RRT
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &889457316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889457315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a23d545c718495988be712c10742918, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startPoint: {x: 50, y: 50, z: 0}
+  goalPoint: {x: 350, y: 450, z: 0}
+  stepSize: 20
+  maxIterations: 100
+  goalThreshold: 10
+  nodePrefab: {fileID: 8183153193659837610, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
+  edgePrefab: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
+  startColor: {r: 1, g: 1, b: 1, a: 1}
+  goalColor: {r: 0, g: 0, b: 0, a: 1}
+  biomes:
+  - color: {r: 1, g: 0, b: 0, a: 0}
+    nodeCount: 25
+  - color: {r: 1, g: 0.9399502, b: 0, a: 0}
+    nodeCount: 25
+  - color: {r: 0.16735196, g: 1, b: 0, a: 0}
+    nodeCount: 25
+  - color: {r: 0, g: 0.035513878, b: 1, a: 0}
+    nodeCount: 25
+--- !u!4 &889457317
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889457315}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &1110441217
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,7 +580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1182919974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,8 +596,8 @@ MonoBehaviour:
   width: 256
   height: 256
   seed: 10000000
-  sitesNumber: 150
-  voronoiMaterial: {fileID: 2100000, guid: 1c1fac55d73f8bb4aa8db5ed039f4c19, type: 2}
+  sitesNumber: 250
+  voronoiMaterial: {fileID: 2100000, guid: 0cfede67ddc1f6c47a92cee3e250add1, type: 2}
 --- !u!4 &1182919975
 Transform:
   m_ObjectHideFlags: 0
@@ -775,5 +806,5 @@ SceneRoots:
   - {fileID: 1689441409}
   - {fileID: 52153081}
   - {fileID: 167282365}
-  - {fileID: 289456277}
   - {fileID: 1182919975}
+  - {fileID: 889457317}
