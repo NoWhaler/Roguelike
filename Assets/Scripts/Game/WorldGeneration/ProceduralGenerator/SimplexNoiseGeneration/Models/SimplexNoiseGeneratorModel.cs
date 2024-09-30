@@ -59,12 +59,6 @@ namespace Game.WorldGeneration.ProceduralGenerator.SimplexNoiseGeneration.Models
         [field: Range(0, 1f)]
         [field: SerializeField] public float DiamondSquareWeight { get; set; }
         
-        [field: Range(0, 1f)]
-        [field: SerializeField] public float VoronoiWeight { get; set; }
-        
-        [field: Range(10, 200)]
-        [field: SerializeField] public int VoronoiSitesNumber { get; set; }
-        
         [field: Range(0, 5)]
         [field: SerializeField] public float FalloffRadius { get; set; }
         [field: SerializeField] public bool UseFalloffMap { get; set; }

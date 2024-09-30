@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Game.WorldGeneration.RTT;
 using UnityEngine;
 
 namespace Game.WorldGeneration.ProceduralGenerator.GeneratorsScripts
@@ -11,71 +9,42 @@ namespace Game.WorldGeneration.ProceduralGenerator.GeneratorsScripts
         {
             public Vector3 position;
             public int parentIndex;
-            public int biomeIndex;
 
-            public Node(Vector3 pos, int parent, int biome)
+            public Node(Vector3 pos, int parent)
             {
                 position = pos;
                 parentIndex = parent;
-                biomeIndex = biome;
             }
         }
 
-        public static List<Node> GenerateRRT(Vector3 centerPoint, float radius, float stepSize, List<Biome> biomes)
+        public static List<Node> GenerateRRT(Vector3 startPoint, float radius, float stepSize, float minDistance, int desiredNodeCount)
         {
             List<Node> nodes = new List<Node>();
-            nodes.Add(new Node(centerPoint, -1, 0));
-            int[] biomeNodeCounts = new int[biomes.Count];
-            biomeNodeCounts[0] = 1;
-            float minBiomeDistance = stepSize * 2f;
-            int maxAttempts = 50; 
+            nodes.Add(new Node(startPoint, -1));
 
-            while (biomeNodeCounts.Select((count, index) => count < biomes[index].nodeCount).Any(x => x))
+            while (nodes.Count < desiredNodeCount)
             {
-                int currentBiomeIndex = GetNextBiomeIndex(biomeNodeCounts, biomes);
-                
-                for (int attempt = 0; attempt < maxAttempts; attempt++)
+                Vector3 randomPoint = GetRandomPointWithinRadius(startPoint, radius);
+
+                Node nearestNode = FindNearestNode(nodes, randomPoint);
+
+                Vector3 direction = (randomPoint - nearestNode.position).normalized;
+                Vector3 newPosition = nearestNode.position + direction * stepSize;
+
+                if (IsFarEnoughFromExistingNodes(nodes, newPosition, minDistance))
                 {
-                    Vector3 randomPoint = GetRandomPoint(centerPoint, radius);
-                    int nearestIndex = GetNearestNodeIndex(nodes, randomPoint, currentBiomeIndex);
-
-                    if (nearestIndex == -1) continue;
-
-                    Vector3 newPoint = ExtendTowards(nodes[nearestIndex].position, randomPoint, stepSize);
-
-                    if (IsValidNodePlacement(nodes, newPoint, stepSize * 0.5f, currentBiomeIndex, minBiomeDistance))
-                    {
-                        nodes.Add(new Node(newPoint, nearestIndex, currentBiomeIndex));
-                        biomeNodeCounts[currentBiomeIndex]++;
-
-                        if (currentBiomeIndex != 0 && biomeNodeCounts[currentBiomeIndex] < biomes[currentBiomeIndex].nodeCount)
-                        {
-                            Vector3 extendedPoint = ExtendTowards(newPoint, GetRandomPoint(centerPoint, radius), stepSize);
-                            if (IsValidNodePlacement(nodes, extendedPoint, stepSize * 0.5f, currentBiomeIndex, minBiomeDistance))
-                            {
-                                nodes.Add(new Node(extendedPoint, nodes.Count - 1, currentBiomeIndex));
-                                biomeNodeCounts[currentBiomeIndex]++;
-                            }
-                        }
-
-                        break;
-                    }
+                    nodes.Add(new Node(newPosition, nodes.IndexOf(nearestNode)));
                 }
             }
 
             return nodes;
         }
 
-        private static bool IsValidNodePlacement(List<Node> nodes, Vector3 newPoint, float minDistance, int currentBiomeIndex, float minBiomeDistance)
+        private static bool IsFarEnoughFromExistingNodes(List<Node> nodes, Vector3 newPosition, float minDistance)
         {
-            foreach (var node in nodes)
+            foreach (Node node in nodes)
             {
-                float distance = Vector3.Distance(node.position, newPoint);
-                if (distance < minDistance)
-                {
-                    return false;
-                }
-                if (node.biomeIndex != currentBiomeIndex && node.biomeIndex != 0 && currentBiomeIndex != 0 && distance < minBiomeDistance)
+                if (Vector3.Distance(newPosition, node.position) < minDistance)
                 {
                     return false;
                 }
@@ -83,62 +52,28 @@ namespace Game.WorldGeneration.ProceduralGenerator.GeneratorsScripts
             return true;
         }
 
-        private static int GetNextBiomeIndex(int[] biomeNodeCounts, List<Biome> biomes)
+        private static Node FindNearestNode(List<Node> nodes, Vector3 point)
         {
-            for (int i = 0; i < biomeNodeCounts.Length; i++)
+            Node nearestNode = nodes[0];
+            float minDistance = Vector3.Distance(point, nearestNode.position);
+
+            for (int i = 1; i < nodes.Count; i++)
             {
-                if (biomeNodeCounts[i] < biomes[i].nodeCount)
+                float distance = Vector3.Distance(point, nodes[i].position);
+                if (distance < minDistance)
                 {
-                    return i;
+                    minDistance = distance;
+                    nearestNode = nodes[i];
                 }
             }
 
-            return 0;
+            return nearestNode;
         }
 
-        private static Vector3 GetRandomPoint(Vector3 centerPoint, float radius)
+        private static Vector3 GetRandomPointWithinRadius(Vector3 center, float radius)
         {
-            Vector2 randomCircle = Random.insideUnitCircle * radius;
-            return new Vector3(centerPoint.x + randomCircle.x, centerPoint.y + randomCircle.y, centerPoint.z);
-        }
-
-        private static int GetNearestNodeIndex(List<Node> nodes, Vector3 point, int targetBiomeIndex)
-        {
-            float minDistance = float.MaxValue;
-            int nearestIndex = -1;
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                if (targetBiomeIndex == 0 || nodes[i].biomeIndex == 0 || nodes[i].biomeIndex == targetBiomeIndex)
-                {
-                    float distance = Vector3.Distance(nodes[i].position, point);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        nearestIndex = i;
-                    }
-                }
-            }
-
-            return nearestIndex;
-        }
-
-        private static Vector3 ExtendTowards(Vector3 from, Vector3 to, float stepSize)
-        {
-            Vector3 direction = (to - from).normalized;
-            return from + direction * stepSize;
-        }
-
-        private static bool IsCollision(List<Node> nodes, Vector3 newPoint, float minDistance)
-        {
-            foreach (var node in nodes)
-            {
-                if (Vector3.Distance(node.position, newPoint) < minDistance)
-                {
-                    return true;
-                }
-            }
-            return false;
+            Vector2 randomPoint2D = Random.insideUnitCircle * radius;
+            return new Vector3(randomPoint2D.x, 0, randomPoint2D.y) + center;
         }
     }
 }

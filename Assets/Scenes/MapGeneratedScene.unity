@@ -285,8 +285,6 @@ MonoBehaviour:
   <SimplexWeight>k__BackingField: 0.15
   <WorleyWeight>k__BackingField: 0
   <DiamondSquareWeight>k__BackingField: 0.85
-  <VoronoiWeight>k__BackingField: 0
-  <VoronoiSitesNumber>k__BackingField: 60
   <FalloffRadius>k__BackingField: 0.55
   <UseFalloffMap>k__BackingField: 0
   <HeightCurve>k__BackingField:
@@ -465,28 +463,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _centerPoint: {x: 0, y: 0, z: 0}
-  _stepSize: 10
-  _radiusModifier: 1.8
+  _stepSize: 25
+  _radius: 750
+  _minDistance: 25
+  _iterations: 1000
   _nodePrefab: {fileID: 8183153193659837610, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
   _edgePrefab: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
-  _startColor: {r: 1, g: 1, b: 1, a: 0}
-  biomes:
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    name: Road
-    nodeCount: 15
-  - color: {r: 1, g: 0, b: 0, a: 0}
-    name: Red
-    nodeCount: 25
-  - color: {r: 1, g: 0.9399502, b: 0, a: 0}
-    name: Yellow
-    nodeCount: 25
-  - color: {r: 0.16735196, g: 1, b: 0, a: 0}
-    name: Green
-    nodeCount: 25
-  - color: {r: 0, g: 0.035513878, b: 1, a: 0}
-    name: Blue
-    nodeCount: 25
-  debugMode: 0
+  _seed: 9294
+  _textureResolution: 256
+  _voronoiMaterial: {fileID: 2100000, guid: 0cfede67ddc1f6c47a92cee3e250add1, type: 2}
+  biomes: []
 --- !u!4 &889457317
 Transform:
   m_ObjectHideFlags: 0
@@ -567,55 +553,6 @@ Transform:
   m_Children:
   - {fileID: 2053202020}
   - {fileID: 1862220368}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1182919973
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1182919975}
-  - component: {fileID: 1182919974}
-  m_Layer: 0
-  m_Name: Voronoi
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1182919974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1182919973}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40f1c888561a4b06a7173583314adca3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  width: 256
-  height: 256
-  seed: 10000000
-  sitesNumber: 250
-  voronoiMaterial: {fileID: 2100000, guid: 0cfede67ddc1f6c47a92cee3e250add1, type: 2}
---- !u!4 &1182919975
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1182919973}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1689441407
@@ -811,5 +748,4 @@ SceneRoots:
   - {fileID: 1689441409}
   - {fileID: 52153081}
   - {fileID: 167282365}
-  - {fileID: 1182919975}
   - {fileID: 889457317}

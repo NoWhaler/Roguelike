@@ -217,15 +217,13 @@ namespace Game.WorldGeneration.ProceduralGenerator.SimplexNoiseGeneration.Contro
                     _simplexNoiseGeneratorModel.SimplexWeight,
                     _simplexNoiseGeneratorModel.WorleyWeight,
                     _simplexNoiseGeneratorModel.DiamondSquareWeight,
-                    _simplexNoiseGeneratorModel.VoronoiWeight,
                     _simplexNoiseGeneratorModel.NoiseScale,
                     _simplexNoiseGeneratorModel.Octaves,
                     _simplexNoiseGeneratorModel.Persistence,
                     _simplexNoiseGeneratorModel.Lacunarity,
                     _simplexNoiseGeneratorModel.WorleyNoiseScale,
                     _simplexNoiseGeneratorModel.DiamondSquareRoughness,
-                    _simplexNoiseGeneratorModel.SeedValue,
-                    _simplexNoiseGeneratorModel.VoronoiSitesNumber
+                    _simplexNoiseGeneratorModel.SeedValue
                 );
             
             
