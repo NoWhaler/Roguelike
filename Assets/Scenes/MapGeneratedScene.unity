@@ -469,10 +469,11 @@ MonoBehaviour:
   _iterations: 1000
   _nodePrefab: {fileID: 8183153193659837610, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
   _edgePrefab: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
-  _seed: 9294
+  _seed: 6746
   _textureResolution: 256
   _voronoiMaterial: {fileID: 2100000, guid: 0cfede67ddc1f6c47a92cee3e250add1, type: 2}
-  biomes: []
+  _biomes: []
+  _voronoiRelaxationIterations: 10
 --- !u!4 &889457317
 Transform:
   m_ObjectHideFlags: 0

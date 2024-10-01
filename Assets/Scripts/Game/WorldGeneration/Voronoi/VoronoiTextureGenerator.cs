@@ -5,10 +5,10 @@ namespace Game.WorldGeneration.Voronoi
 {
     public class VoronoiTextureGenerator
     {
-        public static Texture2D GenerateVoronoiTexture(int width, int height, int seed, List<Biome> biomes)
+        public static Texture2D GenerateVoronoiTexture(int width, int height, int seed, List<Biome> biomes, int relaxationIterations)
         {
-            float[,] voronoiMap = VoronoiBiomeDistributor.GenerateVoronoiMap(width, height, seed, biomes);
-            List<BiomeCell> biomeCells = VoronoiBiomeDistributor.GenerateVoronoiBiomes(width, height, seed, biomes);
+            float[,] voronoiMap = VoronoiBiomeDistributor.GenerateVoronoiMap(width, height, seed, biomes, relaxationIterations);
+            List<BiomeCell> biomeCells = VoronoiBiomeDistributor.GenerateVoronoiBiomes(width, height, seed, biomes, relaxationIterations);
             return CreateVoronoiTexture(voronoiMap, biomeCells);
         }
 

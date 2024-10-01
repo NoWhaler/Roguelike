@@ -23,49 +23,110 @@ namespace Game.WorldGeneration.Voronoi
     [Serializable]
     public class BiomeCell
     {
-        public Vector2 SeedPoint { get; private set; }
-        public Biome BiomeType { get; private set; }
+        public Vector2 SeedPoint;
+        public Biome BiomeType;
+        public List<Vector2> Points;
 
         public BiomeCell(Vector2 seedPoint, Biome biomeType)
         {
             SeedPoint = seedPoint;
             BiomeType = biomeType;
+            Points = new List<Vector2>();
         }
     }
     
     public class VoronoiBiomeDistributor
     {
-        public static float[,] GenerateVoronoiMap(int width, int height, int seed, List<Biome> biomes)
+        public static float[,] GenerateVoronoiMap(int width, int height, int seed, List<Biome> biomes, int relaxationIterations)
         {
-            int totalCells = biomes.Sum(b => b.CellCount);
-            float[,] voronoiMap = new float[width, height];
-            Vector2[] sites = new Vector2[totalCells];
+            List<BiomeCell> biomeCells = GenerateInitialBiomeCells(width, height, seed, biomes);
+            
+            for (int i = 0; i < relaxationIterations; i++)
+            {
+                RelaxCells(biomeCells, width, height);
+            }
+
+            return GenerateVoronoiMapFromCells(biomeCells, width, height);
+        }
+
+        private static List<BiomeCell> GenerateInitialBiomeCells(int width, int height, int seed, List<Biome> biomes)
+        {
+            List<BiomeCell> cells = new List<BiomeCell>();
             System.Random random = new System.Random(seed);
 
-            int siteIndex = 0;
             foreach (var biome in biomes)
             {
                 for (int i = 0; i < biome.CellCount; i++)
                 {
-                    sites[siteIndex] = new Vector2(random.Next(0, width), random.Next(0, height));
-                    siteIndex++;
+                    Vector2 seedPoint = new Vector2(random.Next(0, width), random.Next(0, height));
+                    cells.Add(new BiomeCell(seedPoint, biome));
                 }
+            }
+
+            return cells;
+        }
+
+        private static void RelaxCells(List<BiomeCell> cells, int width, int height)
+        {
+            foreach (var cell in cells)
+            {
+                cell.Points.Clear();
             }
 
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    float closestDistance = float.MaxValue;
-                    for (int i = 0; i < totalCells; i++)
+                    Vector2 point = new Vector2(x, y);
+                    BiomeCell closestCell = null;
+                    float minDistance = float.MaxValue;
+
+                    foreach (var cell in cells)
                     {
-                        float distance = Vector2.Distance(new Vector2(x, y), sites[i]);
+                        float distance = Vector2.Distance(point, cell.SeedPoint);
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            closestCell = cell;
+                        }
+                    }
+
+                    closestCell?.Points.Add(point);
+                }
+            }
+
+            foreach (var cell in cells)
+            {
+                if (cell.Points.Count > 0)
+                {
+                    Vector2 centroid = Vector2.zero;
+                    foreach (var point in cell.Points)
+                    {
+                        centroid += point;
+                    }
+                    centroid /= cell.Points.Count;
+                    cell.SeedPoint = centroid;
+                }
+            }
+        }
+
+        private static float[,] GenerateVoronoiMapFromCells(List<BiomeCell> cells, int width, int height)
+        {
+            float[,] voronoiMap = new float[width, height];
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    float closestDistance = float.MaxValue;
+                    foreach (var cell in cells)
+                    {
+                        float distance = Vector2.Distance(new Vector2(x, y), cell.SeedPoint);
                         if (distance < closestDistance)
                         {
                             closestDistance = distance;
                         }
                     }
-
                     voronoiMap[x, y] = closestDistance;
                 }
             }
@@ -81,7 +142,6 @@ namespace Game.WorldGeneration.Voronoi
             {
                 if (value > maxVal) maxVal = value;
             }
-
             for (int y = 0; y < map.GetLength(1); y++)
             {
                 for (int x = 0; x < map.GetLength(0); x++)
@@ -91,18 +151,13 @@ namespace Game.WorldGeneration.Voronoi
             }
         }
 
-        public static List<BiomeCell> GenerateVoronoiBiomes(int width, int height, int seed, List<Biome> biomes)
+        public static List<BiomeCell> GenerateVoronoiBiomes(int width, int height, int seed, List<Biome> biomes, int relaxationIterations)
         {
-            List<BiomeCell> biomeCells = new List<BiomeCell>();
-            System.Random random = new System.Random(seed);
-
-            foreach (var biome in biomes)
+            List<BiomeCell> biomeCells = GenerateInitialBiomeCells(width, height, seed, biomes);
+            
+            for (int i = 0; i < relaxationIterations; i++)
             {
-                for (int i = 0; i < biome.CellCount; i++)
-                {
-                    Vector2 seedPoint = new Vector2(random.Next(0, width), random.Next(0, height));
-                    biomeCells.Add(new BiomeCell(seedPoint, biome));
-                }
+                RelaxCells(biomeCells, width, height);
             }
 
             return biomeCells;

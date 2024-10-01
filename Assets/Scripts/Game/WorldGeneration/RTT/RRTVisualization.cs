@@ -23,6 +23,8 @@ namespace Game.WorldGeneration.RTT
         private List<GameObject> _visualObjects = new();
         [SerializeField] private List<Biome> _biomes;
 
+        [SerializeField] private int _voronoiRelaxationIterations;
+
         private void Awake()
         {
             InitializeBiomes();
@@ -52,13 +54,16 @@ namespace Game.WorldGeneration.RTT
         {
             ClearVisualization();
             
-            Texture2D voronoiTexture = VoronoiTextureGenerator.GenerateVoronoiTexture(_textureResolution, _textureResolution, _seed, _biomes);
+            Texture2D voronoiTexture = VoronoiTextureGenerator.GenerateVoronoiTexture(_textureResolution,
+                _textureResolution, _seed, _biomes, _voronoiRelaxationIterations);
             _voronoiMaterial.mainTexture = voronoiTexture;
             
             CreateDisplayQuad(voronoiTexture);
             
-            List<RRTAlgorithmGenerator.Node> nodes = RRTAlgorithmGenerator.GenerateRRT(_centerPoint, _radius, _stepSize, _minDistance, _iterations);
-            List<BiomeCell> biomeCells = VoronoiBiomeDistributor.GenerateVoronoiBiomes(_textureResolution, _textureResolution, _seed, _biomes);
+            List<RRTAlgorithmGenerator.Node> nodes = RRTAlgorithmGenerator.GenerateRRT(_centerPoint, _radius, _stepSize,
+                _minDistance, _iterations);
+            List<BiomeCell> biomeCells = VoronoiBiomeDistributor.GenerateVoronoiBiomes(_textureResolution,
+                _textureResolution, _seed, _biomes, _voronoiRelaxationIterations);
             
             VisualizeRRTWithBiomes(nodes, biomeCells);
         }
