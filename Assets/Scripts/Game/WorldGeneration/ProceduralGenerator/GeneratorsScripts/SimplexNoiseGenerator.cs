@@ -3,12 +3,12 @@ using Random = System.Random;
 
 namespace Game.WorldGeneration.ProceduralGenerator.GeneratorsScripts
 {
-    public static class SimplexNoise
+    public static class SimplexNoiseGenerator
     {
         private static int[] perm = new int[512];
         private static Vector2[] grad2D;
 
-        static SimplexNoise()
+        static SimplexNoiseGenerator()
         {
             var random = new Random(42);
             for (int i = 0; i < 256; i++)

@@ -341,6 +341,50 @@ MonoBehaviour:
     color: {r: 1, g: 1, b: 1, a: 0}
   <ChunkPrefab>k__BackingField: {fileID: 5368435053788269231, guid: d1c80c32eae06a04fade22d9c68cf290, type: 3}
   <ChunkMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
+--- !u!1 &622125273
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 622125274}
+  - component: {fileID: 622125275}
+  m_Layer: 0
+  m_Name: VoronoiInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &622125274
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622125273}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1110441219}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &622125275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622125273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2abde46993a7442ea055ddcd32c0a2ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &653201418
 GameObject:
   m_ObjectHideFlags: 0
@@ -462,18 +506,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a23d545c718495988be712c10742918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _centerPoint: {x: 0, y: 0, z: 0}
-  _stepSize: 25
-  _radius: 750
-  _minDistance: 25
-  _iterations: 1000
-  _nodePrefab: {fileID: 8183153193659837610, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
-  _edgePrefab: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
-  _seed: 6746
-  _textureResolution: 256
-  _voronoiMaterial: {fileID: 2100000, guid: 0cfede67ddc1f6c47a92cee3e250add1, type: 2}
-  _biomes: []
-  _voronoiRelaxationIterations: 10
+  <CenterPoint>k__BackingField: {x: 0, y: 0, z: 0}
+  <StepSize>k__BackingField: 8
+  <Radius>k__BackingField: 125
+  <MinDistance>k__BackingField: 8
+  <Iterations>k__BackingField: 450
+  <NodePrefab>k__BackingField: {fileID: -4567914681832355564, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
+  <EdgePrefab>k__BackingField: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
+  <Seed>k__BackingField: 9574
+  <TextureResolution>k__BackingField: 64
+  <VoronoiMaterial>k__BackingField: {fileID: 2100000, guid: c93a38de06a6038429b64731ca304d62, type: 2}
+  <VoronoiRelaxationIterations>k__BackingField: 10
+  <ChunksPerSide>k__BackingField: 3
 --- !u!4 &889457317
 Transform:
   m_ObjectHideFlags: 0
@@ -522,6 +566,9 @@ MonoBehaviour:
   _monoInstallers:
   - {fileID: 2053202021}
   - {fileID: 1862220367}
+  - {fileID: 2142331344}
+  - {fileID: 622125275}
+  - {fileID: 1818014992}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -554,6 +601,9 @@ Transform:
   m_Children:
   - {fileID: 2053202020}
   - {fileID: 1862220368}
+  - {fileID: 1818014991}
+  - {fileID: 622125274}
+  - {fileID: 2142331345}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1689441407
@@ -650,6 +700,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1818014990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1818014991}
+  - component: {fileID: 1818014992}
+  m_Layer: 0
+  m_Name: TerrainMeshGeneratorInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1818014991
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818014990}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1110441219}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1818014992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818014990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f3fbf3427143bab1e01c87f2330a29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _terrainMeshGeneratorModel: {fileID: 2109332566}
 --- !u!1 &1862220366
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,6 +835,104 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   perlinNoiseGeneratorModel: {fileID: 52153080}
+--- !u!1 &2109332563
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2109332565}
+  - component: {fileID: 2109332566}
+  m_Layer: 0
+  m_Name: ChunkGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2109332565
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109332563}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2109332566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109332563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82743d63ccf04090b746693d0d599054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <TerrainMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
+  <ChunkSize>k__BackingField: 128
+  <HeightMultiplier>k__BackingField: 0
+  <HeightCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!1 &2142331343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2142331345}
+  - component: {fileID: 2142331344}
+  m_Layer: 0
+  m_Name: RRTAlgorithmInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2142331344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142331343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea7304f52ced4a55b6256855ff82735a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rrtAlgorithModel: {fileID: 889457316}
+--- !u!4 &2142331345
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142331343}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1110441219}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -750,3 +943,4 @@ SceneRoots:
   - {fileID: 52153081}
   - {fileID: 167282365}
   - {fileID: 889457317}
+  - {fileID: 2109332565}

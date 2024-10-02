@@ -1,18 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Game.WorldGeneration.Voronoi
 {
     public class VoronoiTextureGenerator
     {
-        public static Texture2D GenerateVoronoiTexture(int width, int height, int seed, List<Biome> biomes, int relaxationIterations)
+        private VoronoiBiomeDistributor _voronoiBiomeDistributor;
+        
+        [Inject]
+        private void Constructor(VoronoiBiomeDistributor voronoiBiomeDistributor)
         {
-            float[,] voronoiMap = VoronoiBiomeDistributor.GenerateVoronoiMap(width, height, seed, biomes, relaxationIterations);
-            List<BiomeCell> biomeCells = VoronoiBiomeDistributor.GenerateVoronoiBiomes(width, height, seed, biomes, relaxationIterations);
+            _voronoiBiomeDistributor = voronoiBiomeDistributor;
+        }
+        
+        public Texture2D GenerateVoronoiTexture(int width, int height, int seed, List<Biome> biomes, int relaxationIterations)
+        {
+            float[,] voronoiMap = _voronoiBiomeDistributor.GenerateVoronoiMap(width, height, seed, biomes, relaxationIterations);
+            List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(width, height, seed, biomes, relaxationIterations);
             return CreateVoronoiTexture(voronoiMap, biomeCells);
         }
 
-        private static Texture2D CreateVoronoiTexture(float[,] voronoiMap, List<BiomeCell> biomeCells)
+        private Texture2D CreateVoronoiTexture(float[,] voronoiMap, List<BiomeCell> biomeCells)
         {
             int width = voronoiMap.GetLength(0);
             int height = voronoiMap.GetLength(1);
@@ -24,7 +33,7 @@ namespace Game.WorldGeneration.Voronoi
                 for (int x = 0; x < width; x++)
                 {
                     float voronoiValue = voronoiMap[x, y];
-                    Biome biome = VoronoiBiomeDistributor.GetBiomeForPoint(new Vector2(x, y), biomeCells);
+                    Biome biome = _voronoiBiomeDistributor.GetBiomeForPoint(new Vector2(x, y), biomeCells);
                     Color biomeColor = biome.Color;
 
                     float gradient = 1f - voronoiValue;

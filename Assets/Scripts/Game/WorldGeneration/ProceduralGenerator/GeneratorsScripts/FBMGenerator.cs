@@ -38,7 +38,7 @@ namespace Game.WorldGeneration.ProceduralGenerator.GeneratorsScripts
                         float sampleX = (x - halfWidth + octaveOffsets[i].x) / scale * frequency;
                         float sampleY = (y - halfHeight + octaveOffsets[i].y) / scale * frequency;
 
-                        float perlinValue = SimplexNoise.SimplexNoise2D(sampleX, sampleY) * 2 - 1;
+                        float perlinValue = SimplexNoiseGenerator.SimplexNoise2D(sampleX, sampleY) * 2 - 1;
                         noiseHeight += perlinValue * amplitude;
 
                         amplitude *= persistence;
