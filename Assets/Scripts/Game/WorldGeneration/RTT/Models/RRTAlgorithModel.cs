@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using Game.WorldGeneration.Nodes;
+using Game.WorldGeneration.Voronoi;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.WorldGeneration.RTT.Models
 {
@@ -21,6 +24,8 @@ namespace Game.WorldGeneration.RTT.Models
         [field: SerializeField] public int VoronoiRelaxationIterations { get; set; }
         
         [field: SerializeField] public int ChunksPerSide { get; set; }
+        
+        [field: SerializeField] public List<Biome> Biomes { get; set; }
 
         public void DestroyVisualObject(GameObject visualGameObject)
         {

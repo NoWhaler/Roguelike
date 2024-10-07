@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.WorldGeneration.ChunkGeneration;
 using Game.WorldGeneration.Nodes;
 using Game.WorldGeneration.TerrainMeshGenerator.Models;
@@ -12,7 +13,6 @@ namespace Game.WorldGeneration.RTT
         private Dictionary<Vector2Int, TerrainChunk> terrainChunks = new Dictionary<Vector2Int, TerrainChunk>();
         private Dictionary<Vector2Int, ChunkData> chunkDataCache = new Dictionary<Vector2Int, ChunkData>();
         private TerrainMeshGeneratorModel _terrainMeshGeneratorModel;
-        private readonly Color32 _waterColor = new (35,137,218, 255);
 
         [Inject]
         private void Constructor(TerrainMeshGeneratorModel terrainMeshGeneratorModel)
@@ -30,7 +30,7 @@ namespace Game.WorldGeneration.RTT
                 for (int x = 0; x < chunksPerSide; x++)
                 {
                     Vector2Int chunkCoord = new Vector2Int(x, y);
-                    ChunkData chunkData = GenerateChunkData(chunkCoord, nodes, startPoint, worldSize, centerOffset);
+                    ChunkData chunkData = GenerateChunkData(chunkCoord, nodes, centerOffset);
                     chunkDataCache[chunkCoord] = chunkData;
                 }
             }
@@ -74,6 +74,34 @@ namespace Game.WorldGeneration.RTT
 
             terrainChunks[coord] = chunk;
         }
+        
+        
+        private Vector2[] GenerateTriplanarUVs(Vector3[] vertices)
+        {
+            Vector2[] uvs = new Vector2[vertices.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Vector2 uvX = new Vector2(vertices[i].z, vertices[i].y);
+                Vector2 uvY = new Vector2(vertices[i].x, vertices[i].z);
+                Vector2 uvZ = new Vector2(vertices[i].x, vertices[i].y);
+                
+                Vector3 absNormal = new Vector3(
+                    Mathf.Abs(vertices[i].normalized.x),
+                    Mathf.Abs(vertices[i].normalized.y),
+                    Mathf.Abs(vertices[i].normalized.z)
+                );
+                
+                float maxNormal = Mathf.Max(absNormal.x, Mathf.Max(absNormal.y, absNormal.z));
+                
+                if (maxNormal == absNormal.x)
+                    uvs[i] = uvX;
+                else if (maxNormal == absNormal.y)
+                    uvs[i] = uvY;
+                else
+                    uvs[i] = uvZ;
+            }
+            return uvs;
+        }
 
         private Mesh GenerateTerrainMesh(Vector2Int coord, int chunksPerSide)
         {
@@ -84,7 +112,7 @@ namespace Game.WorldGeneration.RTT
             Vector3[] vertices = new Vector3[vertexSize * vertexSize];
             Color[] colors = new Color[vertices.Length];
             int[] triangles = new int[_terrainMeshGeneratorModel.ChunkSize * _terrainMeshGeneratorModel.ChunkSize * 6];
-            Vector2[] uvs = new Vector2[vertices.Length];
+            Vector2[] uvs = GenerateTriplanarUVs(vertices);
 
             ChunkData northChunk = coord.y < chunksPerSide - 1 ? GetChunkData(coord + Vector2Int.up) : null;
             ChunkData southChunk = coord.y > 0 ? GetChunkData(coord + Vector2Int.down) : null;
@@ -215,17 +243,16 @@ namespace Game.WorldGeneration.RTT
             mesh.normals = normals;
         }
         
-        private ChunkData GenerateChunkData(Vector2Int chunkCoord, List<NodeModel> nodes, 
-            Vector3 startPoint, float worldSize, Vector2 centerOffset)
+        private ChunkData GenerateChunkData(Vector2Int chunkCoord, List<NodeModel> nodes, Vector2 centerOffset)
         {
             ChunkData chunkData = new ChunkData();
-            chunkData.heightMap = GenerateHeightMap(chunkCoord, worldSize);
+            chunkData.heightMap = GenerateHeightMap();
             chunkData.colorMap = GenerateColorMap(chunkCoord, nodes, centerOffset);
             
             return chunkData;
         }
 
-        private float[,] GenerateHeightMap(Vector2Int chunkCoord, float worldSize)
+        private float[,] GenerateHeightMap()
         {
             float[,] heightMap = new float[_terrainMeshGeneratorModel.ChunkSize + 1, _terrainMeshGeneratorModel.ChunkSize + 1];
             
@@ -283,8 +310,14 @@ namespace Game.WorldGeneration.RTT
             Vector2 chunkWorldPos = new Vector2(chunkCoord.x * _terrainMeshGeneratorModel.ChunkSize, 
                 chunkCoord.y * _terrainMeshGeneratorModel.ChunkSize);
 
-            float maxDistance = 40f;
-            Color waterColor = _waterColor;
+            float transitionDistance = _terrainMeshGeneratorModel.TransitionDistance;
+            float maxDistance = _terrainMeshGeneratorModel.MaxDistance;
+            float smoothingFactor = _terrainMeshGeneratorModel.SmoothFactor;
+            Color waterColor = _terrainMeshGeneratorModel.WaterColor;
+            
+            float outlineTransitionWidth = _terrainMeshGeneratorModel.OutlineTransitionWidth * 0.1f;
+            
+            float internalTransitionWidth = _terrainMeshGeneratorModel.InternalTransitionWidth * 0.1f;
 
             for (int y = 0; y < _terrainMeshGeneratorModel.ChunkSize; y++)
             {
@@ -293,37 +326,59 @@ namespace Game.WorldGeneration.RTT
                     Vector2 worldPoint = chunkWorldPos + new Vector2(x, y) - centerOffset;
                     Vector3 worldPos3D = new Vector3(worldPoint.x, 0, worldPoint.y);
 
-                    float minDistance = float.MaxValue;
-                    NodeModel closestNode = null;
+                    List<(NodeModel node, float distance)> nearestNodes = nodes
+                        .Select(node => (node: node, distance: Vector3.Distance(worldPos3D, node.Position)))
+                        .OrderBy(tuple => tuple.distance)
+                        .Take(_terrainMeshGeneratorModel.NearestNodesAmount)
+                        .ToList();
 
-                    foreach (var node in nodes)
+                    float distanceToEdge = maxDistance - nearestNodes[0].distance;
+                    if (distanceToEdge < outlineTransitionWidth)
                     {
-                        float dist = Vector3.Distance(worldPos3D, node.Position);
-                        if (dist < minDistance)
+                        float edgeBlendFactor = Mathf.SmoothStep(0, 1, distanceToEdge / outlineTransitionWidth);
+                        if (edgeBlendFactor < 0.01f)
                         {
-                            minDistance = dist;
-                            closestNode = node;
+                            colorMap[y * _terrainMeshGeneratorModel.ChunkSize + x] = waterColor;
+                            continue;
                         }
-                    }
-
-                    Color finalColor;
-                    if (minDistance > maxDistance)
-                    {
-                        finalColor = waterColor;
-                    }
-                    else
-                    {
-                        Color biomeColor = GetBiomeColor(closestNode);
                         
-                        float blendFactor = minDistance / maxDistance;
-                        finalColor = Color.Lerp(biomeColor, waterColor, blendFactor);
+                        Color landColor = BlendBiomeColors(nearestNodes, worldPos3D, internalTransitionWidth, smoothingFactor);
+                        Color finalColor = Color.Lerp(waterColor, landColor, edgeBlendFactor);
+                        colorMap[y * _terrainMeshGeneratorModel.ChunkSize + x] = finalColor;
+                        continue;
                     }
 
-                    colorMap[y * _terrainMeshGeneratorModel.ChunkSize + x] = finalColor;
+                    Color biomeColor = BlendBiomeColors(nearestNodes, worldPos3D, internalTransitionWidth, smoothingFactor);
+                    colorMap[y * _terrainMeshGeneratorModel.ChunkSize + x] = biomeColor;
                 }
             }
 
             return colorMap;
+        }
+
+        private Color BlendBiomeColors(List<(NodeModel node, float distance)> nearestNodes, Vector3 worldPos3D, float transitionWidth, float smoothingFactor)
+        {
+            float[] weights = new float[nearestNodes.Count];
+            float weightSum = 0;
+
+            for (int i = 0; i < nearestNodes.Count; i++)
+            {
+                float distance = nearestNodes[i].distance;
+                
+                float weight = Mathf.Exp(-distance * smoothingFactor / transitionWidth);
+                weights[i] = weight;
+                weightSum += weight;
+            }
+
+            Color blendedColor = Color.black;
+            for (int i = 0; i < nearestNodes.Count; i++)
+            {
+                float normalizedWeight = weights[i] / weightSum;
+                Color biomeColor = GetBiomeColor(nearestNodes[i].node);
+                blendedColor += biomeColor * normalizedWeight;
+            }
+
+            return blendedColor;
         }
 
         private Color GetBiomeColor(NodeModel node)
@@ -331,7 +386,10 @@ namespace Game.WorldGeneration.RTT
             Color biomeColor = node.NodeColor;
             biomeColor.a = 1f;
             
-            return biomeColor;
+            float saturationIncrease = _terrainMeshGeneratorModel.Saturation; 
+            Color.RGBToHSV(biomeColor, out float h, out float s, out float v);
+            s = Mathf.Clamp01(s * saturationIncrease);
+            return Color.HSVToRGB(h, s, v);
         }
     }
 }

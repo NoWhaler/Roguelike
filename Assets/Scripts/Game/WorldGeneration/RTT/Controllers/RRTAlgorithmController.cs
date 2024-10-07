@@ -9,8 +9,6 @@ namespace Game.WorldGeneration.RTT.Controllers
 {
     public class RRTAlgorithmController: IInitializable
     {
-        private List<Biome> _biomes;
-
         private DiContainer _diContainer;
         
         private TerrainMeshGeneratorController _terrainMeshGeneratorController;
@@ -45,7 +43,7 @@ namespace Game.WorldGeneration.RTT.Controllers
         
         private void InitializeBiomes()
         {
-            _biomes = new List<Biome>
+            _rrtAlgorithmModel.Biomes = new List<Biome>
             {
                 new Biome("Desert", new Color(1f, 0.84f, 0.4f), 3),
                 new Biome("Grassland", new Color(0.5f, 0.8f, 0.3f), 3),
@@ -63,7 +61,7 @@ namespace Game.WorldGeneration.RTT.Controllers
             ClearVisualization();
             
             Texture2D voronoiTexture = _voronoiTextureGenerator.GenerateVoronoiTexture(_rrtAlgorithmModel.TextureResolution,
-                _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
+                _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
             _rrtAlgorithmModel.VoronoiMaterial.mainTexture = voronoiTexture;
             
             // CreateDisplayQuad();
@@ -71,7 +69,7 @@ namespace Game.WorldGeneration.RTT.Controllers
             List<Node> nodes = GenerateRRT(_rrtAlgorithmModel.CenterPoint, _rrtAlgorithmModel.Radius, _rrtAlgorithmModel.StepSize,
                 _rrtAlgorithmModel.MinDistance, _rrtAlgorithmModel.Iterations);
             List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(_rrtAlgorithmModel.TextureResolution,
-                _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
+                _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
             
             VisualizeRRTWithBiomes(nodes, biomeCells);
             
@@ -131,7 +129,7 @@ namespace Game.WorldGeneration.RTT.Controllers
                 }
             }
 
-            Debug.Log($"Generated {nodes.Count} nodes in {_biomes.Count} biomes");
+            Debug.Log($"Generated {nodes.Count} nodes in {_rrtAlgorithmModel.Biomes.Count} biomes");
         }
 
         private void ClearVisualization()

@@ -513,11 +513,12 @@ MonoBehaviour:
   <Iterations>k__BackingField: 450
   <NodePrefab>k__BackingField: {fileID: -4567914681832355564, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
   <EdgePrefab>k__BackingField: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
-  <Seed>k__BackingField: 9574
+  <Seed>k__BackingField: 2460
   <TextureResolution>k__BackingField: 64
   <VoronoiMaterial>k__BackingField: {fileID: 2100000, guid: c93a38de06a6038429b64731ca304d62, type: 2}
   <VoronoiRelaxationIterations>k__BackingField: 10
   <ChunksPerSide>k__BackingField: 3
+  <Biomes>k__BackingField: []
 --- !u!4 &889457317
 Transform:
   m_ObjectHideFlags: 0
@@ -888,6 +889,17 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  <WaterColor>k__BackingField:
+    serializedVersion: 2
+    rgba: 4292512035
+  <SmoothFactor>k__BackingField: 5
+  <Saturation>k__BackingField: 1.3
+  <MaxDistance>k__BackingField: 40
+  <TransitionDistance>k__BackingField: 7
+  <NearestNodesAmount>k__BackingField: 35
+  <OutlineTransitionWidth>k__BackingField: 10
+  <InternalTransitionWidth>k__BackingField: 20
+  <BiomeBlendSharpness>k__BackingField: 2
 --- !u!1 &2142331343
 GameObject:
   m_ObjectHideFlags: 0

@@ -73,6 +73,8 @@ namespace Game.WorldGeneration.ProceduralGenerator.SimplexNoiseGeneration.Contro
             chunkObject.ChunkMeshRenderer.material = _simplexNoiseGeneratorModel.ChunkMaterial;
             ApplyColorToMesh(mesh, colorMap);
         }
+        
+        
 
         private void SmoothBorders()
         {

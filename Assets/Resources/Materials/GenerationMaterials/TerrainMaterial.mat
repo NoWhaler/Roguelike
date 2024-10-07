@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TerrainMaterial
-  m_Shader: {fileID: 4800000, guid: da3187b4cb26468ca661e07fa5ff3c95, type: 3}
+  m_Shader: {fileID: 4800000, guid: 87c5bfd93dd94d4d8bc5f96fa9b75a75, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,8 +23,16 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BiomeMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DesertTex:
+        m_Texture: {fileID: 2800000, guid: 8c1230e817a53c445b8a91b763fa3331, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -40,23 +48,47 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailTex:
-        m_Texture: {fileID: 2800000, guid: d1f484f58ddfa4341a6e72ce14adc083, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ForestTex:
+        m_Texture: {fileID: 2800000, guid: 1d477473b16425744a4c8858b999ca72, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _GrassTex:
-        m_Texture: {fileID: 2800000, guid: b425f3d4e800e284e90bfeccc7276fba, type: 3}
+        m_Texture: {fileID: 2800000, guid: d2eac8569e4d32c4390966c26b1dda81, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GrasslandTex:
+        m_Texture: {fileID: 2800000, guid: d2eac8569e4d32c4390966c26b1dda81, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _JungleTex:
+        m_Texture: {fileID: 2800000, guid: f3db6a4195e0e654883567ad2f8f277d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 18700000, guid: 5e9c24d05a344c948bb0b4019adddadc, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MountainTex:
+        m_Texture: {fileID: 2800000, guid: 0856493c2a19bdf40be2cf8818d2c5d3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 18700000, guid: b235d4294f34ed446a4312fbe3cf8fbe, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -68,24 +100,51 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RockTex:
-        m_Texture: {fileID: 2800000, guid: 853943b2b36a4624ab8455cd26861c46, type: 3}
+        m_Texture: {fileID: 2800000, guid: c2dd1e83012cf224cb793f17b629044d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SavannaTex:
+        m_Texture: {fileID: 2800000, guid: 6222cbe34aa140840a85fecfc17a01af, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SnowTex:
-        m_Texture: {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6abe753279bdf694ba2c81ff68a23f29, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SwampTex:
+        m_Texture: {fileID: 2800000, guid: f6e38f2847d79a84b992e203fa057ba2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TundraTex:
+        m_Texture: {fileID: 2800000, guid: d10a4f7d22cfc0142836eab79aa3ca96, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WaterTex:
+        m_Texture: {fileID: 2800000, guid: 4feb1d18e4e0cfa41a5f6ad4c184246a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BiomeBlendSharpness: 1
+    - _BlendDistance: 0.1
+    - _BlendSharpness: 5
+    - _BlendStrength: 2
+    - _Brightness: 1
     - _BumpScale: 1
+    - _ColorThreshold: 0.1
+    - _ColorTolerance: 0.2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _DetailScale: 10
+    - _DetailStrength: 0.51
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NoiseScale: 0
+    - _NoiseStrength: 0.5
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RockHeight: 0.3
@@ -94,9 +153,22 @@ Material:
     - _SnowHeight: 0.8
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TessellationEdgeLength: 5
+    - _TextureScale: 3
+    - _TilingFactor: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
+    - _AmbientLight: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DesertColor: {r: 0.9528302, g: 0.9528302, b: 0.22921856, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ForestColor: {r: 0.77016103, g: 0.8867924, b: 0.55633676, a: 1}
+    - _GrasslandColor: {r: 0.72156864, g: 0.98039216, b: 0.24705882, a: 1}
+    - _JungleColor: {r: 0.17221434, g: 0.8113208, b: 0.17221434, a: 1}
+    - _MountainColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
+    - _SavannaColor: {r: 1, g: 0.7221741, b: 0.495283, a: 1}
+    - _SwampColor: {r: 0.6627451, g: 0.5568628, b: 0.26666668, a: 1}
+    - _TundraColor: {r: 1, g: 0.07075471, b: 0.7193351, a: 1}
+    - _WaterColor: {r: 0.501513, g: 0.8215722, b: 0.9245283, a: 1}
   m_BuildTextureStacks: []
