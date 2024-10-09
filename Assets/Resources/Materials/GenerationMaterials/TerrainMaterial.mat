@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: 87c5bfd93dd94d4d8bc5f96fa9b75a75, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _DEBUGBIOME_MOUNTAIN
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -125,19 +126,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BiomeBlendSharpness: 1
+    - _BiomeBlendSharpness: 10
     - _BlendDistance: 0.1
     - _BlendSharpness: 5
     - _BlendStrength: 2
     - _Brightness: 1
     - _BumpScale: 1
     - _ColorThreshold: 0.1
-    - _ColorTolerance: 0.2
+    - _ColorTolerance: 1
     - _Cutoff: 0.5
+    - _DebugBiome: 5
+    - _DebugMode: 0
     - _DetailNormalMapScale: 1
     - _DetailScale: 10
     - _DetailStrength: 0.51
     - _DstBlend: 0
+    - _EdgeSoftness: 0.0409
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
@@ -161,14 +165,14 @@ Material:
     m_Colors:
     - _AmbientLight: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DesertColor: {r: 0.9528302, g: 0.9528302, b: 0.22921856, a: 1}
+    - _DesertColor: {r: 1, g: 0.9160734, b: 0.514151, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ForestColor: {r: 0.77016103, g: 0.8867924, b: 0.55633676, a: 1}
-    - _GrasslandColor: {r: 0.72156864, g: 0.98039216, b: 0.24705882, a: 1}
-    - _JungleColor: {r: 0.17221434, g: 0.8113208, b: 0.17221434, a: 1}
-    - _MountainColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
-    - _SavannaColor: {r: 1, g: 0.7221741, b: 0.495283, a: 1}
-    - _SwampColor: {r: 0.6627451, g: 0.5568628, b: 0.26666668, a: 1}
-    - _TundraColor: {r: 1, g: 0.07075471, b: 0.7193351, a: 1}
-    - _WaterColor: {r: 0.501513, g: 0.8215722, b: 0.9245283, a: 1}
+    - _ForestColor: {r: 0.16073336, g: 0.7924528, b: 0.16073336, a: 1}
+    - _GrasslandColor: {r: 0.6436172, g: 0.9150943, b: 0.45323068, a: 1}
+    - _JungleColor: {r: 0.2079844, g: 0.6320754, b: 0.14012992, a: 1}
+    - _MountainColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
+    - _SavannaColor: {r: 1, g: 0.7464942, b: 0.5424528, a: 1}
+    - _SwampColor: {r: 0.6698113, g: 0.5264573, b: 0.38861695, a: 1}
+    - _TundraColor: {r: 0.8666667, g: 0.9437599, b: 0.972549, a: 1}
+    - _WaterColor: {r: 0.38416696, g: 0.7731222, b: 0.9150943, a: 1}
   m_BuildTextureStacks: []

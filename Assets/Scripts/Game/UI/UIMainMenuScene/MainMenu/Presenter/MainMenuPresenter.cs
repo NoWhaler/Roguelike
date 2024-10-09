@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
-namespace Game.UI.UIMainMenuScene.Presenter
+namespace Game.UI.UIMainMenuScene.MainMenu.Presenter
 {
     public class MainMenuPresenter
     {

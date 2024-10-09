@@ -1,4 +1,4 @@
-namespace Game.UI.UIMainMenuScene.Model
+namespace Game.UI.UIMainMenuScene.MainMenu.Model
 {
     public class MainMenuModel
     {

@@ -1,6 +1,6 @@
 using System;
-using Game.UI.UIMainMenuScene.Presenter;
-using Game.UI.UIMainMenuScene.View;
+using Game.UI.UIMainMenuScene.MainMenu.Presenter;
+using Game.UI.UIMainMenuScene.MainMenu.View;
 using UnityEngine;
 
 namespace Core.Initialization.MainMenuInitialization.Models

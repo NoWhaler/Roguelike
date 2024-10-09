@@ -1,9 +1,8 @@
-using System;
-using Game.UI.UIMainMenuScene.Presenter;
+using Game.UI.UIMainMenuScene.MainMenu.Presenter;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.UI.UIMainMenuScene.View
+namespace Game.UI.UIMainMenuScene.MainMenu.View
 {
     public class MainMenuView: MonoBehaviour
     {
