@@ -3,15 +3,8 @@ Shader "Custom/BiomesShader"
     Properties
     {
         [Header(Textures)]
-        _DesertTex ("Desert Texture", 2D) = "white" {}
-        _ForestTex ("Forest Texture", 2D) = "white" {}
-        _GrasslandTex ("Grassland Texture", 2D) = "white" {}
-        _JungleTex ("Jungle Texture", 2D) = "white" {}
-        _MountainTex ("Mountain Texture", 2D) = "white" {}
-        _SavannaTex ("Savanna Texture", 2D) = "white" {}
-        _TundraTex ("Tundra Texture", 2D) = "white" {}
-        _SwampTex ("Swamp Texture", 2D) = "white" {}
-        _WaterTex ("Water Texture", 2D) = "white" {}
+        _BiomeTexArray ("Biome Texture Array", 2DArray) = "white" {} 
+        _GridTex ("Grid Texture", 2D) = "white" {}
         
         [Header(Colors)]
         _DesertColor ("Desert Color", Color) = (1.0, 0.84, 0.4, 1.0)
@@ -23,7 +16,7 @@ Shader "Custom/BiomesShader"
         _TundraColor ("Tundra Color", Color) = (0.8, 0.9, 0.95, 1.0)
         _SwampColor ("Swamp Color", Color) = (0.4, 0.3, 0.2, 1.0)
         _WaterColor ("Water Color", Color) = (0.0, 0.5, 1.0, 1.0)
-        
+
         [Header(Parameters)]
         _TextureScale ("Texture Scale", Float) = 1.0
         _BlendDistance ("Blend Distance", Range(0.001, 1)) = 0.01
@@ -32,6 +25,10 @@ Shader "Custom/BiomesShader"
         _NoiseStrength ("Noise Strength", Range(0, 1)) = 0.5
         _BiomeBlendSharpness ("Biome Blend Sharpness", Range(1, 20)) = 10
         
+        [Header(Grid Settings)]
+        _GridBlend ("Grid Blend Strength", Range(0.0, 1.0)) = 0.5
+        _HexScale ("Hex Scale", Vector) = (1, 1, 0, 0)
+
         [Header(Debug)]
         [Toggle] _DebugMode ("Debug Mode", Float) = 0
         [KeywordEnum(None, Desert, Forest, Grassland, Jungle, Mountain, Savanna, Tundra, Swamp, Water)] 
@@ -40,21 +37,43 @@ Shader "Custom/BiomesShader"
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 100
-
+        LOD 200
         Pass
         {
             CGPROGRAM
+            
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile _DEBUGBIOME_NONE _DEBUGBIOME_DESERT _DEBUGBIOME_FOREST _DEBUGBIOME_GRASSLAND _DEBUGBIOME_JUNGLE _DEBUGBIOME_MOUNTAIN _DEBUGBIOME_SAVANNA _DEBUGBIOME_TUNDRA _DEBUGBIOME_SWAMP _DEBUGBIOME_WATER
+            #pragma target 3.5
+            #pragma multi_compile _ GRID_ON
+
+            UNITY_DECLARE_TEX2DARRAY(_BiomeTexArray);
+
             #include "UnityCG.cginc"
+            
+            sampler2D _DesertTex, _ForestTex, _GrasslandTex, _JungleTex;
+            sampler2D _MountainTex, _SavannaTex, _TundraTex, _SwampTex, _WaterTex;
+            sampler2D _GridTex; // Declare grid texture sampler
+            float4 _DesertColor, _ForestColor, _GrasslandColor, _JungleColor;
+            float4 _MountainColor, _SavannaColor, _TundraColor, _SwampColor, _WaterColor;
+            float _TextureScale, _BlendDistance, _ColorTolerance, _BiomeBlendSharpness;
+            float _NoiseScale, _NoiseStrength;
+            float _GridBlend;
+            float2 _HexScale;
+            float _DebugMode;
 
             struct appdata
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
                 float4 color : COLOR;
+            };
+
+            struct Input {
+                float4 color : COLOR;
+                float3 worldPos;
+                float3 terrain;
             };
 
             struct v2f
@@ -64,14 +83,6 @@ Shader "Custom/BiomesShader"
                 float4 color : COLOR;
                 float3 worldPos : TEXCOORD1;
             };
-
-            sampler2D _DesertTex, _ForestTex, _GrasslandTex, _JungleTex;
-            sampler2D _MountainTex, _SavannaTex, _TundraTex, _SwampTex, _WaterTex;
-            float4 _DesertColor, _ForestColor, _GrasslandColor, _JungleColor;
-            float4 _MountainColor, _SavannaColor, _TundraColor, _SwampColor, _WaterColor;
-            float _TextureScale, _BlendDistance, _ColorTolerance, _BiomeBlendSharpness;
-            float _NoiseScale, _NoiseStrength;
-            float _DebugMode;
 
             struct BiomeInfo {
                 float weight;
@@ -96,12 +107,13 @@ Shader "Custom/BiomesShader"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                o.uv = v.uv * _TextureScale;
+                o.uv = v.uv * float2(14.0 / _HexScale.x, 12.12436 / _HexScale.y);
+                // o.uv = v.uv * _TextureScale;
                 o.color = v.color;
                 return o;
             }
 
-            BiomeInfo GetBiomeInfo(float3 targetColor, float4 biomeColor, sampler2D biomeTex, float2 uv, int debugBiomeIndex, int currentBiomeIndex)
+            BiomeInfo GetBiomeInfo(float3 targetColor, float4 biomeColor, int biomeIndex, float2 uv, int debugBiomeIndex, int currentBiomeIndex)
             {
                 BiomeInfo info;
                 float colorDist = length(targetColor - biomeColor.rgb);
@@ -113,7 +125,7 @@ Shader "Custom/BiomesShader"
                     info.texColor = float4(weight.xxx, 1);
                 } else {
                     info.weight = weight;
-                    info.texColor = tex2D(biomeTex, uv);
+                    info.texColor = UNITY_SAMPLE_TEX2DARRAY(_BiomeTexArray, float3(uv, biomeIndex));
                 }
                 
                 return info;
@@ -121,6 +133,8 @@ Shader "Custom/BiomesShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                const float whiteThreshold = 0.9;
+                
                 float2 noiseUV = i.worldPos.xz * _NoiseScale;
                 float noiseValue = noise(noiseUV);
                 float2 offsetUV = i.uv + noiseValue * _NoiseStrength;
@@ -146,32 +160,49 @@ Shader "Custom/BiomesShader"
                 debugBiomeIndex = 9;
                 #endif
                 
-                BiomeInfo biomes[9];
-                biomes[0] = GetBiomeInfo(i.color.rgb, _DesertColor, _DesertTex, offsetUV, debugBiomeIndex, 1);
-                biomes[1] = GetBiomeInfo(i.color.rgb, _ForestColor, _ForestTex, offsetUV, debugBiomeIndex, 2);
-                biomes[2] = GetBiomeInfo(i.color.rgb, _GrasslandColor, _GrasslandTex, offsetUV, debugBiomeIndex, 3);
-                biomes[3] = GetBiomeInfo(i.color.rgb, _JungleColor, _JungleTex, offsetUV, debugBiomeIndex, 4);
-                biomes[4] = GetBiomeInfo(i.color.rgb, _MountainColor, _MountainTex, offsetUV, debugBiomeIndex, 5);
-                biomes[5] = GetBiomeInfo(i.color.rgb, _SavannaColor, _SavannaTex, offsetUV, debugBiomeIndex, 6);
-                biomes[6] = GetBiomeInfo(i.color.rgb, _TundraColor, _TundraTex, offsetUV, debugBiomeIndex, 7);
-                biomes[7] = GetBiomeInfo(i.color.rgb, _SwampColor, _SwampTex, offsetUV, debugBiomeIndex, 8);
-                biomes[8] = GetBiomeInfo(i.color.rgb, _WaterColor, _WaterTex, offsetUV, debugBiomeIndex, 9);
-                
-                float4 finalColor = float4(0,0,0,0);
-                float totalWeight = 0;
-                
-                for(int j = 0; j < 9; j++) {
-                    finalColor += biomes[j].texColor * biomes[j].weight;
-                    totalWeight += biomes[j].weight;
+                BiomeInfo biomes[8];
+                biomes[0] = GetBiomeInfo(i.color.rgb, _DesertColor, 0, offsetUV, debugBiomeIndex, 1);
+                biomes[1] = GetBiomeInfo(i.color.rgb, _ForestColor, 1, offsetUV, debugBiomeIndex, 2);
+                biomes[2] = GetBiomeInfo(i.color.rgb, _GrasslandColor, 2, offsetUV, debugBiomeIndex, 3);
+                biomes[3] = GetBiomeInfo(i.color.rgb, _JungleColor, 3, offsetUV, debugBiomeIndex, 4);
+                biomes[4] = GetBiomeInfo(i.color.rgb, _MountainColor, 4, offsetUV, debugBiomeIndex, 5);
+                biomes[5] = GetBiomeInfo(i.color.rgb, _SavannaColor, 5, offsetUV, debugBiomeIndex, 6);
+                biomes[6] = GetBiomeInfo(i.color.rgb, _TundraColor, 6, offsetUV, debugBiomeIndex, 7);
+                biomes[7] = GetBiomeInfo(i.color.rgb, _SwampColor, 7, offsetUV, debugBiomeIndex, 8);
+
+                float totalWeight = 0.0;
+                fixed4 finalTex = fixed4(0, 0, 0, 1);
+
+                for (int idx = 0; idx < 8; idx++)
+                {
+                    totalWeight += biomes[idx].weight;
+                    finalTex += biomes[idx].texColor * biomes[idx].weight;
                 }
+
+                finalTex /= totalWeight;
                 
-                if(totalWeight > 0) {
-                    finalColor /= totalWeight;
-                }
+                float2 gridUV = i.worldPos.xz;
                 
-                return _DebugMode > 0 ? finalColor : finalColor * fixed4(i.color.rgb, 1);
+                float temp = gridUV.x;
+                gridUV.x = gridUV.y;
+                gridUV.y = temp;
+                
+                gridUV.y *= -1;
+                
+                gridUV.x *= 1 / (4 * 6.06217783);
+                gridUV.y *= 1 / (2 * 10.5);
+                
+                fixed4 gridTexColor = tex2D(_GridTex, gridUV);
+
+                const float whiteFactor = smoothstep(whiteThreshold, 1.0, dot(gridTexColor.rgb, float3(1.0, 1.0, 1.0)));
+                gridTexColor.a = lerp(gridTexColor.a, 0.0, whiteFactor);
+                
+                finalTex = lerp(finalTex, gridTexColor, _GridBlend  * gridTexColor.a);
+
+                return finalTex;
             }
             ENDCG
         }
     }
+    FallBack "Diffuse"
 }

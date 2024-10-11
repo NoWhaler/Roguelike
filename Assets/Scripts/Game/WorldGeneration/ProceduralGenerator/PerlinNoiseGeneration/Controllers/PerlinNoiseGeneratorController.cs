@@ -69,7 +69,7 @@ namespace Game.WorldGeneration.ProceduralGenerator.PerlinNoiseGeneration.Control
             _chunkMeshes[new Vector2Int(chunkX, chunkY)] = chunkObject;
             chunkObject.gameObject.name = $"Chunk_{chunkX}_{chunkY}";
             chunkObject.ChunkMeshFilter.mesh = mesh;
-            chunkObject.ChunkMeshCollider.sharedMesh = mesh;
+            // chunkObject.ChunkMeshCollider.sharedMesh = mesh;
             
             chunkObject.ChunkMeshRenderer.material = _perlinNoiseGeneratorModel.ChunkMaterial;
             ApplyColorToMesh(mesh, colorMap);

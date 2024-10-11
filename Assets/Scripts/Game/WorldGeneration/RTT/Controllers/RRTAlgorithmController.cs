@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.WorldGeneration.Nodes;
 using Game.WorldGeneration.RTT.Models;
+using Game.WorldGeneration.TerrainMeshGenerator.Controllers;
 using Game.WorldGeneration.Voronoi;
 using UnityEngine;
 using Zenject;
@@ -12,6 +13,8 @@ namespace Game.WorldGeneration.RTT.Controllers
         private DiContainer _diContainer;
         
         private TerrainMeshGeneratorController _terrainMeshGeneratorController;
+
+        private HexagonalTerrainMeshGeneratorController _hexagonalTerrainMeshGenerator;
 
         private RRTAlgorithModel _rrtAlgorithmModel;
 
@@ -26,13 +29,15 @@ namespace Game.WorldGeneration.RTT.Controllers
         [Inject]
         private void Constructor(DiContainer diContainer, 
             TerrainMeshGeneratorController terrainMeshGeneratorController,
-            RRTAlgorithModel rrtAlgorithModel, VoronoiBiomeDistributor voronoiBiomeDistributor, VoronoiTextureGenerator voronoiTextureGenerator)
+            RRTAlgorithModel rrtAlgorithModel, VoronoiBiomeDistributor voronoiBiomeDistributor,
+            VoronoiTextureGenerator voronoiTextureGenerator, HexagonalTerrainMeshGeneratorController hexagonalTerrainMeshGeneratorController)
         {
             _diContainer = diContainer;
             _terrainMeshGeneratorController = terrainMeshGeneratorController;
             _rrtAlgorithmModel = rrtAlgorithModel;
             _voronoiBiomeDistributor = voronoiBiomeDistributor;
             _voronoiTextureGenerator = voronoiTextureGenerator;
+            _hexagonalTerrainMeshGenerator = hexagonalTerrainMeshGeneratorController;
         }
         
         public void Initialize()
@@ -63,9 +68,12 @@ namespace Game.WorldGeneration.RTT.Controllers
             Texture2D voronoiTexture = _voronoiTextureGenerator.GenerateVoronoiTexture(_rrtAlgorithmModel.TextureResolution,
                 _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
             _rrtAlgorithmModel.VoronoiMaterial.mainTexture = voronoiTexture;
-            
-            // CreateDisplayQuad();
-            
+
+            if (_rrtAlgorithmModel.IsDisplayingVoronoi)
+            {
+                CreateDisplayQuad();
+            }
+
             List<Node> nodes = GenerateRRT(_rrtAlgorithmModel.CenterPoint, _rrtAlgorithmModel.Radius, _rrtAlgorithmModel.StepSize,
                 _rrtAlgorithmModel.MinDistance, _rrtAlgorithmModel.Iterations);
             List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(_rrtAlgorithmModel.TextureResolution,
@@ -73,7 +81,7 @@ namespace Game.WorldGeneration.RTT.Controllers
             
             VisualizeRRTWithBiomes(nodes, biomeCells);
             
-            _terrainMeshGeneratorController.GenerateChunks(_nodeModels, _rrtAlgorithmModel.CenterPoint, _rrtAlgorithmModel.ChunksPerSide);
+            _hexagonalTerrainMeshGenerator.GenerateChunks(_nodeModels, _rrtAlgorithmModel.ChunksPerSide);
         }
         
         private void CreateDisplayQuad()

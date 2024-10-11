@@ -12,8 +12,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _DEBUGBIOME_MOUNTAIN
-  m_InvalidKeywords: []
+  - _DEBUGBIOME_NONE
+  m_InvalidKeywords:
+  - _SHOWGRID_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -28,8 +29,16 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BiomeTexArray:
+        m_Texture: {fileID: 18700000, guid: 1bdf2b9f9e0a9ba44b13aec28b48a0e8, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CellGridTex:
+        m_Texture: {fileID: 2800000, guid: a92017d282b9b7e48afdf8cff1b96f51, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DesertTex:
@@ -68,12 +77,16 @@ Material:
         m_Texture: {fileID: 2800000, guid: d2eac8569e4d32c4390966c26b1dda81, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _GridTex:
+        m_Texture: {fileID: 2800000, guid: a92017d282b9b7e48afdf8cff1b96f51, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _JungleTex:
         m_Texture: {fileID: 2800000, guid: f3db6a4195e0e654883567ad2f8f277d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 18700000, guid: 5e9c24d05a344c948bb0b4019adddadc, type: 2}
+        m_Texture: {fileID: 2800000, guid: a92017d282b9b7e48afdf8cff1b96f51, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -127,15 +140,16 @@ Material:
     m_Ints: []
     m_Floats:
     - _BiomeBlendSharpness: 10
-    - _BlendDistance: 0.1
+    - _BlendDistance: 0.054
     - _BlendSharpness: 5
     - _BlendStrength: 2
     - _Brightness: 1
     - _BumpScale: 1
+    - _CellScale: 1
     - _ColorThreshold: 0.1
     - _ColorTolerance: 1
     - _Cutoff: 0.5
-    - _DebugBiome: 5
+    - _DebugBiome: 0
     - _DebugMode: 0
     - _DetailNormalMapScale: 1
     - _DetailScale: 10
@@ -145,6 +159,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
+    - _GridBlend: 0.5
+    - _GridThickness: 0.001
     - _Metallic: 0
     - _Mode: 0
     - _NoiseScale: 0
@@ -153,6 +169,7 @@ Material:
     - _Parallax: 0.02
     - _RockHeight: 0.3
     - _RockSteepness: 0.7
+    - _ShowGrid: 1
     - _SmoothnessTextureChannel: 0
     - _SnowHeight: 0.8
     - _SpecularHighlights: 1
@@ -168,7 +185,9 @@ Material:
     - _DesertColor: {r: 1, g: 0.9160734, b: 0.514151, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ForestColor: {r: 0.16073336, g: 0.7924528, b: 0.16073336, a: 1}
-    - _GrasslandColor: {r: 0.6436172, g: 0.9150943, b: 0.45323068, a: 1}
+    - _GrasslandColor: {r: 0.72420037, g: 0.8962264, b: 0.6045301, a: 1}
+    - _GridColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HexScale: {r: 14, g: 14, b: 0, a: 0}
     - _JungleColor: {r: 0.2079844, g: 0.6320754, b: 0.14012992, a: 1}
     - _MountainColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
     - _SavannaColor: {r: 1, g: 0.7464942, b: 0.5424528, a: 1}

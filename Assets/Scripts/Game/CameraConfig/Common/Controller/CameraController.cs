@@ -31,10 +31,75 @@ namespace Game.CameraConfig.Common.Controller
         {
             _cameraModel.OnGetMainCamera += HandleOnGetMainCamera;
         }
-
+        
         public void LateTick()
         {
-            
+            HandleCameraMovement();
+            HandleCameraZoom();
+            HandleCameraRotation();
         }
+        
+        private void HandleCameraMovement()
+        {
+            Vector3 movement = Vector3.zero;
+            
+            if (Input.GetKey(KeyCode.W))
+                movement.z += 1;
+            if (Input.GetKey(KeyCode.S))
+                movement.z -= 1;
+            if (Input.GetKey(KeyCode.A))
+                movement.x -= 1;
+            if (Input.GetKey(KeyCode.D))
+                movement.x += 1;
+            
+
+            // if (Input.mousePosition.x <= _cameraModel.EdgeThreshold)
+            //     movement.x = -1;
+            // else if (Input.mousePosition.x >= Screen.width - _cameraModel.EdgeThreshold)
+            //     movement.x = 1;
+            //
+            // if (Input.mousePosition.y <= _cameraModel.EdgeThreshold)
+            //     movement.z = -1;
+            // else if (Input.mousePosition.y >= Screen.height - _cameraModel.EdgeThreshold)
+            //     movement.z = 1;
+
+            if (movement.magnitude > 0)
+            {
+                movement.Normalize(); 
+
+                Vector3 forward = Vector3.ProjectOnPlane(_cameraModel.transform.forward, Vector3.up).normalized;
+                Vector3 right = Vector3.ProjectOnPlane(_cameraModel.transform.right, Vector3.up).normalized;
+
+                Vector3 moveDirection = (forward * movement.z + right * movement.x).normalized;
+
+                _cameraModel.transform.position += moveDirection * _cameraModel.CameraMoveSpeed * Time.deltaTime;
+            }
+        }
+
+        private void HandleCameraZoom()
+        {
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll != 0)
+            {
+                var transform = _cameraModel.transform;
+                Vector3 pos = transform.position;
+                pos += transform.forward * scroll * _cameraModel.ZoomSpeed;
+                
+                float distanceFromOrigin = Vector3.Distance(Vector3.zero, pos);
+                if (distanceFromOrigin >= _cameraModel.MinZoom && distanceFromOrigin <= _cameraModel.MaxZoom)
+                {
+                    _cameraModel.transform.position = pos;
+                }
+            }
+        }
+        
+        private void HandleCameraRotation()
+        {
+            if (Input.GetKey(KeyCode.Q))
+                _cameraModel.transform.Rotate(Vector3.up, -_cameraModel.RotationSpeed * Time.deltaTime, Space.World);
+            else if (Input.GetKey(KeyCode.E))
+                _cameraModel.transform.Rotate(Vector3.up, _cameraModel.RotationSpeed * Time.deltaTime, Space.World);
+        }
+
     }
 }

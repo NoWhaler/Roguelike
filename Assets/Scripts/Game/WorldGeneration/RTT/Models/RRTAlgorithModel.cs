@@ -27,6 +27,8 @@ namespace Game.WorldGeneration.RTT.Models
         
         [field: SerializeField] public List<Biome> Biomes { get; set; }
 
+        [field: SerializeField] public bool IsDisplayingVoronoi { get; set; }
+
         public void DestroyVisualObject(GameObject visualGameObject)
         {
             Destroy(visualGameObject);
