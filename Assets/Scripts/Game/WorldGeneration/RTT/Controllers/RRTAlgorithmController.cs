@@ -12,8 +12,6 @@ namespace Game.WorldGeneration.RTT.Controllers
     {
         private DiContainer _diContainer;
         
-        private TerrainMeshGeneratorController _terrainMeshGeneratorController;
-
         private HexagonalTerrainMeshGeneratorController _hexagonalTerrainMeshGenerator;
 
         private RRTAlgorithModel _rrtAlgorithmModel;
@@ -27,13 +25,12 @@ namespace Game.WorldGeneration.RTT.Controllers
         private List<GameObject> _visualObjects = new();
         
         [Inject]
-        private void Constructor(DiContainer diContainer, 
-            TerrainMeshGeneratorController terrainMeshGeneratorController,
+        private void Constructor(DiContainer diContainer,
             RRTAlgorithModel rrtAlgorithModel, VoronoiBiomeDistributor voronoiBiomeDistributor,
-            VoronoiTextureGenerator voronoiTextureGenerator, HexagonalTerrainMeshGeneratorController hexagonalTerrainMeshGeneratorController)
+            VoronoiTextureGenerator voronoiTextureGenerator,
+            HexagonalTerrainMeshGeneratorController hexagonalTerrainMeshGeneratorController)
         {
             _diContainer = diContainer;
-            _terrainMeshGeneratorController = terrainMeshGeneratorController;
             _rrtAlgorithmModel = rrtAlgorithModel;
             _voronoiBiomeDistributor = voronoiBiomeDistributor;
             _voronoiTextureGenerator = voronoiTextureGenerator;
@@ -82,6 +79,13 @@ namespace Game.WorldGeneration.RTT.Controllers
             VisualizeRRTWithBiomes(nodes, biomeCells);
             
             _hexagonalTerrainMeshGenerator.GenerateChunks(_nodeModels, _rrtAlgorithmModel.ChunksPerSide);
+
+            if (_rrtAlgorithmModel.IsDisplaingRRT) return;
+            
+            foreach (var visualObject in _visualObjects)
+            {
+                visualObject.SetActive(false);
+            }
         }
         
         private void CreateDisplayQuad()

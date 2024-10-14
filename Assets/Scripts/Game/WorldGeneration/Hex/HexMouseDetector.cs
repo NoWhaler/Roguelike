@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using Zenject;
 
 namespace Game.WorldGeneration.Hex
@@ -29,6 +30,11 @@ namespace Game.WorldGeneration.Hex
 
         public void Tick()
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            
             Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
             var hitHex = DetectHexWithPointInHexagon(ray);

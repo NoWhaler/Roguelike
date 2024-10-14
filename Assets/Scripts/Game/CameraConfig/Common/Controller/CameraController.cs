@@ -78,18 +78,22 @@ namespace Game.CameraConfig.Common.Controller
 
         private void HandleCameraZoom()
         {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll != 0)
-            {
-                var transform = _cameraModel.transform;
-                Vector3 pos = transform.position;
-                pos += transform.forward * scroll * _cameraModel.ZoomSpeed;
+            var scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll == 0) return;
+            
+            var transform = _cameraModel.transform;
+            var currentPosition = transform.position;
+            var forwardDirection = transform.forward;
                 
-                float distanceFromOrigin = Vector3.Distance(Vector3.zero, pos);
-                if (distanceFromOrigin >= _cameraModel.MinZoom && distanceFromOrigin <= _cameraModel.MaxZoom)
-                {
-                    _cameraModel.transform.position = pos;
-                }
+            var newPosition = currentPosition + forwardDirection * scroll * _cameraModel.ZoomSpeed;
+                
+            var groundPoint = new Vector3(newPosition.x, 0, newPosition.z);
+                
+            var newHeight = newPosition.y - groundPoint.y;
+                
+            if (newHeight >= _cameraModel.MinZoom && newHeight <= _cameraModel.MaxZoom)
+            {
+                _cameraModel.transform.position = newPosition;
             }
         }
         
