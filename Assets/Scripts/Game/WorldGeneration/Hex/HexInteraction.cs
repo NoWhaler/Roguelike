@@ -1,5 +1,6 @@
 using Game.Buildings;
 using Game.Buildings.BuildingsType;
+using Game.Researches.Controller;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.SelectionHandling;
 using Game.Units;
@@ -20,15 +21,18 @@ namespace Game.WorldGeneration.Hex
 
          private UIBuildingsActionPanel _buildingsActionPanel;
 
+         private ResearchesController _researchesController;
+
          private DiContainer _diContainer;
 
          [Inject]
          private void Constructor(HexMouseDetector hexMouseDetector, UISelectionHandler uiSelectionHandler,
-             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel)
+             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel, ResearchesController researchesController)
          {
              _hexMouseDetector = hexMouseDetector;
              _uiSelectionHandler = uiSelectionHandler;
              _buildingsActionPanel = uiBuildingsActionPanel;
+             _researchesController = researchesController;
              _diContainer = diContainer;
          }
              
@@ -71,7 +75,7 @@ namespace Game.WorldGeneration.Hex
      
          private void HandleHexClicked(HexModel hexModel)
          {
-             Debug.Log($"Hit hex on {hexModel.Q}, {hexModel.R}, {hexModel.S}");
+             // Debug.Log($"Hit hex on {hexModel.Q}, {hexModel.R}, {hexModel.S}");
              
              if (!hexModel.IsHexEmpty() && hexModel.CurrentBuilding != null)
              {
@@ -110,7 +114,6 @@ namespace Game.WorldGeneration.Hex
          private void UpdateBuildingActionPanel()
          {
              _buildingsActionPanel.ShowActions(_currentSelectedBuilding.GetAvailableActions());
-             // _buildingsActionPanel.Hide();
          }
     }
 }

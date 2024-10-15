@@ -1,6 +1,8 @@
+using Core.TurnBasedSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Game.Buildings
 {
@@ -11,10 +13,20 @@ namespace Game.Buildings
         [SerializeField] private Button _actionButton;
 
         [SerializeField] private TMP_Text _descriptionText;
+        
+       [SerializeField] private TMP_Text _durationText; 
 
         [SerializeField] private TMP_Text _actionName;
         
         private IBuildingAction _buildingAction;
+
+        private GameTurnController _gameTurnController;
+
+        [Inject]
+        private void Constructor(GameTurnController gameTurnController)
+        {
+            _gameTurnController = gameTurnController;
+        }
         
         private void OnDisable()
         {
@@ -28,16 +40,22 @@ namespace Game.Buildings
             _descriptionText.text = action.Description;
             _actionButton.onClick.AddListener(ExecuteAction);
         }
+        
+        public void UpdateView()
+        {
+            _actionName.text = _buildingAction.Name;
+            _descriptionText.text = _buildingAction.Description;
+            _durationText.text = _buildingAction.IsActive ? $"{_buildingAction.Duration}" : "";
+            _actionButton.interactable = _buildingAction.CanExecute() && !_buildingAction.IsActive;
+        }
 
         private void ExecuteAction()
         {
-            if (_buildingAction.CanExecute())
+            if (_buildingAction.CanExecute() && !_buildingAction.IsActive)
             {
                 _buildingAction.Execute();
-            }
-            else
-            {
-                Debug.Log($"Cannot execute action: {_buildingAction.Name}");
+                _gameTurnController.AddActiveAction(_buildingAction);
+                UpdateView();
             }
         }
     }

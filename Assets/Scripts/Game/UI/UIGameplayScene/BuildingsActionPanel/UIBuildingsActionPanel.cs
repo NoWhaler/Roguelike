@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Buildings;
 using UnityEngine;
+using Zenject;
 
 namespace Game.UI.UIGameplayScene.BuildingsActionPanel
 {
@@ -10,13 +11,21 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
 
         private List<BuildingActionView> _actionViews = new List<BuildingActionView>();
 
+        private DiContainer _diContainer;
+        
+        [Inject]
+        private void Constructor(DiContainer diContainer)
+        {
+            _diContainer = diContainer;
+        }
+
         public void ShowActions(List<IBuildingAction> actions)
         {
             ClearActions();
 
             foreach (var action in actions)
             {
-                var actionView = Instantiate(_actionViewPrefab, transform);
+                var actionView = _diContainer.InstantiatePrefabForComponent<BuildingActionView>(_actionViewPrefab, transform);
                 actionView.SetAction(action);
                 _actionViews.Add(actionView);
             }
@@ -24,6 +33,16 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
             gameObject.SetActive(true);
         }
 
+        public void UpdateActionViews()
+        {
+            ClearActions();
+            
+            foreach (var actionView in _actionViews)
+            {
+                actionView.UpdateView();
+            }
+        }
+        
         public void Hide()
         {
             ClearActions();

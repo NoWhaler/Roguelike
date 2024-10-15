@@ -8,6 +8,7 @@ namespace Game.WorldGeneration.Hex.Installer
         {
             Container.BindInterfacesAndSelfTo<HexMouseDetector>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<HexInteraction>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<HexGridController>().AsSingle().NonLazy();
         }
     }
 }

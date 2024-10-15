@@ -2,9 +2,14 @@ namespace Game.Buildings.Enum
 {
     public enum BuildingType
     {
-        DefensiveStructure,
-		ResourceStructure,
-        ResearchStructure,
-        UnitProduceStructure
+        MainBuilding, 
+        Farm,
+        House,
+        Lumber,
+        Quarry,
+        Tower,
+        Wall,
+        WatchTower,
+        Barrack
     }
 }

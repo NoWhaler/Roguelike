@@ -12,16 +12,18 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
     {
         private HexagonalTerrainMeshGeneratorModel _hexagonalTerrainMeshGeneratorModel;
         private HexMouseDetector _hexMouseDetector;
+        private HexGridController _hexGridController;
         private Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk> _chunks;
 
         private DiContainer _diContainer;
         
         [Inject]
         private void Constructor(HexagonalTerrainMeshGeneratorModel hexagonalTerrainMeshGeneratorModel, HexMouseDetector hexMouseDetector, 
-            DiContainer diContainer)
+            HexGridController hexGridController, DiContainer diContainer)
         {
             _hexagonalTerrainMeshGeneratorModel = hexagonalTerrainMeshGeneratorModel;
             _hexMouseDetector = hexMouseDetector;
+            _hexGridController = hexGridController;
             _diContainer = diContainer;
             _chunks = new Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk>();
         }
@@ -173,7 +175,7 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                     chunk.ChunkObject.transform
                 );
 
-            _hexMouseDetector.SetHexes(ref hexObject);
+            _hexGridController.SetHex(hexObject);
             
             hexObject.HexPosition = center;
             

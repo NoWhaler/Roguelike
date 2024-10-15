@@ -11,13 +11,18 @@ namespace Game.WorldGeneration.Hex
         private Camera _mainCamera;
         private const float HEX_RADIUS = 7f;
 
-        private readonly List<HexModel> _allHexes = new List<HexModel>();
-
         public UnityEvent<HexModel> OnHexagonHovered;
         public UnityEvent<HexModel> OnHexagonUnhovered;
         public UnityEvent<HexModel> OnHexagonClicked;
 
         private HexModel _currentHoveredHex;
+        private HexGridController _hexGridController;
+
+        [Inject]
+        private void Constructor(HexGridController hexGridController)
+        {
+            _hexGridController = hexGridController;
+        }
 
         public void Initialize()
         {
@@ -51,15 +56,15 @@ namespace Game.WorldGeneration.Hex
                 HexModel closestHex = null;
                 float closestDistance = float.MaxValue;
 
-                foreach (var hex in _allHexes)
+                foreach (var hex in _hexGridController.GetAllHexes())
                 {
-                    if (IsPointInHexagon(worldPoint, hex.HexPosition, HEX_RADIUS))
+                    if (IsPointInHexagon(worldPoint, hex.Value.HexPosition, HEX_RADIUS))
                     {
-                        float distance = Vector3.Distance(worldPoint, hex.HexPosition);
+                        float distance = Vector3.Distance(worldPoint, hex.Value.HexPosition);
                         if (distance < closestDistance)
                         {
                             closestDistance = distance;
-                            closestHex = hex;
+                            closestHex = hex.Value;
                         }
                     }
                 }
@@ -123,11 +128,6 @@ namespace Game.WorldGeneration.Hex
             {
                 OnHexagonClicked.Invoke(hitHex);
             }
-        }
-
-        public void SetHexes(ref HexModel hex)
-        {
-            _allHexes.Add(hex);
         }
     }
 }

@@ -1,29 +1,35 @@
+using Game.Buildings.BuildingsType;
+using Game.Units;
+using Game.WorldGeneration.Hex;
 using UnityEngine;
 
 namespace Game.Buildings.BuildingActions
 {
-    public class HireUnitAction: IBuildingAction
+    public class HireUnitAction: BaseBuildingAction
     {
-        public HireUnitAction(string name, float cost, float duration)
+        public HireUnitAction(string name, float cost, float duration, Building building)
         {
             Name = name;
             Cost = cost;
             Duration = duration;
+            _building = building;
         }
 
-        public string Name { get; }
-        public string Description { get; }
-        public float Cost { get; }
-        public float Duration { get; }
-        
-        public bool CanExecute()
+        public override bool CanExecute()
         {
-            return true;
+            return !IsActive;
         }
 
-        public void Execute()
+        public override void Execute()
         {
-            Debug.Log("Hired unit");
+            Debug.Log("Started hire unit");
+            IsActive = true;
+        }
+
+        public override void Complete()
+        {
+            Debug.Log("Hiring finished");
+            IsActive = false;
         }
     }
 }

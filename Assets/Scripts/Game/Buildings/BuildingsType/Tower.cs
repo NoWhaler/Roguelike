@@ -6,8 +6,8 @@ namespace Game.Buildings.BuildingsType
     {
         protected override void SetupActions()
         {
-             _availableActions.Add(new ResearchAction("Increased Range", 180, 25));
-             _availableActions.Add(new ResearchAction("Bonus Damage", 200, 30));   
+             _availableActions.Add(new ResearchAction("Enhanced Range", 180, 3, _researchesController, this));
+             _availableActions.Add(new ResearchAction("Reinforced Structure", 200, 2, _researchesController, this));   
         }
     }
 }
