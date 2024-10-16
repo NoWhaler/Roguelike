@@ -120,6 +120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 730db7e00db243ab9ee64ca9839d1ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <UnitType>k__BackingField: 0
+  <UnitType>k__BackingField: 3
   <MaxHealth>k__BackingField: 0
   <CurrentHealth>k__BackingField: 125

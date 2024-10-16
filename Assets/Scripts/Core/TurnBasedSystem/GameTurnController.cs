@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Game.Buildings;
-using Game.Researches.Controller;
+using Game.Buildings.Interfaces;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
+using Game.UI.UIGameplayScene.UIResourcesPanel;
 using Zenject;
 
 namespace Core.TurnBasedSystem
@@ -13,14 +13,18 @@ namespace Core.TurnBasedSystem
         public event Action<int> OnTurnChanged;
 
         private int _currentTurn = 1;
+        
         private List<IBuildingAction> _activeActions = new List<IBuildingAction>();
         
         private UIBuildingsActionPanel _buildingActionPanel;
+
+        private ResourcesPanel _resourcesPanel;
         
         [Inject]
-        private void Constructor(UIBuildingsActionPanel buildingsActionPanel)
+        private void Constructor(UIBuildingsActionPanel buildingsActionPanel, ResourcesPanel resourcesPanel)
         {
             _buildingActionPanel = buildingsActionPanel;
+            _resourcesPanel = resourcesPanel;
         }
         
         public void Initialize()
@@ -47,6 +51,8 @@ namespace Core.TurnBasedSystem
             _buildingActionPanel.UpdateActionViews();
             _buildingActionPanel.Hide();
             OnTurnEnded?.Invoke();
+            
+            _resourcesPanel.UpdateResourcesAmount();
         }
         
         public void AddActiveAction(IBuildingAction action)

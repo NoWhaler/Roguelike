@@ -1,10 +1,11 @@
 using Core.TurnBasedSystem;
+using Game.Buildings.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Game.Buildings
+namespace Game.Buildings.View
 {
     public class BuildingActionView : MonoBehaviour
     {

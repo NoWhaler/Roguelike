@@ -1,4 +1,4 @@
-namespace Game.Buildings
+namespace Game.Buildings.Interfaces
 {
     public interface IBuildingAction
     {

@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 using Game.Buildings;
+using Game.Buildings.BuildingsType;
+using Game.Buildings.Interfaces;
+using Game.Buildings.View;
+using Game.Units.View;
 using UnityEngine;
 using Zenject;
 
@@ -9,7 +13,11 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
     {
         [SerializeField] private BuildingActionView _actionViewPrefab;
 
+        [SerializeField] private Transform _panelTransform;
+        
         private List<BuildingActionView> _actionViews = new List<BuildingActionView>();
+        
+        [SerializeField] private List<UnitView> _unitViews = new List<UnitView>();
 
         private DiContainer _diContainer;
         
@@ -25,12 +33,20 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
 
             foreach (var action in actions)
             {
-                var actionView = _diContainer.InstantiatePrefabForComponent<BuildingActionView>(_actionViewPrefab, transform);
+                var actionView = _diContainer.InstantiatePrefabForComponent<BuildingActionView>(_actionViewPrefab, _panelTransform);
                 actionView.SetAction(action);
                 _actionViews.Add(actionView);
             }
 
             gameObject.SetActive(true);
+        }
+
+        public void SetUnitCount(ref Building currentBuilding)
+        {
+            foreach (var unitView in _unitViews)
+            {
+                unitView.UpdateUnitCount(ref currentBuilding);
+            }
         }
 
         public void UpdateActionViews()

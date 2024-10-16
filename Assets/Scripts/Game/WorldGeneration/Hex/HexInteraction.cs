@@ -1,5 +1,7 @@
 using Game.Buildings;
 using Game.Buildings.BuildingsType;
+using Game.Buildings.Controller;
+using Game.Buildings.Interfaces;
 using Game.Researches.Controller;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.SelectionHandling;
@@ -21,18 +23,22 @@ namespace Game.WorldGeneration.Hex
 
          private UIBuildingsActionPanel _buildingsActionPanel;
 
-         private ResearchesController _researchesController;
+         private BuildingsController _buildingsController;
+
+         private ResearchController _researchController;
 
          private DiContainer _diContainer;
 
          [Inject]
          private void Constructor(HexMouseDetector hexMouseDetector, UISelectionHandler uiSelectionHandler,
-             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel, ResearchesController researchesController)
+             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel, ResearchController researchController,
+             BuildingsController buildingsController)
          {
              _hexMouseDetector = hexMouseDetector;
              _uiSelectionHandler = uiSelectionHandler;
              _buildingsActionPanel = uiBuildingsActionPanel;
-             _researchesController = researchesController;
+             _researchController = researchController;
+             _buildingsController = buildingsController;
              _diContainer = diContainer;
          }
              
@@ -60,7 +66,6 @@ namespace Game.WorldGeneration.Hex
          private void SelectUnit(Unit unit)
          {
              _currentSelectedUnit = unit;
-             _currentSelectedBuilding = null;
          }
          
          private void HandleHexHovered(HexModel hexModel)
@@ -90,30 +95,46 @@ namespace Game.WorldGeneration.Hex
              
              if (!hexModel.IsHexEmpty()) return;
              
-             if (_currentSelectedBuilding != null)
+
+             if (_currentSelectedUnit != null && _currentSelectedBuilding != null)
              {
-                 var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(_currentSelectedBuilding,
-                     new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 2.5f, hexModel.HexPosition.z),
-                     Quaternion.identity, hexModel.transform);
-
-                 hexModel.SetBuilding(ref newBuilding);
-                 _currentSelectedBuilding = null;
+                 DeployUnit(hexModel);
              }
-
-             if (_currentSelectedUnit != null)
+             
+             else if (_currentSelectedBuilding != null)
              {
-                 var newUnit = _diContainer.InstantiatePrefabForComponent<Unit>(_currentSelectedUnit,
-                     new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 5f, hexModel.HexPosition.z),
-                     Quaternion.identity, hexModel.transform);
-
-                 hexModel.SetUnit(ref newUnit);
-                 _currentSelectedUnit = null;
+                 PlaceBuilding(hexModel);
              }
+         }
+         
+         private void DeployUnit(HexModel hexModel)
+         {
+             var newUnit = _diContainer.InstantiatePrefabForComponent<Unit>(_currentSelectedUnit,
+                 new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 5f, hexModel.HexPosition.z),
+                 Quaternion.identity, hexModel.transform);
+
+             hexModel.SetUnit(ref newUnit);
+             _currentSelectedBuilding.DecreaseUnitCount(newUnit.UnitType);
+             _buildingsActionPanel.SetUnitCount(ref _currentSelectedBuilding);
+             _currentSelectedUnit = null;
+             _currentSelectedBuilding = null;
+         }
+ 
+         private void PlaceBuilding(HexModel hexModel)
+         {
+             var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(_currentSelectedBuilding,
+                 new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 2.5f, hexModel.HexPosition.z),
+                 Quaternion.identity, hexModel.transform);
+ 
+             hexModel.SetBuilding(ref newBuilding);
+             _buildingsController.RegisterBuilding(newBuilding as IProduceResource);
+             _currentSelectedBuilding = null;
          }
          
          private void UpdateBuildingActionPanel()
          {
              _buildingsActionPanel.ShowActions(_currentSelectedBuilding.GetAvailableActions());
+             _buildingsActionPanel.SetUnitCount(ref _currentSelectedBuilding);
          }
     }
 }

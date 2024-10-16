@@ -8,7 +8,7 @@ namespace Core.Lifetime.Initialization
 {
     public class ResearchesInitialization: IInitializable
     {
-        private ResearchesController _researchesController;
+        private ResearchController _researchController;
         
         // TODO Replace all data to separate file and load it
         private Dictionary<BuildingType, List<string>> _allPossibleResearch = new Dictionary<BuildingType, List<string>>
@@ -37,14 +37,14 @@ namespace Core.Lifetime.Initialization
         };
         
         [Inject]
-        private void Constructor(ResearchesController researchesController)
+        private void Constructor(ResearchController researchController)
         {
-            _researchesController = researchesController;
+            _researchController = researchController;
         }
         
         public void Initialize()
         {
-            _researchesController.InitializeResearch(_allPossibleResearch);
+            _researchController.InitializeResearch(_allPossibleResearch);
         }
     }
 }

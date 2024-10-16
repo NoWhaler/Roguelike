@@ -174,8 +174,6 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                     Quaternion.identity, 
                     chunk.ChunkObject.transform
                 );
-
-            _hexGridController.SetHex(hexObject);
             
             hexObject.HexPosition = center;
             
@@ -183,6 +181,7 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             hexObject.HexPosition = center;
             hexObject.SetLogicalCoordinates(logicalCoords.Q, logicalCoords.R, logicalCoords.S);
 
+            _hexGridController.SetHex(hexObject);
             hexObject.name = $"Hex({logicalCoords.Q}, {logicalCoords.R}, {logicalCoords.S})";
         }
         

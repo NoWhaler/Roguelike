@@ -1,18 +1,20 @@
 using Game.Buildings.BuildingsType;
-using Game.Units;
-using Game.WorldGeneration.Hex;
+using Game.Units.Enum;
 using UnityEngine;
 
 namespace Game.Buildings.BuildingActions
 {
     public class HireUnitAction: BaseBuildingAction
     {
-        public HireUnitAction(string name, float cost, float duration, Building building)
+        private UnitType _unitType;
+        
+        public HireUnitAction(string name, float cost, float duration, Building building, UnitType unitType)
         {
             Name = name;
             Cost = cost;
             Duration = duration;
             _building = building;
+            _unitType = unitType;
         }
 
         public override bool CanExecute()
@@ -29,6 +31,7 @@ namespace Game.Buildings.BuildingActions
         public override void Complete()
         {
             Debug.Log("Hiring finished");
+            _building.IncreaseUnitCount(_unitType);
             IsActive = false;
         }
     }

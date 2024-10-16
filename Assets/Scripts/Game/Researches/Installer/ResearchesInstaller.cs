@@ -7,7 +7,7 @@ namespace Game.Researches.Installer
     {
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<ResearchesController>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ResearchController>().AsSingle();
         }
     }
 }

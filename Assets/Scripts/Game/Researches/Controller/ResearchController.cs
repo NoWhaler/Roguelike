@@ -3,7 +3,7 @@ using Game.Buildings.Enum;
 
 namespace Game.Researches.Controller
 {
-    public class ResearchesController
+    public class ResearchController
     {
         private Dictionary<BuildingType, Dictionary<string, bool>> _researchStatus = new Dictionary<BuildingType, Dictionary<string, bool>>();
 

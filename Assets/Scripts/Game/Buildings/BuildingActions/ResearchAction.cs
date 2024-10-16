@@ -1,4 +1,5 @@
 using Game.Buildings.BuildingsType;
+using Game.Buildings.Interfaces;
 using Game.Researches.Controller;
 using UnityEngine;
 
@@ -6,27 +7,27 @@ namespace Game.Buildings.BuildingActions
 {
     public class ResearchAction: BaseBuildingAction
     {
-        private ResearchesController _researchesController;
+        private ResearchController _researchController;
         
-        public ResearchAction(string name, float cost, float duration, ResearchesController researchesController, Building building)
+        public ResearchAction(string name, float cost, float duration, ResearchController researchController, Building building)
         {
             Name = name;
             Cost = cost;
             Duration = duration;
-            _researchesController = researchesController;
+            _researchController = researchController;
             _building = building;
         }
         
         public override bool CanExecute()
         {
-            return !_researchesController.IsResearchActive(_building.BuildingType, Name);
+            return !_researchController.IsResearchActive(_building.BuildingType, Name);
         }
 
         public override void Execute()
         {
             Debug.Log("Research started");
             
-            _researchesController.StartResearch(_building.BuildingType, Name);
+            _researchController.StartResearch(_building.BuildingType, Name);
             IsActive = true;
         }
 
@@ -34,7 +35,7 @@ namespace Game.Buildings.BuildingActions
         {
             Debug.Log("Research completed");
             
-            _researchesController.CompleteResearch(_building.BuildingType, Name);
+            _researchController.CompleteResearch(_building.BuildingType, Name);
 
             IBuildingAction buildingAction = null;
             
