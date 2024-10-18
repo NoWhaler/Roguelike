@@ -24,5 +24,30 @@ namespace Game.WorldGeneration.Hex
             }
             return null;
         }   
+        
+        public List<HexModel> GetNeighbors(HexModel hex)
+        {
+            List<HexModel> neighbors = new List<HexModel>();
+            int[][] directions = new int[][]
+            {
+                new int[] {+1, -1, 0}, new int[] {+1, 0, -1}, new int[] {0, +1, -1},
+                new int[] {-1, +1, 0}, new int[] {-1, 0, +1}, new int[] {0, -1, +1}
+            };
+
+            foreach (int[] dir in directions)
+            {
+                int neighborQ = hex.Q + dir[0];
+                int neighborR = hex.R + dir[1];
+                int neighborS = hex.S + dir[2];
+
+                HexModel neighbor = GetHexAt(neighborQ, neighborR, neighborS);
+                if (neighbor != null)
+                {
+                    neighbors.Add(neighbor);
+                }
+            }
+
+            return neighbors;
+        }
     }
 }

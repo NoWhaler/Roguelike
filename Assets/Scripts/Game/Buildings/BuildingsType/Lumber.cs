@@ -1,6 +1,7 @@
 using Game.Buildings.BuildingActions;
 using Game.Buildings.Interfaces;
 using Game.ProductionResources.Enum;
+using Game.WorldGeneration.Hex;
 using UnityEngine;
 
 namespace Game.Buildings.BuildingsType
@@ -15,9 +16,8 @@ namespace Game.Buildings.BuildingsType
             _resourcesController.AddResource(ResourceType, ResourceAmountProduction);
         }
 
-        public override void Initialize()
+        public override void Initialize(HexModel hexModel)
         {
-            base.Initialize();
             ResourceType = ResourceType.Wood;
             ResourceAmountProduction = 4;
         }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using Game.WorldGeneration.Hex;
+using Game.WorldGeneration.Hex.Struct;
 using Game.WorldGeneration.Nodes;
 using Game.WorldGeneration.TerrainMeshGenerator.Models;
 using UnityEngine;

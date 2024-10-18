@@ -17,7 +17,7 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
         
         private List<BuildingActionView> _actionViews = new List<BuildingActionView>();
         
-        [SerializeField] private List<UnitView> _unitViews = new List<UnitView>();
+        [SerializeField] private List<UnitSelectorView> _unitViews = new List<UnitSelectorView>();
 
         private DiContainer _diContainer;
         

@@ -2,20 +2,10 @@ using System.Collections.Generic;
 using Game.Buildings.BuildingsType;
 using Game.Units;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.WorldGeneration.Hex
 {
-    public struct HexCoordinate
-    {
-        public int Q, R, S; 
-        
-        public HexCoordinate(int q, int r)
-        {
-            Q = q;
-            R = r;
-            S = -q - r;
-        }
-    }
     
     public class HexModel: MonoBehaviour
     {
@@ -26,6 +16,10 @@ namespace Game.WorldGeneration.Hex
         [field: SerializeField] public int S { get; set; }
 
         [SerializeField] private SpriteRenderer _hexOutlineImage;
+
+        [SerializeField] private SpriteRenderer _unitRangeHighlight;
+
+        [SerializeField] private SpriteRenderer _unitPathHighlight;
         
         [field: SerializeField] public Building CurrentBuilding { get; set; }
 
@@ -43,6 +37,16 @@ namespace Game.WorldGeneration.Hex
             _hexOutlineImage.enabled = !_hexOutlineImage.enabled;
         }
 
+        public void SetUnitRangeHighlight(bool isHighlighted)
+        {
+            _unitRangeHighlight.enabled = isHighlighted;
+        }
+
+        public void SetUnitPathHighlight(bool isHighlighted)
+        {
+            _unitPathHighlight.enabled = isHighlighted;
+        }
+        
         public bool IsHexEmpty()
         {
             return CurrentBuilding == null && CurrentUnit == null;
@@ -51,7 +55,7 @@ namespace Game.WorldGeneration.Hex
         public void SetBuilding(ref Building building)
         {
             CurrentBuilding = building;
-            CurrentBuilding.Initialize();
+            CurrentBuilding.Initialize(this);
         }
 
         public void SetUnit(ref Unit unit)

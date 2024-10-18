@@ -36,12 +36,12 @@ namespace Game.Buildings.Controller
             }
         }
         
-        public void RegisterBuilding(IProduceResource building)
+        public void RegisterProductionBuilding(IProduceResource building)
         {
             _resourcesProductionBuildings.Add(building);
         }
 
-        public void UnregisterBuilding(IProduceResource building)
+        public void UnregisterProductionBuilding(IProduceResource building)
         {
             _resourcesProductionBuildings.Remove(building);
         }

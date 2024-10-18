@@ -38,7 +38,7 @@ namespace Game.Buildings.BuildingsType
         
         [field: SerializeField] public float CurrentHealth { get; set; }
         
-        [SerializeField] private HexModel _currentHex;
+        public HexModel CurrentHex { get; private set; }
 
         private Collider _buildingCollider;
         
@@ -62,9 +62,10 @@ namespace Game.Buildings.BuildingsType
             _resourcesController = resourcesController;
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(HexModel hexModel)
         {
             CurrentHealth = MaxHealth;
+            CurrentHex = hexModel;
             SetupActions();
         }
         
