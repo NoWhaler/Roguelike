@@ -94,14 +94,12 @@ namespace Game.Buildings.BuildingsType
             }
         }
 
-        public bool DecreaseUnitCount(UnitType unitType)
+        public void DecreaseUnitCount(UnitType unitType)
         {
             if (_unitCounts.ContainsKey(unitType) && _unitCounts[unitType] > 0)
             {
                 _unitCounts[unitType]--;
-                return true;
             }
-            return false;
         }
 
         public int GetUnitCount(UnitType unitType)

@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <UnitType>k__BackingField: 2
-  <MaxHealth>k__BackingField: 0
-  <CurrentHealth>k__BackingField: 150
+  <MaxHealth>k__BackingField: 150
+  <CurrentHealth>k__BackingField: 0
   <MaxMovementPoints>k__BackingField: 3
   <CurrentMovementPoints>k__BackingField: 0

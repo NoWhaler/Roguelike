@@ -6,6 +6,7 @@ using Game.Buildings.Controller;
 using Game.Buildings.Interfaces;
 using Game.Pathfinding;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
+using Game.UI.UIGameplayScene.SelectedEntityInformation;
 using Game.UI.UIGameplayScene.SelectionHandling;
 using Game.Units;
 using Game.Units.Controller;
@@ -25,10 +26,12 @@ namespace Game.WorldGeneration.Hex
         private UISelectionHandler _uiSelectionHandler;
 
         private Building _currentSelectedBuilding;
-
-        private Building _buildingToPlace;
-
+        
+        private Building _currentUISelectedBuilding;
+        
         private Unit _currentSelectedUnit;
+
+        private Unit _currentUISelectedUnit;
 
         private UIBuildingsActionPanel _buildingsActionPanel;
         
@@ -40,6 +43,8 @@ namespace Game.WorldGeneration.Hex
 
         private PathfindingController _pathfindingController;
         
+        private UISelectedEntityView _uiSelectedEntityView;
+        
         private DiContainer _diContainer;
         
         private bool _isUnitMoving;
@@ -48,7 +53,7 @@ namespace Game.WorldGeneration.Hex
         private void Constructor(HexMouseDetector hexMouseDetector, UISelectionHandler uiSelectionHandler,
             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel,
             BuildingsController buildingsController, HexGridController hexGridController,
-            UnitsController unitsController,
+            UnitsController unitsController, UISelectedEntityView uiSelectedEntityView,
             PathfindingController pathfindingController)
         {
             _hexMouseDetector = hexMouseDetector;
@@ -58,6 +63,7 @@ namespace Game.WorldGeneration.Hex
             _hexGridController = hexGridController;
             _unitsController = unitsController;
             _pathfindingController = pathfindingController;
+            _uiSelectedEntityView = uiSelectedEntityView;
             _diContainer = diContainer;
         }
             
@@ -66,30 +72,58 @@ namespace Game.WorldGeneration.Hex
             _hexMouseDetector.OnHexagonHovered.AddListener(HandleHexHovered);
             _hexMouseDetector.OnHexagonUnhovered.AddListener(HandleHexUnhovered);
             _hexMouseDetector.OnHexagonClicked.AddListener(HandleHexClicked);
-            _uiSelectionHandler.OnSelectedBuilding += SelectBuilding;
-            _uiSelectionHandler.OnSelectedUnit += SelectUnit;
+            
+            _uiSelectionHandler.OnUISelectedBuilding += SelectUIBuilding;
+            _uiSelectionHandler.OnUISelectedUnit += SelectUIUnit;
         }
 
         public void LateDispose()
         {
-            _uiSelectionHandler.OnSelectedBuilding -= SelectBuilding;
-            _uiSelectionHandler.OnSelectedUnit -= SelectUnit;
+            _uiSelectionHandler.OnUISelectedBuilding -= SelectUIBuilding;
+            _uiSelectionHandler.OnUISelectedUnit -= SelectUIUnit;
         }
 
+        private void SelectUIBuilding(Building building)
+        {
+            ClearHighlights();
+            ClearPathHighlight();
+            
+            _currentUISelectedBuilding = building;
+            _currentUISelectedUnit = null;
+            _currentSelectedUnit = null;
+            _currentSelectedBuilding = null;
+        }
+
+        private void SelectUIUnit(Unit unit)
+        {
+            ClearHighlights();
+            ClearPathHighlight();
+            
+            _currentUISelectedUnit = unit;
+            _currentUISelectedBuilding = null;
+            _currentSelectedUnit = null;
+        }
+        
         private void SelectBuilding(Building building)
         {
             ClearHighlights();
             ClearPathHighlight();
             
             _currentSelectedBuilding = building;
+            _currentUISelectedBuilding = null;
+            _currentUISelectedUnit = null;
             _currentSelectedUnit = null;
         }
 
         private void SelectUnit(Unit unit)
         {
             ClearHighlights();
+            ClearPathHighlight();
             
             _currentSelectedUnit = unit;
+            _currentUISelectedBuilding = null;
+            _currentUISelectedUnit = null;
+            _currentSelectedBuilding = null;
             
             var reachableHexes = _unitsController.GetReachableHexes(unit);
             HighlightHexes(reachableHexes);
@@ -110,7 +144,70 @@ namespace Game.WorldGeneration.Hex
             ClearPathHighlight();
         }
 
-        private void  HandleHexClicked(HexModel hexModel)
+        private void HandleHexClicked(HexModel hexModel)
+        {
+            if (!hexModel.IsHexEmpty())
+            {
+                if (hexModel.CurrentBuilding != null)
+                {
+                    SelectBuilding(hexModel.CurrentBuilding);
+                    
+                    _uiSelectionHandler.SelectBuilding(hexModel.CurrentBuilding);
+                    UpdateBuildingActionPanel();
+                }
+
+                else if (hexModel.CurrentUnit != null)
+                {
+                    SelectUnit(hexModel.CurrentUnit);
+                    _buildingsActionPanel.Hide();
+                    _uiSelectionHandler.SelectUnit(hexModel.CurrentUnit);
+                }
+            }
+            else
+            {
+                if (_currentUISelectedBuilding != null)
+                {
+                    PlaceBuilding(hexModel);
+                }
+
+                else if (_currentUISelectedUnit != null || _currentSelectedUnit != null)
+                {
+                    if (_currentSelectedUnit == null && _currentSelectedBuilding != null)
+                    {
+                        if (IsNeighboringHex(_currentSelectedBuilding.CurrentHex, hexModel))
+                        {
+                            DeployUnit(hexModel);
+                        }
+                    }
+                    else
+                    {
+                        MoveSelectedUnit(hexModel).Forget();
+                        ClearHighlights();
+                        ClearPathHighlight();
+                    }
+                }
+
+                else
+                {
+                    ClearAllSelections();
+                }
+            }
+        }
+
+        private void ClearAllSelections()
+        {
+            _currentSelectedBuilding = null;
+            _currentUISelectedBuilding = null;
+            _currentSelectedUnit = null;
+            _currentUISelectedUnit = null;
+            
+            ClearHighlights();
+            ClearPathHighlight();
+            
+            _uiSelectionHandler.ClearSelection();
+        }
+        
+        private void  HandleHex(HexModel hexModel)
         {
             if (!hexModel.IsHexEmpty() && hexModel.CurrentBuilding != null)
             {
@@ -118,7 +215,7 @@ namespace Game.WorldGeneration.Hex
                 Building clickedBuilding = hexModel.CurrentBuilding;
                 if (clickedBuilding != null)
                 {
-                    SelectBuilding(clickedBuilding);
+                    SelectUIBuilding(clickedBuilding);
                     UpdateBuildingActionPanel();
                     return;
                 }
@@ -127,7 +224,7 @@ namespace Game.WorldGeneration.Hex
             if (!hexModel.IsHexEmpty() && hexModel.CurrentUnit != null)
             {
                 ClearHighlights();
-                SelectUnit(hexModel.CurrentUnit);
+                SelectUIUnit(hexModel.CurrentUnit);
                 return;
             }
 
@@ -165,12 +262,16 @@ namespace Game.WorldGeneration.Hex
             {
                 ClearHighlights();
             }
+            
+            if (_currentSelectedUnit == null && _currentSelectedBuilding == null)
+            {
+                _uiSelectionHandler.ClearSelection();
+            }
         }
-        
          
         private void DeployUnit(HexModel hexModel)
         {
-            var newUnit = _diContainer.InstantiatePrefabForComponent<Unit>(_currentSelectedUnit,
+            var newUnit = _diContainer.InstantiatePrefabForComponent<Unit>(_currentUISelectedUnit,
                 new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 5f, hexModel.HexPosition.z),
                 Quaternion.identity, hexModel.transform);
 
@@ -188,7 +289,7 @@ namespace Game.WorldGeneration.Hex
  
         private void PlaceBuilding(HexModel hexModel)
         {
-            var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(_currentSelectedBuilding,
+            var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(_currentUISelectedBuilding,
                 new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 2.5f, hexModel.HexPosition.z),
                 Quaternion.identity, hexModel.transform);
  
@@ -284,19 +385,21 @@ namespace Game.WorldGeneration.Hex
             foreach (var hex in path.Skip(1))
             {
                 await MoveUnitToHex(unit, hex);
+                _uiSelectedEntityView.UpdateSelectedEntityInfo();
                 if (unit.CurrentMovementPoints == 0)
                     break;
             }
             ClearHighlights();
             ClearPathHighlight();
             _currentSelectedUnit = null;
+            _uiSelectionHandler.ClearSelection();
         }
 
         private async UniTask MoveUnitToHex(Unit unit, HexModel targetHex)
         {
             Vector3 startPosition = unit.transform.position;
             Vector3 endPosition = new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 5f, targetHex.HexPosition.z);
-            float moveDuration = 0.5f; // Adjust this value to change movement speed
+            float moveDuration = 0.8f;
 
             float elapsedTime = 0f;
             while (elapsedTime < moveDuration)

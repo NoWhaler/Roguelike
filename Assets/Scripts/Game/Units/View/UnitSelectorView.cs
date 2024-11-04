@@ -37,9 +37,7 @@ namespace Game.Units.View
 
         private void OnButtonClick()
         {
-            _uiSelectionHandler.SelectUnit(_selectedUnit);
-            
-            Debug.Log($"Selected Unit - {_selectedUnit}");
+            _uiSelectionHandler.SelectUIUnit(_selectedUnit);
         }
         
         public void UpdateUnitCount(ref Building building)

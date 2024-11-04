@@ -119,5 +119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <BuildingType>k__BackingField: 1
-  <MaxHealth>k__BackingField: 0
-  <CurrentHealth>k__BackingField: 150
+  <MaxHealth>k__BackingField: 150
+  <CurrentHealth>k__BackingField: 0
+  <ResourceType>k__BackingField: 0
+  <ResourceAmountProduction>k__BackingField: 0

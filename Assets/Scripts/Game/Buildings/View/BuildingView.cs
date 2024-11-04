@@ -34,9 +34,7 @@ namespace Game.Buildings.View
 
         private void OnButtonClick()
         {
-            _uiSelectionHandler.SelectBuilding(_selectedBuilding);
-            
-            Debug.Log($"Selected building - {_selectedBuilding}");
+            _uiSelectionHandler.SelectUIBuilding(_selectedBuilding);
         }
     }
 }
