@@ -14,16 +14,16 @@ namespace Game.WorldGeneration.Hex
         [field: SerializeField] public int Q { get; set; }
         [field: SerializeField] public int R { get; set; }
         [field: SerializeField] public int S { get; set; }
-
+        
         [SerializeField] private SpriteRenderer _hexOutlineImage;
 
         [SerializeField] private SpriteRenderer _unitRangeHighlight;
 
         [SerializeField] private SpriteRenderer _unitPathHighlight;
         
-        [field: SerializeField] public Building CurrentBuilding { get; set; }
+        public Building CurrentBuilding { get; set; }
 
-        [field: SerializeField] public Unit CurrentUnit { get; set; }
+        public Unit CurrentUnit { get; set; }
         
         public void SetLogicalCoordinates(int q, int r, int s)
         {

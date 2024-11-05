@@ -207,68 +207,6 @@ namespace Game.WorldGeneration.Hex
             _uiSelectionHandler.ClearSelection();
         }
         
-        private void  HandleHex(HexModel hexModel)
-        {
-            if (!hexModel.IsHexEmpty() && hexModel.CurrentBuilding != null)
-            {
-                ClearHighlights();
-                Building clickedBuilding = hexModel.CurrentBuilding;
-                if (clickedBuilding != null)
-                {
-                    SelectUIBuilding(clickedBuilding);
-                    UpdateBuildingActionPanel();
-                    return;
-                }
-            }
-             
-            if (!hexModel.IsHexEmpty() && hexModel.CurrentUnit != null)
-            {
-                ClearHighlights();
-                SelectUIUnit(hexModel.CurrentUnit);
-                return;
-            }
-
-            if (_currentSelectedUnit != null && _currentSelectedBuilding == null)
-            {
-                MoveSelectedUnit(hexModel).Forget();
-                ClearHighlights();
-                ClearPathHighlight();
-                return;
-            }
-
-            if (_currentSelectedUnit != null && _currentSelectedBuilding != null)
-            {
-                if (IsNeighboringHex(_currentSelectedBuilding.CurrentHex, hexModel))
-                {
-                    ClearHighlights();
-                    DeployUnit(hexModel);
-                }
-            }
-
-            if (_currentSelectedBuilding != null)
-            {
-                if (_currentSelectedBuilding.CurrentHex == null)
-                {
-                    ClearHighlights();
-                    PlaceBuilding(hexModel);
-                }
-                else
-                {
-                    _currentSelectedBuilding = null;
-                    ClearHighlights();
-                }
-            }
-            else
-            {
-                ClearHighlights();
-            }
-            
-            if (_currentSelectedUnit == null && _currentSelectedBuilding == null)
-            {
-                _uiSelectionHandler.ClearSelection();
-            }
-        }
-         
         private void DeployUnit(HexModel hexModel)
         {
             var newUnit = _diContainer.InstantiatePrefabForComponent<Unit>(_currentUISelectedUnit,
