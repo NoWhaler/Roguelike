@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using UnityEngine;
 using Zenject;
 
 namespace Game.WorldGeneration.Hex.Installer

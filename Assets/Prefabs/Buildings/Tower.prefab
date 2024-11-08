@@ -121,3 +121,4 @@ MonoBehaviour:
   <BuildingType>k__BackingField: 5
   <MaxHealth>k__BackingField: 500
   <CurrentHealth>k__BackingField: 0
+  <RevealFogOfWarRange>k__BackingField: 2

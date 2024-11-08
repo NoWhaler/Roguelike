@@ -10,6 +10,8 @@ namespace Game.Buildings.Controller
     {
         private List<IProduceResource> _resourcesProductionBuildings = new List<IProduceResource>();
 
+        private List<IHireUnit> _unitsHiringBuildings = new List<IHireUnit>();
+
         private GameTurnController _gameTurnController;
         
         [Inject]
@@ -44,6 +46,16 @@ namespace Game.Buildings.Controller
         public void UnregisterProductionBuilding(IProduceResource building)
         {
             _resourcesProductionBuildings.Remove(building);
+        }
+        
+        public void RegisterHiringBuilding(IHireUnit building)
+        {
+            _unitsHiringBuildings.Add(building);
+        }
+
+        public void UnregisterHiringBuilding(IHireUnit building)
+        {
+            _unitsHiringBuildings.Remove(building);
         }
     }
 }

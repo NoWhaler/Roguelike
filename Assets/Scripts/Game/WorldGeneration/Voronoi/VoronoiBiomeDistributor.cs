@@ -1,40 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using Game.WorldGeneration.Biomes;
 using UnityEngine;
 
 namespace Game.WorldGeneration.Voronoi
 {
-    [Serializable]
-    public class Biome
-    {
-        [field: SerializeField] public string Name { get; private set; }
-        [field: SerializeField] public Color Color { get; private set; }
-        [field: SerializeField] public int CellCount { get; private set; }
-
-        public Biome(string name, Color color, int cellCount)
-        {
-            Name = name;
-            Color = color;
-            CellCount = cellCount;
-        }
-    }
-
-    [Serializable]
-    public class BiomeCell
-    {
-        public Vector2 SeedPoint { get; set; }
-        public Biome BiomeType { get; set; }
-        public List<Vector2> Points { get; set; }
-
-        public BiomeCell(Vector2 seedPoint, Biome biomeType)
-        {
-            SeedPoint = seedPoint;
-            BiomeType = biomeType;
-            Points = new List<Vector2>();
-        }
-    }
-    
     public class VoronoiBiomeDistributor
     {
         public float[,] GenerateVoronoiMap(int width, int height, int seed, List<Biome> biomes, int relaxationIterations)

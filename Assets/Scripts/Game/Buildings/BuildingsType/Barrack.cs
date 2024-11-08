@@ -1,8 +1,8 @@
-using Game.Buildings.BuildingActions;
+using Game.Buildings.Interfaces;
 
 namespace Game.Buildings.BuildingsType
 {
-    public class Barrack: Building
+    public class Barrack: Building, IHireUnit
     {
         protected override void SetupActions()
         {

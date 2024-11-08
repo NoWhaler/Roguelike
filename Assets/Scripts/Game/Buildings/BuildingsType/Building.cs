@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Core.TurnBasedSystem;
 using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
 using Game.ProductionResources.Controller;
@@ -38,6 +37,8 @@ namespace Game.Buildings.BuildingsType
         
         [field: SerializeField] public float CurrentHealth { get; set; }
         
+        [field: SerializeField] public int RevealFogOfWarRange { get; set; }
+        
         public HexModel CurrentHex { get; private set; }
 
         private Collider _buildingCollider;
@@ -48,17 +49,11 @@ namespace Game.Buildings.BuildingsType
 
         protected ResourcesController _resourcesController;
 
-        protected HexGridController _hexGridController;
-
-        protected GameTurnController _gameTurnController;
-
         [Inject]
-        private void Constructor(GameTurnController gameTurnController, ResourcesController resourcesController,
-            ResearchController researchesController, HexGridController hexGridController)
+        private void Constructor(ResourcesController resourcesController,
+            ResearchController researchesController)
         {
-            _gameTurnController = gameTurnController;
             _researchesController = researchesController;
-            _hexGridController = hexGridController;
             _resourcesController = resourcesController;
         }
 

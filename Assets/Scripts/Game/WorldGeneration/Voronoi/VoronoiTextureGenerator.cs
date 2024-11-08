@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.WorldGeneration.Biomes;
 using UnityEngine;
 using Zenject;
 

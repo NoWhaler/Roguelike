@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.WorldGeneration.Biomes.Enum;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using Game.WorldGeneration.Hex;
 using Game.WorldGeneration.Hex.Struct;
@@ -12,18 +13,16 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
     public class HexagonalTerrainMeshGeneratorController
     {
         private HexagonalTerrainMeshGeneratorModel _hexagonalTerrainMeshGeneratorModel;
-        private HexMouseDetector _hexMouseDetector;
         private HexGridController _hexGridController;
         private Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk> _chunks;
 
         private DiContainer _diContainer;
         
         [Inject]
-        private void Constructor(HexagonalTerrainMeshGeneratorModel hexagonalTerrainMeshGeneratorModel, HexMouseDetector hexMouseDetector, 
+        private void Constructor(HexagonalTerrainMeshGeneratorModel hexagonalTerrainMeshGeneratorModel, 
             HexGridController hexGridController, DiContainer diContainer)
         {
             _hexagonalTerrainMeshGeneratorModel = hexagonalTerrainMeshGeneratorModel;
-            _hexMouseDetector = hexMouseDetector;
             _hexGridController = hexGridController;
             _diContainer = diContainer;
             _chunks = new Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk>();
@@ -47,20 +46,21 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         {
             var chunk = new HexagonalTerrainMeshGeneratorModel.HexChunk(chunkCoord);
 
-            float chunkOffsetX = chunkCoord.x * (_hexagonalTerrainMeshGeneratorModel.hexWidth * 0.75f * _hexagonalTerrainMeshGeneratorModel.hexagonsPerChunkSide);
+            float chunkOffsetX = chunkCoord.x * (_hexagonalTerrainMeshGeneratorModel.HexWidth * 0.75f * _hexagonalTerrainMeshGeneratorModel.HexagonsPerChunkSide);
             
-            float chunkOffsetZ = chunkCoord.y * (_hexagonalTerrainMeshGeneratorModel.hexHeight * _hexagonalTerrainMeshGeneratorModel.hexagonsPerChunkSide) + 
-                         ((Mathf.Abs(chunkCoord.x) % 2) == 1 ? _hexagonalTerrainMeshGeneratorModel.hexHeight * 0.5f : 0);
+            float chunkOffsetZ = chunkCoord.y * (_hexagonalTerrainMeshGeneratorModel.HexHeight * _hexagonalTerrainMeshGeneratorModel.HexagonsPerChunkSide) + 
+                         ((Mathf.Abs(chunkCoord.x) % 2) == 1 ? _hexagonalTerrainMeshGeneratorModel.HexHeight * 0.5f : 0);
 
             var chunkObject = CreateChunkGameObject(chunk);
             
-            for (int x = 0; x < _hexagonalTerrainMeshGeneratorModel.hexagonsPerChunkSide; x++)
+            for (int x = 0; x < _hexagonalTerrainMeshGeneratorModel.HexagonsPerChunkSide; x++)
             {
-                for (int y = 0; y < _hexagonalTerrainMeshGeneratorModel.hexagonsPerChunkSide; y++)
+                for (int y = 0; y < _hexagonalTerrainMeshGeneratorModel.HexagonsPerChunkSide; y++)
                 {
                     Vector3 hexCenter = CalculateHexPosition(x, y, chunkOffsetX, chunkOffsetZ);
                     Color hexColor = GetColorForHexagon(hexCenter, nodes);
-                    GenerateHexagonMesh(chunk, hexCenter, hexColor);
+                    BiomeType biomeType = GetBiomeTypeForHexagon(hexCenter, nodes);
+                    GenerateHexagonMesh(chunk, hexCenter, hexColor, biomeType);
                 }
             }
 
@@ -70,12 +70,12 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         
         private Vector3 CalculateHexPosition(int x, int y, float offsetX, float offsetZ)
         {
-            float xPos = (x * _hexagonalTerrainMeshGeneratorModel.hexWidth * 0.75f) + offsetX;
-            float zPos = ((y + (x % 2) * 0.5f) * _hexagonalTerrainMeshGeneratorModel.hexHeight) + offsetZ;
+            float xPos = (x * _hexagonalTerrainMeshGeneratorModel.HexWidth * 0.75f) + offsetX;
+            float zPos = ((y + (x % 2) * 0.5f) * _hexagonalTerrainMeshGeneratorModel.HexHeight) + offsetZ;
             return new Vector3(xPos, 0, zPos);
         }
         
-        private void GenerateHexagonMesh(HexagonalTerrainMeshGeneratorModel.HexChunk chunk, Vector3 center, Color color)
+        private void GenerateHexagonMesh(HexagonalTerrainMeshGeneratorModel.HexChunk chunk, Vector3 center, Color color, BiomeType biomeType)
         {
             int vertexOffset = chunk.Vertices.Count;
             
@@ -94,9 +94,9 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             {
                 float angle = i * Mathf.PI / 3f;
                 Vector3 vertex = center + new Vector3(
-                    Mathf.Cos(angle) * _hexagonalTerrainMeshGeneratorModel.hexRadius,
+                    Mathf.Cos(angle) * _hexagonalTerrainMeshGeneratorModel.HexRadius,
                     0,
-                    Mathf.Sin(angle) * _hexagonalTerrainMeshGeneratorModel.hexRadius
+                    Mathf.Sin(angle) * _hexagonalTerrainMeshGeneratorModel.HexRadius
                 );
                 chunk.Vertices.Add(vertex);
                 chunk.Colors.Add(color);
@@ -105,8 +105,8 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                 normalizedPos = uvRotation.MultiplyPoint3x4(normalizedPos);
                 
                 Vector2 uv = new Vector2(
-                    (normalizedPos.x / _hexagonalTerrainMeshGeneratorModel.hexRadius + 1f) * 0.5f,
-                    (normalizedPos.z / _hexagonalTerrainMeshGeneratorModel.hexRadius + 1f) * 0.5f
+                    (normalizedPos.x / _hexagonalTerrainMeshGeneratorModel.HexRadius + 1f) * 0.5f,
+                    (normalizedPos.z / _hexagonalTerrainMeshGeneratorModel.HexRadius + 1f) * 0.5f
                 );
                 
                 chunk.UVs.Add(uv);
@@ -130,9 +130,9 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             {
                 float angle = i * Mathf.PI / 3f;
                 Vector3 vertex = center + new Vector3(
-                    Mathf.Cos(angle) * _hexagonalTerrainMeshGeneratorModel.hexRadius,
+                    Mathf.Cos(angle) * _hexagonalTerrainMeshGeneratorModel.HexRadius,
                     -0.1f,
-                    Mathf.Sin(angle) * _hexagonalTerrainMeshGeneratorModel.hexRadius
+                    Mathf.Sin(angle) * _hexagonalTerrainMeshGeneratorModel.HexRadius
                 );
                 chunk.Vertices.Add(vertex);
                 chunk.Colors.Add(color);
@@ -180,6 +180,14 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             
             HexCoordinate logicalCoords = WorldToHexCoordinate(center);
             hexObject.HexPosition = center;
+            hexObject.HexIndex = _hexagonalTerrainMeshGeneratorModel.GlobalCellIndex;
+
+            _hexagonalTerrainMeshGeneratorModel.GlobalCellIndex++;
+            
+            hexObject.BiomeType = biomeType;
+            
+            hexObject.SetFog(biomeType != BiomeType.Grassland);
+
             hexObject.SetLogicalCoordinates(logicalCoords.Q, logicalCoords.R, logicalCoords.S);
 
             _hexGridController.SetHex(hexObject);
@@ -188,8 +196,8 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         
         private HexCoordinate WorldToHexCoordinate(Vector3 worldPosition)
         {
-            float q = (2f/3 * worldPosition.x) / _hexagonalTerrainMeshGeneratorModel.hexRadius;
-            float r = (-1f/3 * worldPosition.x + Mathf.Sqrt(3)/3 * worldPosition.z) / _hexagonalTerrainMeshGeneratorModel.hexRadius;
+            float q = (2f/3 * worldPosition.x) / _hexagonalTerrainMeshGeneratorModel.HexRadius;
+            float r = (-1f/3 * worldPosition.x + Mathf.Sqrt(3)/3 * worldPosition.z) / _hexagonalTerrainMeshGeneratorModel.HexRadius;
             
             float x = q;
             float z = r;
@@ -241,7 +249,7 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             
             hexTerrainChunkModel.ChunkMeshFilter.mesh = mesh;
             
-            hexTerrainChunkModel.ChunkMeshRenderer.material = _hexagonalTerrainMeshGeneratorModel.defaultMaterial;
+            hexTerrainChunkModel.ChunkMeshRenderer.material = _hexagonalTerrainMeshGeneratorModel.DefaultMaterial;
         }
         
         private Color GetColorForHexagon(Vector3 hexCenter, List<NodeModel> nodes)
@@ -263,6 +271,27 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             }
             
             return closestNode?.NodeColor ?? Color.white;
+        }
+
+        private BiomeType GetBiomeTypeForHexagon(Vector3 hexCenter, List<NodeModel> nodes)
+        {
+            NodeModel closestNode = null;
+            float closestDistance = float.MaxValue;
+        
+            foreach (var node in nodes)
+            {
+                float distance = Vector2.Distance(
+                    new Vector2(hexCenter.x, hexCenter.z),
+                    new Vector2(node.Position.x, node.Position.z));
+        
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestNode = node;
+                }
+            }
+        
+            return closestNode != null ? closestNode.BiomeType : BiomeType.Default;
         }
         
         private void ClearExistingChunks()

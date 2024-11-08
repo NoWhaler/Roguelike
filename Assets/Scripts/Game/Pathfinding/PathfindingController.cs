@@ -40,7 +40,7 @@ namespace Game.Pathfinding
 
                 foreach (var neighbor in _hexGridController.GetNeighbors(current))
                 {
-                    if (neighbor.CurrentUnit != null || neighbor.CurrentBuilding != null)
+                    if (neighbor.CurrentUnit != null || neighbor.CurrentBuilding != null || !neighbor.IsVisible)
                         continue;
 
                     var tentativeGScore = gScore[current] + 1;
@@ -61,6 +61,7 @@ namespace Game.Pathfinding
 
             return null;
         }
+        
 
         private float HexDistance(HexModel a, HexModel b)
         {

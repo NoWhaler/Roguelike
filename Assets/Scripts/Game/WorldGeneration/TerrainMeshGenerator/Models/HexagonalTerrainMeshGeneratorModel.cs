@@ -2,27 +2,30 @@ using System.Collections.Generic;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using Game.WorldGeneration.Hex;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.WorldGeneration.TerrainMeshGenerator.Models
 {
     public class HexagonalTerrainMeshGeneratorModel: MonoBehaviour
     {
-        [Header("Hexagon Settings")]
-        [field: SerializeField] public float hexRadius;
+        [field: Header("Hexagon Settings")]
+        [field: SerializeField] public float HexRadius { get; set; }
         
-        [Header("Chunk Settings")]
-        [field: SerializeField] public int hexagonsPerChunkSide;
+        [field: Header("Chunk Settings")]
+        [field: SerializeField] public int HexagonsPerChunkSide { get; set; }
         
-        [Header("Mesh Settings")]
-        [field: SerializeField] public Material defaultMaterial;
+        [field: Header("Mesh Settings")]
+        [field: SerializeField] public Material DefaultMaterial { get; set; }
         
-        [field: SerializeField] public float hexWidth;
-        [field: SerializeField] public float hexHeight;
+        [field: SerializeField] public float HexWidth { get; set; }
+        [field: SerializeField] public float HexHeight { get; set; }
         
         [field: Header("Prefabs")]
         [field: SerializeField] public HexTerrainChunkModel HexTerrainChunkPrefab { get; private set; }
         
         [field: SerializeField] public HexModel HexPrefab { get; private set; }
+
+        public int GlobalCellIndex { get; set; }
         
         private void Awake()
         {
@@ -31,8 +34,8 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Models
         
         private void CalculateHexMetrics()
         {
-            hexWidth = hexRadius * 2f;
-            hexHeight = hexWidth * Mathf.Sqrt(3f) / 2f;
+            HexWidth = HexRadius * 2f;
+            HexHeight = HexWidth * Mathf.Sqrt(3f) / 2f;
         }
         
         public class HexChunk

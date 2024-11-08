@@ -1,9 +1,10 @@
 using Game.Buildings.BuildingActions;
+using Game.Buildings.Interfaces;
 using Game.Units.Enum;
 
 namespace Game.Buildings.BuildingsType
 {
-    public class MainBuilding: Building
+    public class MainBuilding: Building, IHireUnit
     {
         protected override void SetupActions()
         {

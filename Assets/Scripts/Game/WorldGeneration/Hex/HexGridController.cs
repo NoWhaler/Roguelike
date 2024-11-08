@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Game.WorldGeneration.Hex
 {
@@ -24,6 +26,26 @@ namespace Game.WorldGeneration.Hex
             }
             return null;
         }   
+        
+        public List<HexModel> GetHexesInRadius(HexModel centerHex, int radius)
+        {
+            List<HexModel> hexesInRadius = new List<HexModel>();
+        
+            for (int dq = -radius; dq <= radius; dq++)
+            {
+                for (int dr = Math.Max(-radius, -dq - radius); dr <= Math.Min(radius, -dq + radius); dr++)
+                {
+                    int ds = -dq - dr;
+                    HexModel hex = GetHexAt(centerHex.Q + dq, centerHex.R + dr, centerHex.S + ds);
+                    if (hex != null)
+                    {
+                        hexesInRadius.Add(hex);
+                    }
+                }
+            }
+        
+            return hexesInRadius;
+        }
         
         public List<HexModel> GetNeighbors(HexModel hex)
         {

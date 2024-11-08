@@ -44,7 +44,7 @@ namespace Game.WorldGeneration.Hex
         private PathfindingController _pathfindingController;
         
         private UISelectedEntityView _uiSelectedEntityView;
-        
+
         private DiContainer _diContainer;
         
         private bool _isUnitMoving;
@@ -131,6 +131,8 @@ namespace Game.WorldGeneration.Hex
 
         private void HandleHexHovered(HexModel hexModel)
         {
+            if (!hexModel.IsVisible) return;
+            
             if (_currentSelectedUnit != null && _currentSelectedUnit.CurrentHex != null && !_isUnitMoving)
             {
                 ClearPathHighlight();
@@ -146,12 +148,14 @@ namespace Game.WorldGeneration.Hex
 
         private void HandleHexClicked(HexModel hexModel)
         {
+            if (!hexModel.IsVisible) return;
+            
             if (!hexModel.IsHexEmpty())
             {
                 if (hexModel.CurrentBuilding != null)
                 {
                     SelectBuilding(hexModel.CurrentBuilding);
-                    
+
                     _uiSelectionHandler.SelectBuilding(hexModel.CurrentBuilding);
                     UpdateBuildingActionPanel();
                 }
@@ -233,10 +237,19 @@ namespace Game.WorldGeneration.Hex
  
             hexModel.SetBuilding(ref newBuilding);
              
-            if (newBuilding is IProduceResource produceResourceBuilding)
+            switch (newBuilding)
             {
-                _buildingsController.RegisterProductionBuilding(produceResourceBuilding);
+                case IProduceResource produceResourceBuilding:
+                    _buildingsController.RegisterProductionBuilding(produceResourceBuilding);
+                    break;
+                case IHireUnit unitHiringBuilding:
+                    _buildingsController.RegisterHiringBuilding(unitHiringBuilding);
+                    break;
             }
+
+            List<HexModel> nearestCells = _hexGridController.GetHexesInRadius(hexModel, newBuilding.RevealFogOfWarRange);
+            RevealFogOfWar(nearestCells);
+            
             _currentSelectedBuilding = null;
         }
          
@@ -244,6 +257,14 @@ namespace Game.WorldGeneration.Hex
         {
             _buildingsActionPanel.ShowActions(_currentSelectedBuilding.GetAvailableActions());
             _buildingsActionPanel.SetUnitCount(ref _currentSelectedBuilding);
+        }
+        
+        private void RevealFogOfWar(List<HexModel> cells)
+        {
+            foreach (var cell in cells)
+            {
+                cell.SetFog(false);
+            }
         }
          
         private async UniTaskVoid MoveSelectedUnit(HexModel targetHex)

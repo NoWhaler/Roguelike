@@ -14,6 +14,7 @@ Material:
   m_ValidKeywords:
   - _DEBUGBIOME_NONE
   m_InvalidKeywords:
+  - _DEBUGMODE_ON
   - _SHOWGRID_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -65,6 +66,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FogTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ForestTex:
         m_Texture: {fileID: 2800000, guid: 1d477473b16425744a4c8858b999ca72, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -79,6 +84,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _GridTex:
         m_Texture: {fileID: 2800000, guid: a92017d282b9b7e48afdf8cff1b96f51, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HexCellData:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _JungleTex:
@@ -150,7 +159,7 @@ Material:
     - _ColorTolerance: 1
     - _Cutoff: 0.5
     - _DebugBiome: 0
-    - _DebugMode: 0
+    - _DebugMode: 1
     - _DetailNormalMapScale: 1
     - _DetailScale: 10
     - _DetailStrength: 0.51
@@ -184,13 +193,14 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DesertColor: {r: 1, g: 0.9160734, b: 0.514151, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FogColor: {r: 1, g: 1, b: 1, a: 0}
     - _ForestColor: {r: 0.16073336, g: 0.7924528, b: 0.16073336, a: 1}
     - _GrasslandColor: {r: 0.72420037, g: 0.8962264, b: 0.6045301, a: 1}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
     - _HexScale: {r: 14, g: 14, b: 0, a: 0}
     - _JungleColor: {r: 0.2079844, g: 0.6320754, b: 0.14012992, a: 1}
     - _MountainColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
-    - _SavannaColor: {r: 1, g: 0.7464942, b: 0.5424528, a: 1}
+    - _SavannaColor: {r: 1, g: 0.8139413, b: 0.6650944, a: 1}
     - _SwampColor: {r: 0.6698113, g: 0.5264573, b: 0.38861695, a: 1}
     - _TundraColor: {r: 0.8666667, g: 0.9437599, b: 0.972549, a: 1}
     - _WaterColor: {r: 0.38416696, g: 0.7731222, b: 0.9150943, a: 1}

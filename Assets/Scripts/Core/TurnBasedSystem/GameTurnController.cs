@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Buildings.Interfaces;
+using Game.Technology.Model;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.UIResourcesPanel;
 using Zenject;
@@ -15,6 +16,8 @@ namespace Core.TurnBasedSystem
         private int _currentTurn = 1;
         
         private List<IBuildingAction> _activeActions = new List<IBuildingAction>();
+
+        private List<TechnologyModel> _activeTechnologies = new List<TechnologyModel>();
         
         private UIBuildingsActionPanel _buildingActionPanel;
 

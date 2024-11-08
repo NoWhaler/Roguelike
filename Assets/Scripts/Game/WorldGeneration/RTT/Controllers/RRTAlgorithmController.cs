@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using Game.WorldGeneration.Biomes;
+using Game.WorldGeneration.Biomes.Enum;
+using Game.WorldGeneration.Hex;
 using Game.WorldGeneration.Nodes;
 using Game.WorldGeneration.RTT.Models;
 using Game.WorldGeneration.TerrainMeshGenerator.Controllers;
+using Game.WorldGeneration.TerrainMeshGenerator.Models;
 using Game.WorldGeneration.Voronoi;
 using UnityEngine;
 using Zenject;
@@ -26,12 +30,12 @@ namespace Game.WorldGeneration.RTT.Controllers
         
         [Inject]
         private void Constructor(DiContainer diContainer,
-            RRTAlgorithModel rrtAlgorithModel, VoronoiBiomeDistributor voronoiBiomeDistributor,
+            RRTAlgorithModel rrtAlgorithmModel, VoronoiBiomeDistributor voronoiBiomeDistributor,
             VoronoiTextureGenerator voronoiTextureGenerator,
             HexagonalTerrainMeshGeneratorController hexagonalTerrainMeshGeneratorController)
         {
             _diContainer = diContainer;
-            _rrtAlgorithmModel = rrtAlgorithModel;
+            _rrtAlgorithmModel = rrtAlgorithmModel;
             _voronoiBiomeDistributor = voronoiBiomeDistributor;
             _voronoiTextureGenerator = voronoiTextureGenerator;
             _hexagonalTerrainMeshGenerator = hexagonalTerrainMeshGeneratorController;
@@ -47,14 +51,14 @@ namespace Game.WorldGeneration.RTT.Controllers
         {
             _rrtAlgorithmModel.Biomes = new List<Biome>
             {
-                new Biome("Desert", new Color(1f, 0.84f, 0.4f), 3),
-                new Biome("Grassland", new Color(0.5f, 0.8f, 0.3f), 3),
-                new Biome("Forest", new Color(0.13f, 0.55f, 0.13f), 3),
-                new Biome("Tundra", new Color(0.8f, 0.9f, 0.95f), 2),
-                new Biome("Swamp", new Color(0.4f, 0.3f, 0.2f), 2),
-                new Biome("Savanna", new Color(0.96f, 0.64f, 0.38f), 2),
-                new Biome("Jungle", new Color(0f, 0.4f, 0f), 2),
-                new Biome("Mountain", new Color(0.5f, 0.5f, 0.5f), 2)
+                new Biome("Desert", BiomeType.Desert, new Color(1f, 0.84f, 0.4f), 3),
+                new Biome("Grassland", BiomeType.Grassland, new Color(0.5f, 0.8f, 0.3f), 3),
+                new Biome("Forest", BiomeType.Forest, new Color(0.13f, 0.55f, 0.13f), 3),
+                new Biome("Tundra", BiomeType.Tundra, new Color(0.8f, 0.9f, 0.95f), 2),
+                new Biome("Swamp", BiomeType.Swamp, new Color(0.4f, 0.3f, 0.2f), 2),
+                new Biome("Savanna", BiomeType.Savanna, new Color(0.96f, 0.64f, 0.38f), 2),
+                new Biome("Jungle", BiomeType.Jungle, new Color(0f, 0.4f, 0f), 2),
+                new Biome("Mountain", BiomeType.Mountain, new Color(0.5f, 0.5f, 0.5f), 2)
             };
         }
 
@@ -122,6 +126,7 @@ namespace Game.WorldGeneration.RTT.Controllers
                 
                 nodeObj.NodeRenderer.material.color = nodeColor;
                 nodeObj.NodeColor = nodeColor;
+                nodeObj.BiomeType = biome.BiomeType;
 
                 _nodeModels.Add(nodeObj);
 
