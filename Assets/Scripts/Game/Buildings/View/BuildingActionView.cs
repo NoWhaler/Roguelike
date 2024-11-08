@@ -55,7 +55,7 @@ namespace Game.Buildings.View
             if (_buildingAction.CanExecute() && !_buildingAction.IsActive)
             {
                 _buildingAction.Execute();
-                _gameTurnController.AddActiveAction(_buildingAction);
+                _gameTurnController.AddActiveBuildingAction(_buildingAction);
                 UpdateView();
             }
         }
