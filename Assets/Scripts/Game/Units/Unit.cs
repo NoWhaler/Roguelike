@@ -28,8 +28,8 @@ namespace Game.Units
         {
             CurrentMovementPoints = MaxMovementPoints;
         }
-        
-        public bool CanMove(int distance)
+
+        private bool CanMove(int distance)
         {
             return CurrentMovementPoints >= distance;
         }
@@ -44,6 +44,11 @@ namespace Game.Units
                 transform.position = new Vector3(newHex.HexPosition.x, newHex.HexPosition.y + 5f, newHex.HexPosition.z);
                 CurrentMovementPoints -= movementCost;
             }
+        }
+
+        public void DisableUnit()
+        {
+            Destroy(gameObject);
         }
     }
 }

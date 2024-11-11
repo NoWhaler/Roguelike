@@ -40,7 +40,8 @@ namespace Game.Pathfinding
 
                 foreach (var neighbor in _hexGridController.GetNeighbors(current))
                 {
-                    if (neighbor.CurrentUnit != null || neighbor.CurrentBuilding != null || !neighbor.IsVisible)
+                    if (neighbor.CurrentUnit != null || (!neighbor.IsVisible) || 
+                    (neighbor != goal && neighbor.CurrentBuilding != null))
                         continue;
 
                     var tentativeGScore = gScore[current] + 1;

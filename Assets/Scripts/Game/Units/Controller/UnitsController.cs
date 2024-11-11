@@ -70,7 +70,7 @@ namespace Game.Units.Controller
                 {
                     foreach (var neighbor in _hexGridController.GetNeighbors(currentHex))
                     {
-                        if (neighbor.CurrentUnit == null && neighbor.CurrentBuilding == null && neighbor.IsVisible)
+                        if (neighbor.CurrentUnit == null && neighbor.IsVisible)
                         {
                             queue.Enqueue((neighbor, remainingMovement - 1));
                         }

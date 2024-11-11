@@ -154,12 +154,21 @@ namespace Game.WorldGeneration.Hex
             {
                 if (hexModel.CurrentBuilding != null)
                 {
+                    if (_currentSelectedUnit != null)
+                    {
+                        if (_highlightedHexes.Contains(hexModel))
+                        {
+                            MoveSelectedUnit(hexModel).Forget();
+                            ClearHighlights();
+                            ClearPathHighlight();
+                            return;
+                        }
+                    }
+                    
                     SelectBuilding(hexModel.CurrentBuilding);
-
                     _uiSelectionHandler.SelectBuilding(hexModel.CurrentBuilding);
                     UpdateBuildingActionPanel();
                 }
-
                 else if (hexModel.CurrentUnit != null)
                 {
                     SelectUnit(hexModel.CurrentUnit);
@@ -358,7 +367,7 @@ namespace Game.WorldGeneration.Hex
         {
             Vector3 startPosition = unit.transform.position;
             Vector3 endPosition = new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 5f, targetHex.HexPosition.z);
-            float moveDuration = 0.8f;
+            float moveDuration = 0.3f;
 
             float elapsedTime = 0f;
             while (elapsedTime < moveDuration)
@@ -369,6 +378,19 @@ namespace Game.WorldGeneration.Hex
             }
 
             unit.Move(targetHex, 1);
+
+            var targetHexCurrentBuilding = targetHex.CurrentBuilding;
+            
+            if (targetHexCurrentBuilding != null)
+            {
+                targetHex.CurrentUnit = null;
+                
+                targetHexCurrentBuilding.IncreaseUnitCount(unit.UnitType);
+                _buildingsActionPanel.SetUnitCount(ref targetHexCurrentBuilding);
+                unit.DisableUnit();
+                
+                ClearAllSelections();
+            }
         }
     }
 }
