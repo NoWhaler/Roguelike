@@ -14,7 +14,7 @@ namespace Game.WorldGeneration.Hex
         [field: SerializeField] public int R { get; set; }
         [field: SerializeField] public int S { get; set; }
 
-        [field: SerializeField] public bool IsVisible { get; private set; } = true;
+        [field: SerializeField] public bool IsVisible { get; private set; }
         
         [field: SerializeField] public BiomeType BiomeType { get; set; }
         

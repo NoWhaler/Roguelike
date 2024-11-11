@@ -26,6 +26,7 @@ Shader "Custom/BiomesShader"
         _BiomeBlendSharpness ("Biome Blend Sharpness", Range(1, 20)) = 10
         
         [Header(Grid Settings)]
+        [Toggle(GRID_ON)] _GridEnabled ("Grid Enabled", Float) = 0
         _GridBlend ("Grid Blend Strength", Range(0.0, 1.0)) = 0.5
         _HexScale ("Hex Scale", Vector) = (1, 1, 0, 0)
         
@@ -63,6 +64,7 @@ Shader "Custom/BiomesShader"
             float _GridBlend;
             float2 _HexScale;
             float _DebugMode;
+            float _GlobalGridEnabled;
 
             struct appdata
             {
@@ -214,8 +216,18 @@ Shader "Custom/BiomesShader"
 
                 const float whiteFactor = smoothstep(whiteThreshold, 1.0, dot(gridTexColor.rgb, float3(1.0, 1.0, 1.0)));
                 gridTexColor.a = lerp(gridTexColor.a, 0.0, whiteFactor);
+
+                const float luminance = dot(finalTex.rgb, float3(0.299, 0.587, 0.114));
+
+                float gridStrength = _GridBlend * gridTexColor.a * i.visibility.x;
+                gridStrength *= lerp(1.0, 0.5, luminance);
+
+                gridStrength *= _GlobalGridEnabled;
+
+                const float gridContrast = lerp(0.1, 1.7, luminance);
+                gridTexColor.rgb = pow(gridTexColor.rgb, gridContrast);
                 
-                finalTex = lerp(finalTex, gridTexColor, _GridBlend  * gridTexColor.a * i.color.x * i.color.y * i.color.z);
+                finalTex = lerp(finalTex, lerp(finalTex, gridTexColor, gridStrength), step(0.05, gridTexColor.a));
 
                 return finalTex;
             }

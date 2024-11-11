@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.EditorSettings.Controller;
 using Game.WorldGeneration.Biomes.Enum;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using Game.WorldGeneration.Hex;
@@ -186,7 +187,9 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             
             hexObject.BiomeType = biomeType;
             
-            hexObject.SetFog(biomeType != BiomeType.Grassland);
+            hexObject.SetFog(true);
+            
+            // hexObject.SetFog(biomeType != BiomeType.Grassland);
 
             hexObject.SetLogicalCoordinates(logicalCoords.Q, logicalCoords.R, logicalCoords.S);
 

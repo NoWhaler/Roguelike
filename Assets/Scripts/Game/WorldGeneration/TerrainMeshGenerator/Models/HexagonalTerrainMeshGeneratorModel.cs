@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using Game.WorldGeneration.Hex;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.WorldGeneration.TerrainMeshGenerator.Models
 {
