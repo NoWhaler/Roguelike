@@ -105,6 +105,70 @@ namespace Game.Units.Controller
             return reachableHexes;
         }
         
+        public HashSet<HexModel> GetAttackableHexes(Unit unit)
+        {
+            var attackableHexes = new HashSet<HexModel>();
+            var movementHexes = GetAvailableHexes(unit);
+            
+            foreach (var movementHex in movementHexes)
+            {
+                var hexesInRange = GetHexesInAttackRange(movementHex, unit.AttackRange);
+                foreach (var hex in hexesInRange)
+                {
+                    if (hex.IsVisible && (hex.CurrentUnit == null || 
+                        (hex.CurrentUnit != null && hex.CurrentUnit.UnitTeamType != unit.UnitTeamType)))
+                    {
+                        attackableHexes.Add(hex);
+                    }
+                }
+            }
+            
+            var currentPosAttackHexes = GetHexesInAttackRange(unit.CurrentHex, unit.AttackRange);
+            foreach (var hex in currentPosAttackHexes)
+            {
+                if (hex.IsVisible && (hex.CurrentUnit == null || 
+                    (hex.CurrentUnit != null && hex.CurrentUnit.UnitTeamType != unit.UnitTeamType)))
+                {
+                    attackableHexes.Add(hex);
+                }
+            }
+
+            return attackableHexes;
+        }
+
+        private HashSet<HexModel> GetHexesInAttackRange(HexModel centerHex, int range)
+        {
+            var hexesInRange = new HashSet<HexModel>();
+            var visited = new HashSet<HexModel>();
+            var queue = new Queue<(HexModel hex, int distance)>();
+            
+            queue.Enqueue((centerHex, 0));
+            visited.Add(centerHex);
+
+            while (queue.Count > 0)
+            {
+                var (currentHex, distance) = queue.Dequeue();
+                
+                if (distance > 0)
+                {
+                    hexesInRange.Add(currentHex);
+                }
+
+                if (distance < range)
+                {
+                    foreach (var neighbor in _hexGridController.GetNeighbors(currentHex))
+                    {
+                        if (!visited.Contains(neighbor))
+                        {
+                            queue.Enqueue((neighbor, distance + 1));
+                            visited.Add(neighbor);
+                        }
+                    }
+                }
+            }
+
+            return hexesInRange;
+        }
         
         public void ProcessCombat(Unit attackingUnit, Unit defendingUnit)
         {

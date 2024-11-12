@@ -20,6 +20,8 @@ namespace Game.Hex
     {
         private HashSet<HexModel> _highlightedHexes = new HashSet<HexModel>();
         
+        private HashSet<HexModel> _attackableHexes = new HashSet<HexModel>();
+        
         private List<HexModel> _currentPath = new List<HexModel>();
         
         private HexMouseDetector _hexMouseDetector;
@@ -127,6 +129,7 @@ namespace Game.Hex
             _currentSelectedBuilding = null;
             
             var reachableHexes = _unitsController.GetAvailableHexes(unit);
+            _attackableHexes = _unitsController.GetAttackableHexes(unit);
             HighlightHexes(reachableHexes);
         }
 
@@ -175,7 +178,7 @@ namespace Game.Hex
                 {
                     if (_currentSelectedUnit != null && 
                         hexModel.CurrentUnit.UnitTeamType != _currentSelectedUnit.UnitTeamType &&
-                        _highlightedHexes.Contains(hexModel))
+                        _attackableHexes.Contains(hexModel))
                     {
                         await HandleCombat(_currentSelectedUnit, hexModel.CurrentUnit);
                         return;
