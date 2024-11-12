@@ -1,7 +1,7 @@
 using Game.Buildings.BuildingsType;
+using Game.Hex;
 using Game.UI.UIGameplayScene.SelectionHandling;
 using Game.Units;
-using Game.WorldGeneration.Hex;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

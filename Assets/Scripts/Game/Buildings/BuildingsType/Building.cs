@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
+using Game.Hex;
 using Game.ProductionResources.Controller;
 using Game.Researches.Controller;
 using Game.Units.Enum;
-using Game.WorldGeneration.Hex;
 using UnityEngine;
 using Zenject;
 

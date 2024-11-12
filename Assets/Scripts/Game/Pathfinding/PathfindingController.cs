@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Game.WorldGeneration.Hex;
+using Game.Hex;
 using UnityEngine;
 using Zenject;
 

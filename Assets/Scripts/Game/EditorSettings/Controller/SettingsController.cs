@@ -1,4 +1,4 @@
-using Game.WorldGeneration.Hex;
+using Game.Hex;
 using UnityEngine;
 using Zenject;
 

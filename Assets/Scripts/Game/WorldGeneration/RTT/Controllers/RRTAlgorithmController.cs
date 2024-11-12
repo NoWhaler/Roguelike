@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Game.WorldGeneration.Biomes;
 using Game.WorldGeneration.Biomes.Enum;
-using Game.WorldGeneration.Hex;
 using Game.WorldGeneration.Nodes;
 using Game.WorldGeneration.RTT.Models;
 using Game.WorldGeneration.TerrainMeshGenerator.Controllers;

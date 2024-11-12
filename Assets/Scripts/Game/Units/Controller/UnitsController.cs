@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core.TurnBasedSystem;
-using Game.Pathfinding;
-using Game.WorldGeneration.Hex;
+using Game.Hex;
 using Zenject;
 
 namespace Game.Units.Controller
@@ -41,12 +39,12 @@ namespace Game.Units.Controller
             }
         }
 
-        public void RegisterUnit(ref Unit unit)
+        public void RegisterUnit(Unit unit)
         {
             _allUnits.Add(unit);
         }
         
-        public void UnregisterUnit(ref Unit unit)
+        public void UnregisterUnit(Unit unit)
         {
             _allUnits.Remove(unit);
         }
@@ -54,31 +52,53 @@ namespace Game.Units.Controller
         public HashSet<HexModel> GetReachableHexes(Unit unit)
         {
             var reachableHexes = new HashSet<HexModel>();
+            var reachableBuildingHexes = new HashSet<HexModel>();
+            var visited = new HashSet<HexModel>();
             var queue = new Queue<(HexModel hex, int remainingMovement)>();
+            
             queue.Enqueue((unit.CurrentHex, unit.CurrentMovementPoints));
+            visited.Add(unit.CurrentHex);
 
             while (queue.Count > 0)
             {
                 var (currentHex, remainingMovement) = queue.Dequeue();
 
-                if (reachableHexes.Contains(currentHex))
-                    continue;
-
-                reachableHexes.Add(currentHex);
+                if (currentHex.CurrentBuilding != null)
+                {
+                    reachableBuildingHexes.Add(currentHex);
+                }
+                else
+                {
+                    reachableHexes.Add(currentHex);
+                }
 
                 if (remainingMovement > 0)
                 {
                     foreach (var neighbor in _hexGridController.GetNeighbors(currentHex))
                     {
-                        if (neighbor.CurrentUnit == null && neighbor.IsVisible)
+                        if (!visited.Contains(neighbor) && neighbor.IsVisible)
                         {
-                            queue.Enqueue((neighbor, remainingMovement - 1));
+                            bool canTraverse = neighbor.CurrentUnit == null;
+                            
+                            if (neighbor.CurrentBuilding != null)
+                            {
+                                reachableBuildingHexes.Add(neighbor);
+                                continue;
+                            }
+
+                            if (canTraverse)
+                            {
+                                queue.Enqueue((neighbor, remainingMovement - 1));
+                                visited.Add(neighbor);
+                            }
                         }
                     }
                 }
             }
 
             reachableHexes.Remove(unit.CurrentHex);
+            reachableHexes.UnionWith(reachableBuildingHexes);
+            
             return reachableHexes;
         }
     }

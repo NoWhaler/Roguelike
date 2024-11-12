@@ -1,5 +1,5 @@
+using Game.Hex;
 using Game.Units.Enum;
-using Game.WorldGeneration.Hex;
 using UnityEngine;
 
 namespace Game.Units
@@ -7,6 +7,8 @@ namespace Game.Units
     public abstract class Unit: MonoBehaviour
     {
         [field: SerializeField] public UnitType UnitType { get; set; }
+        
+        [field: SerializeField] public UnitTeamType UnitTeamType { get; set; }
         
         [field: SerializeField] public float MaxHealth { get; set; }
         
