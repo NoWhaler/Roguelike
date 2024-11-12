@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.TurnBasedSystem;
 using Game.Hex;
+using Game.Units.Enum;
 using Zenject;
 
 namespace Game.Units.Controller
@@ -49,10 +50,10 @@ namespace Game.Units.Controller
             _allUnits.Remove(unit);
         }
         
-        public HashSet<HexModel> GetReachableHexes(Unit unit)
+        public HashSet<HexModel> GetAvailableHexes(Unit unit)
         {
             var reachableHexes = new HashSet<HexModel>();
-            var reachableBuildingHexes = new HashSet<HexModel>();
+            var reachableNotEmptyHexes = new HashSet<HexModel>();
             var visited = new HashSet<HexModel>();
             var queue = new Queue<(HexModel hex, int remainingMovement)>();
             
@@ -65,7 +66,7 @@ namespace Game.Units.Controller
 
                 if (currentHex.CurrentBuilding != null)
                 {
-                    reachableBuildingHexes.Add(currentHex);
+                    reachableNotEmptyHexes.Add(currentHex);
                 }
                 else
                 {
@@ -79,10 +80,12 @@ namespace Game.Units.Controller
                         if (!visited.Contains(neighbor) && neighbor.IsVisible)
                         {
                             bool canTraverse = neighbor.CurrentUnit == null;
-                            
-                            if (neighbor.CurrentBuilding != null)
+
+                            if (neighbor.CurrentBuilding != null || (neighbor.CurrentUnit != null &&
+                                                                     neighbor.CurrentUnit.UnitTeamType ==
+                                                                     UnitTeamType.Enemy)) 
                             {
-                                reachableBuildingHexes.Add(neighbor);
+                                reachableNotEmptyHexes.Add(neighbor);
                                 continue;
                             }
 
@@ -97,9 +100,23 @@ namespace Game.Units.Controller
             }
 
             reachableHexes.Remove(unit.CurrentHex);
-            reachableHexes.UnionWith(reachableBuildingHexes);
+            reachableHexes.UnionWith(reachableNotEmptyHexes);
             
             return reachableHexes;
+        }
+        
+        
+        public void ProcessCombat(Unit attackingUnit, Unit defendingUnit)
+        {
+            float damage = attackingUnit.Attack();
+            defendingUnit.TakeDamage(damage);
+            
+            attackingUnit.SetMovementPointsToZero();
+            
+            if (defendingUnit.CurrentHealth <= 0)
+            {
+                UnregisterUnit(defendingUnit);
+            }
         }
     }
 }

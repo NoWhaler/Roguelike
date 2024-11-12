@@ -10,6 +10,7 @@ using Game.UI.UIGameplayScene.SelectedEntityInformation;
 using Game.UI.UIGameplayScene.SelectionHandling;
 using Game.Units;
 using Game.Units.Controller;
+using Game.Units.Enum;
 using UnityEngine;
 using Zenject;
 
@@ -125,15 +126,16 @@ namespace Game.Hex
             _currentUISelectedUnit = null;
             _currentSelectedBuilding = null;
             
-            var reachableHexes = _unitsController.GetReachableHexes(unit);
+            var reachableHexes = _unitsController.GetAvailableHexes(unit);
             HighlightHexes(reachableHexes);
         }
 
         private void HandleHexHovered(HexModel hexModel)
         {
             if (!hexModel.IsVisible) return;
-            
-            if (_currentSelectedUnit != null && _currentSelectedUnit.CurrentHex != null && !_isUnitMoving)
+
+            if (_currentSelectedUnit != null && _currentSelectedUnit.CurrentHex != null && !_isUnitMoving &&
+                _currentSelectedUnit.UnitTeamType != UnitTeamType.Enemy) 
             {
                 ClearPathHighlight();
                 _currentPath = _pathfindingController.FindPath(_currentSelectedUnit.CurrentHex, hexModel);
@@ -146,7 +148,7 @@ namespace Game.Hex
             ClearPathHighlight();
         }
 
-        private void HandleHexClicked(HexModel hexModel)
+        private async void HandleHexClicked(HexModel hexModel)
         {
             if (!hexModel.IsVisible) return;
             
@@ -171,6 +173,14 @@ namespace Game.Hex
                 }
                 else if (hexModel.CurrentUnit != null)
                 {
+                    if (_currentSelectedUnit != null && 
+                        hexModel.CurrentUnit.UnitTeamType != _currentSelectedUnit.UnitTeamType &&
+                        _highlightedHexes.Contains(hexModel))
+                    {
+                        await HandleCombat(_currentSelectedUnit, hexModel.CurrentUnit);
+                        return;
+                    }
+                    
                     SelectUnit(hexModel.CurrentUnit);
                     _buildingsActionPanel.Hide();
                     _uiSelectionHandler.SelectUnit(hexModel.CurrentUnit);
@@ -230,6 +240,7 @@ namespace Game.Hex
              
             _unitsController.RegisterUnit(newUnit);
             newUnit.CurrentHex = hexModel;
+            newUnit.UnitTeamType = UnitTeamType.Player;
             
             _currentSelectedBuilding.DecreaseUnitCount(newUnit.UnitType);
             _buildingsActionPanel.SetUnitCount(ref _currentSelectedBuilding);
@@ -275,13 +286,39 @@ namespace Game.Hex
                 cell.SetFog(false);
             }
         }
+        
+        private async UniTask HandleCombat(Unit attackingUnit, Unit targetUnit)
+        {
+            int attackRange = attackingUnit.AttackRange;
+            int currentDistance = _pathfindingController.CalculatePathDistance(attackingUnit.CurrentHex, targetUnit.CurrentHex);
+            
+            if (currentDistance > attackRange)
+            {
+                var pathToTarget = new List<HexModel>(_currentPath);
+                if (pathToTarget is { Count: > 0 })
+                {
+                    int stepsNeeded = currentDistance - attackRange;
+                    var movementPath = pathToTarget.Take(stepsNeeded + 1).ToList();
+                    
+                    _isUnitMoving = true;
+                    ClearPathHighlight();
+                    await MoveUnitAlongPath(attackingUnit, movementPath);
+                    _isUnitMoving = false;
+                }
+            }
+            
+            _unitsController.ProcessCombat(attackingUnit, targetUnit);
+            _uiSelectedEntityView.UpdateSelectedEntityInfo();
+            ClearAllSelections();
+        }
          
         private async UniTaskVoid MoveSelectedUnit(HexModel targetHex)
         {
             if (_highlightedHexes.Contains(targetHex))
             {
-                List<HexModel> path = _pathfindingController.FindPath(_currentSelectedUnit.CurrentHex, targetHex);
-                if (path != null && path.Count > 0)
+                var path = new List<HexModel>(_currentPath);
+                
+                if (path.Count > 0)
                 {
                     _isUnitMoving = true;
                     ClearPathHighlight();

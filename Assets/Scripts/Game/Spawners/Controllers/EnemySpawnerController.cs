@@ -1,89 +1,105 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using Core.TurnBasedSystem;
+using Game.Hex;
 using Game.Spawners.Models;
+using Game.Units;
+using Game.Units.Enum;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Game.Spawners.Controllers
 {
-    public class EnemySpawnerController : IInitializable
+    public class EnemySpawnerController: IInitializable, IDisposable
     {
         private DiContainer _diContainer;
         private EnemySpawnerModel _enemySpawnerModel;
+        
+        private HexGridController _hexGridController;
+        private GameTurnController _gameTurnController;
+        
+        private int _nextWaveTurn;
 
         [Inject]
-        private void Constructor(EnemySpawnerModel enemySpawnerModel, DiContainer diContainer)
+        private void Constructor(EnemySpawnerModel enemySpawnerModel, HexGridController hexGridController,
+            GameTurnController gameTurnController, DiContainer diContainer)
         {
             _enemySpawnerModel = enemySpawnerModel;
+            _hexGridController = hexGridController;
+            _gameTurnController = gameTurnController;
             _diContainer = diContainer;
         }
 
         public void Initialize()
         {
-            SpawnObstacles();
+            SetNextWaveTurn();
+            _gameTurnController.OnTurnEnded += CheckForWaveSpawn;
         }
         
-        private void SpawnObstacles()
+        public void Dispose()
         {
-            var spawnPositions = GenerateSpawnPositions(_enemySpawnerModel.GroundCollider.bounds, _enemySpawnerModel.EnemiesAmount);
-
-            for (var i = 0; i < spawnPositions.Count; i++)
+            _gameTurnController.OnTurnEnded -= CheckForWaveSpawn;
+        }
+        
+        private void SetNextWaveTurn()
+        {
+            int turnsUntilNextWave = Random.Range(_enemySpawnerModel.MinTurnsBetweenWaves, _enemySpawnerModel.MaxTurnsBetweenWaves + 1);
+            _nextWaveTurn = _gameTurnController.GetCurrentTurn() + turnsUntilNextWave;
+        }
+        
+        private void CheckForWaveSpawn()
+        {
+            if (_gameTurnController.GetCurrentTurn() >= _nextWaveTurn)
             {
-                var position = new Vector3(spawnPositions[i].x, 1.5f, spawnPositions[i].z);
-                _diContainer.InstantiatePrefab(_enemySpawnerModel.GameObjectPrefab, position, Quaternion.identity, _enemySpawnerModel.transform);
+                SpawnEnemyWave();
+                SetNextWaveTurn();
             }
         }
-
-        private List<Vector3> GenerateSpawnPositions(Bounds bounds, int numPositions)
+        
+        private void SpawnEnemyWave()
         {
-            var spawnPositions = new List<Vector3>();
-
-            for (var i = 0; i < numPositions; i++)
-            {
-                var isValidPosition = false;
-                var newPosition = Vector3.zero;
-
-                var maxAttempts = 1000;
-                var attempts = 0;
-
-                while (!isValidPosition && attempts < maxAttempts)
-                {
-                    newPosition = new Vector3(
-                        Random.Range(bounds.min.x, bounds.max.x),
-                        Random.Range(bounds.min.y, bounds.max.y),
-                        Random.Range(bounds.min.z, bounds.max.z)
-                    );
-
-                    isValidPosition = IsPositionValid(newPosition, spawnPositions);
-                    attempts++;
-                }
-
-                if (isValidPosition)
-                {
-                    spawnPositions.Add(newPosition);
-                }
-            }
-
-            return spawnPositions;
-        }
-
-        private bool IsPositionValid(Vector3 position, IEnumerable<Vector3> existingPositions)
-        {
-            var colliders = Physics.OverlapSphere(position, 2f);
+            var allHexes = _hexGridController.GetAllHexes();
+            var emptyHexes = new List<HexModel>();
             
-            foreach (var collider in colliders)
+            foreach (var hex in allHexes.Values)
             {
-                foreach (var obstaclesLayer in _enemySpawnerModel.ObstaclesLayers)
+                if (hex.CurrentUnit == null)
                 {
-                    if ((collider != null && collider.gameObject.layer == obstaclesLayer) 
-                                         || !existingPositions.All(existingPosition => Vector3.Distance(position, existingPosition) > 2f))
-                    { 
-                        return false;
-                    }
+                    emptyHexes.Add(hex);
                 }
             }
             
-            return true;
+            if (emptyHexes.Count == 0) return;
+            
+            HexModel centerHex = emptyHexes[Random.Range(0, emptyHexes.Count)];
+            
+            var spawnArea = _hexGridController.GetHexesInRadius(centerHex, 2);
+            var availableSpawnHexes = spawnArea.FindAll(hex => hex.CurrentUnit == null);
+            
+            int unitsToSpawn = Random.Range(_enemySpawnerModel.MinUnitsPerWave, _enemySpawnerModel.MaxUnitsPerWave + 1);
+            unitsToSpawn = Mathf.Min(unitsToSpawn, availableSpawnHexes.Count);
+            
+            for (int i = 0; i < unitsToSpawn; i++)
+            {
+                if (availableSpawnHexes.Count == 0) break;
+                
+                int spawnIndex = Random.Range(0, availableSpawnHexes.Count);
+                HexModel spawnHex = availableSpawnHexes[spawnIndex];
+                availableSpawnHexes.RemoveAt(spawnIndex);
+                
+                Unit unitPrefab = _enemySpawnerModel.EnemyUnitPrefabs[Random.Range(0, _enemySpawnerModel.EnemyUnitPrefabs.Length)];
+
+                Unit unitObj = _diContainer.InstantiatePrefabForComponent<Unit>(unitPrefab,
+                    new Vector3(spawnHex.HexPosition.x, spawnHex.HexPosition.y + 5f, spawnHex.HexPosition.z),
+                    Quaternion.identity, spawnHex.transform);
+
+                Unit unit = unitObj.GetComponent<Unit>();
+                unit.UnitTeamType = UnitTeamType.Enemy;
+                unit.CurrentHex = spawnHex;
+                spawnHex.CurrentUnit = unit;
+                unit.Initialize();
+            }
         }
     }
 }

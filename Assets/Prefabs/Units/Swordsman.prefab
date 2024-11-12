@@ -121,7 +121,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <UnitType>k__BackingField: 1
+  <UnitTeamType>k__BackingField: 0
   <MaxHealth>k__BackingField: 150
   <CurrentHealth>k__BackingField: 0
   <MaxMovementPoints>k__BackingField: 5
   <CurrentMovementPoints>k__BackingField: 0
+  <MinDamage>k__BackingField: 3
+  <MaxDamage>k__BackingField: 7
+  <AttackRange>k__BackingField: 1
+  <HasAttackedThisTurn>k__BackingField: 0

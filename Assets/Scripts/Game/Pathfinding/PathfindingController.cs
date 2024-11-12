@@ -17,19 +17,26 @@ namespace Game.Pathfinding
             _hexGridController = hexGridController;
         }
 
+        public int CalculatePathDistance(HexModel start, HexModel goal)
+        {
+            var path = FindPath(start, goal);
+            if (path == null) return int.MaxValue;
+            return path.Count - 1;
+        }
+        
         public List<HexModel> FindPath(HexModel start, HexModel goal)
         {
             var openSet = new List<HexModel> { start };
             var cameFrom = new Dictionary<HexModel, HexModel>();
             var gScore = new Dictionary<HexModel, float> { { start, 0 } };
             var fScore = new Dictionary<HexModel, float> { { start, HexDistance(start, goal) } };
-
+            
             while (openSet.Count > 0)
             {
                 var current = openSet
-                .OrderBy(x => fScore.GetValueOrDefault(x, float.MaxValue))
-                .ThenBy(x => UnityEngine.Random.value)
-                .First();
+                    .OrderBy(x => fScore.GetValueOrDefault(x, float.MaxValue))
+                    .ThenBy(x => UnityEngine.Random.value)
+                    .First();
 
                 if (current == goal)
                 {
@@ -40,8 +47,9 @@ namespace Game.Pathfinding
 
                 foreach (var neighbor in _hexGridController.GetNeighbors(current))
                 {
-                    if (neighbor.CurrentUnit != null || (!neighbor.IsVisible) || 
-                    (neighbor != goal && neighbor.CurrentBuilding != null))
+                    if (neighbor != goal && 
+                        (neighbor.CurrentUnit != null || (!neighbor.IsVisible) || 
+                         (neighbor.CurrentBuilding != null)))
                         continue;
 
                     var tentativeGScore = gScore[current] + 1;
@@ -62,7 +70,6 @@ namespace Game.Pathfinding
 
             return null;
         }
-        
 
         private float HexDistance(HexModel a, HexModel b)
         {

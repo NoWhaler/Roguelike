@@ -18,22 +18,56 @@ namespace Game.Units
         
         [field: SerializeField] public int CurrentMovementPoints { get; private set; }
         
+        [field: SerializeField] public float MinDamage { get; set; }
+        
+        [field: SerializeField] public float MaxDamage { get; set; }
+        
+        [field: SerializeField] public int AttackRange { get; set; }
+        
+        [field: SerializeField] public bool HasAttackedThisTurn { get; private set; }
+        
         public HexModel CurrentHex { get; set; }
 
         public void Initialize()
         {
             CurrentHealth = MaxHealth;
             CurrentMovementPoints = MaxMovementPoints;
+            HasAttackedThisTurn = false;
         }
         
         public void ResetMovementPoints()
         {
             CurrentMovementPoints = MaxMovementPoints;
+            HasAttackedThisTurn = false;
+        }
+        
+        public void SetMovementPointsToZero()
+        {
+            CurrentMovementPoints = 0;
         }
 
         private bool CanMove(int distance)
         {
             return CurrentMovementPoints >= distance;
+        }
+        
+        public float Attack()
+        {
+            if (HasAttackedThisTurn) return 0;
+            
+            var damage = Random.Range(MinDamage, MaxDamage);
+            
+            HasAttackedThisTurn = true;
+            return damage;
+        }
+        
+        public void TakeDamage(float damage)
+        {
+            CurrentHealth -= damage;
+            if (CurrentHealth <= 0)
+            {
+                DisableUnit();
+            }
         }
         
         public void Move(HexModel newHex, int movementCost)
