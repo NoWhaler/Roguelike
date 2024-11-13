@@ -5,6 +5,7 @@ using Game.Buildings.BuildingsType;
 using Game.Buildings.Controller;
 using Game.Buildings.Interfaces;
 using Game.Pathfinding;
+using Game.ProductionResources.Controller;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.SelectedEntityInformation;
 using Game.UI.UIGameplayScene.SelectionHandling;
@@ -48,6 +49,8 @@ namespace Game.Hex
         
         private UISelectedEntityView _uiSelectedEntityView;
 
+        private ResourcesController _resourcesController;
+        
         private DiContainer _diContainer;
         
         private bool _isUnitMoving;
@@ -57,7 +60,7 @@ namespace Game.Hex
             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel,
             BuildingsController buildingsController, HexGridController hexGridController,
             UnitsController unitsController, UISelectedEntityView uiSelectedEntityView,
-            PathfindingController pathfindingController)
+            PathfindingController pathfindingController, ResourcesController resourcesController)
         {
             _hexMouseDetector = hexMouseDetector;
             _uiSelectionHandler = uiSelectionHandler;
@@ -67,6 +70,7 @@ namespace Game.Hex
             _unitsController = unitsController;
             _pathfindingController = pathfindingController;
             _uiSelectedEntityView = uiSelectedEntityView;
+            _resourcesController = resourcesController;
             _diContainer = diContainer;
         }
             
@@ -235,29 +239,30 @@ namespace Game.Hex
         
         private void DeployUnit(HexModel hexModel)
         {
-            var newUnit = _diContainer.InstantiatePrefabForComponent<Unit>(_currentUISelectedUnit,
-                new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 5f, hexModel.HexPosition.z),
-                Quaternion.identity, hexModel.transform);
-
-            hexModel.SetUnit(ref newUnit);
-             
-            _unitsController.RegisterUnit(newUnit);
-            newUnit.CurrentHex = hexModel;
-            newUnit.UnitTeamType = UnitTeamType.Player;
+            var newUnit = _unitsController.SpawnPlayerUnit(_currentUISelectedUnit.UnitType, hexModel);
+            
+            if (newUnit == null) return;
             
             _currentSelectedBuilding.DecreaseUnitCount(newUnit.UnitType);
             _buildingsActionPanel.SetUnitCount(ref _currentSelectedBuilding);
-             
+                
             _currentSelectedUnit = null;
             _currentSelectedBuilding = null;
         }
  
         private void PlaceBuilding(HexModel hexModel)
         {
+            var buildingCost = _currentUISelectedBuilding.GetBuildingCost();
+            
             var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(_currentUISelectedBuilding,
                 new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 2.5f, hexModel.HexPosition.z),
                 Quaternion.identity, hexModel.transform);
  
+            foreach (var resourceCost in buildingCost.ResourceCosts)
+            {
+                _resourcesController.DeductResource(resourceCost.ResourceType, resourceCost.Amount);
+            }
+            
             hexModel.SetBuilding(ref newBuilding);
              
             switch (newBuilding)

@@ -4327,6 +4327,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bb09e03dc534801a1a89ac9312e9a45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _archerPrefab: {fileID: 2529392283780758089, guid: d3f3852664149814483ebe5dc953dfbf, type: 3}
+  _crossbowmanPrefab: {fileID: 7857376588469115512, guid: ec3f4263398aa2542a7774e5c560e6a4, type: 3}
+  _swordsmanPrefab: {fileID: 7935591976940046084, guid: 1b5d9f4230752ac40854d741446036dd, type: 3}
+  _cavalryPrefab: {fileID: 1857093356436449258, guid: 930bd6293b625be4baecd2a911cacd38, type: 3}
+  _playerPoolPrefab: {fileID: 8982660171873280662, guid: dc2d11a433c1baf49b3e311fb520d4da, type: 3}
+  _enemyPoolPrefab: {fileID: 7186696852802824216, guid: b0cb8d13c2aed9d42867031e53adf2cf, type: 3}
 --- !u!1 &1067452818
 GameObject:
   m_ObjectHideFlags: 0

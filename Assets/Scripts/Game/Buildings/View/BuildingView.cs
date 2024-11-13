@@ -1,4 +1,6 @@
+using System.Linq;
 using Game.Buildings.BuildingsType;
+using Game.ProductionResources.Controller;
 using Game.UI.UIGameplayScene.SelectionHandling;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,10 +18,13 @@ namespace Game.Buildings.View
 
         private UISelectionHandler _uiSelectionHandler;
 
+        private ResourcesController _resourcesController;
+
         [Inject]
-        private void Constructor(UISelectionHandler uiSelectionHandler)
+        private void Constructor(UISelectionHandler uiSelectionHandler, ResourcesController resourcesController)
         {
             _uiSelectionHandler = uiSelectionHandler;
+            _resourcesController = resourcesController;
         }
 
         private void OnEnable()
@@ -34,7 +39,23 @@ namespace Game.Buildings.View
 
         private void OnButtonClick()
         {
-            _uiSelectionHandler.SelectUIBuilding(_selectedBuilding);
+            if (HasEnoughResources())
+            {
+                _uiSelectionHandler.SelectUIBuilding(_selectedBuilding);
+            }
+            else
+            {
+                Debug.Log("Not enough resources to build this building!");
+            }
+        }
+        
+        private bool HasEnoughResources()
+        {
+            var buildingCost = _selectedBuilding.GetBuildingCost();
+            if (buildingCost == null) return true;
+
+            return buildingCost.ResourceCosts.All(resourceCost =>
+                _resourcesController.GetResourceAmount(resourceCost.ResourceType) >= resourceCost.Amount);
         }
     }
 }

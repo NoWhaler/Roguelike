@@ -6,7 +6,7 @@ namespace Core.ObjectPooling
 {
     public class ObjectPool<T> : MonoBehaviour where T: MonoBehaviour
     {
-        [SerializeField] protected T _objectPrefab;
+        [field: SerializeField] public T ObjectPrefab { get; set; }
         [SerializeField] protected int _poolSize;
 
         [Inject] private DiContainer _diContainer;
@@ -14,13 +14,13 @@ namespace Core.ObjectPooling
         protected List<T> _freeObjects;
         private List<T> _usedObjects;
 
-        private void Awake()
+        public void InitPool()
         {
             _freeObjects = new List<T>();
             _usedObjects = new List<T>();
             for (var i = 0; i < _poolSize; i++)
             {
-                var pooledObject = _diContainer.InstantiatePrefabForComponent<T>(_objectPrefab, transform);
+                var pooledObject = _diContainer.InstantiatePrefabForComponent<T>(ObjectPrefab, transform);
                 pooledObject.gameObject.SetActive(false);
                 _freeObjects.Add(pooledObject);
             }

@@ -118,8 +118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82fb7cfd35a749deb4333ff76e54e81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _buildingCost: {fileID: 11400000, guid: 016949677585edb45a8e99d64d4c8840, type: 2}
   <BuildingType>k__BackingField: 4
   <MaxHealth>k__BackingField: 150
   <CurrentHealth>k__BackingField: 0
+  <RevealFogOfWarRange>k__BackingField: 0
   <ResourceType>k__BackingField: 0
   <ResourceAmountProduction>k__BackingField: 0

@@ -1,6 +1,9 @@
 using Game.Hex;
+using Game.Units.Controller;
 using Game.Units.Enum;
+using Game.Units.View;
 using UnityEngine;
+using Zenject;
 
 namespace Game.Units
 {
@@ -9,6 +12,8 @@ namespace Game.Units
         [field: SerializeField] public UnitType UnitType { get; set; }
         
         [field: SerializeField] public UnitTeamType UnitTeamType { get; set; }
+        
+        [SerializeField] private UnitView _unitView;
         
         [field: SerializeField] public float MaxHealth { get; set; }
         
@@ -28,11 +33,15 @@ namespace Game.Units
         
         public HexModel CurrentHex { get; set; }
 
+        [Inject] private UnitsController _unitsController;
+
         public void Initialize()
         {
             CurrentHealth = MaxHealth;
             CurrentMovementPoints = MaxMovementPoints;
             HasAttackedThisTurn = false;
+            
+            _unitView.Initialize(UnitTeamType);
         }
         
         public void ResetMovementPoints()
@@ -84,7 +93,7 @@ namespace Game.Units
 
         public void DisableUnit()
         {
-            Destroy(gameObject);
+            _unitsController.ReturnUnitToPool(this);
         }
     }
 }

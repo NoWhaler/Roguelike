@@ -4,7 +4,7 @@ using Core.TurnBasedSystem;
 using Game.Hex;
 using Game.Spawners.Models;
 using Game.Units;
-using Game.Units.Enum;
+using Game.Units.Controller;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -13,22 +13,22 @@ namespace Game.Spawners.Controllers
 {
     public class EnemySpawnerController: IInitializable, IDisposable
     {
-        private DiContainer _diContainer;
         private EnemySpawnerModel _enemySpawnerModel;
         
         private HexGridController _hexGridController;
         private GameTurnController _gameTurnController;
+        private UnitsController _unitsController;
         
         private int _nextWaveTurn;
 
         [Inject]
         private void Constructor(EnemySpawnerModel enemySpawnerModel, HexGridController hexGridController,
-            GameTurnController gameTurnController, DiContainer diContainer)
+            GameTurnController gameTurnController, UnitsController unitsController)
         {
             _enemySpawnerModel = enemySpawnerModel;
             _hexGridController = hexGridController;
             _gameTurnController = gameTurnController;
-            _diContainer = diContainer;
+            _unitsController = unitsController;
         }
 
         public void Initialize()
@@ -89,16 +89,7 @@ namespace Game.Spawners.Controllers
                 availableSpawnHexes.RemoveAt(spawnIndex);
                 
                 Unit unitPrefab = _enemySpawnerModel.EnemyUnitPrefabs[Random.Range(0, _enemySpawnerModel.EnemyUnitPrefabs.Length)];
-
-                Unit unitObj = _diContainer.InstantiatePrefabForComponent<Unit>(unitPrefab,
-                    new Vector3(spawnHex.HexPosition.x, spawnHex.HexPosition.y + 5f, spawnHex.HexPosition.z),
-                    Quaternion.identity, spawnHex.transform);
-
-                Unit unit = unitObj.GetComponent<Unit>();
-                unit.UnitTeamType = UnitTeamType.Enemy;
-                unit.CurrentHex = spawnHex;
-                spawnHex.CurrentUnit = unit;
-                unit.Initialize();
+                _unitsController.SpawnEnemyUnit(unitPrefab.UnitType, spawnHex);
             }
         }
     }

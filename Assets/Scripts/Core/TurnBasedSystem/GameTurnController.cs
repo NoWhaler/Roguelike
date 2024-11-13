@@ -5,7 +5,6 @@ using Game.Technology.Controller;
 using Game.Technology.Model;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.TechnologyPanel;
-using Game.UI.UIGameplayScene.UIResourcesPanel;
 using Zenject;
 
 namespace Core.TurnBasedSystem
@@ -27,17 +26,14 @@ namespace Core.TurnBasedSystem
 
         private UITechnologyPanel _technologyPanel;
 
-        private ResourcesPanel _resourcesPanel;
-        
         [Inject]
-        private void Constructor(UIBuildingsActionPanel buildingsActionPanel,
-            ResourcesPanel resourcesPanel, UITechnologyPanel technologyPanel,
+        private void Constructor(UIBuildingsActionPanel buildingsActionPanel, 
+            UITechnologyPanel technologyPanel,
             TechnologiesController technologiesController)
         {
             _buildingActionPanel = buildingsActionPanel;
             _technologyPanel = technologyPanel;
             _technologiesController = technologiesController;
-            _resourcesPanel = resourcesPanel;
         }
         
         public void Initialize()
@@ -76,8 +72,6 @@ namespace Core.TurnBasedSystem
             _technologyPanel.UpdateTechViews();
             _buildingActionPanel.Hide();
             OnTurnEnded?.Invoke();
-            
-            _resourcesPanel.UpdateResourcesAmount();
         }
         
         public void AddActiveBuildingAction(IBuildingAction action)

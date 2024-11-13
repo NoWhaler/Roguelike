@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
+using Game.Buildings.Struct;
 using Game.Hex;
 using Game.ProductionResources.Controller;
 using Game.Researches.Controller;
 using Game.Units.Enum;
+using ScriptableObjects;
 using UnityEngine;
 using Zenject;
 
@@ -30,6 +32,8 @@ namespace Game.Buildings.BuildingsType
                 UnitType.Horseman, 0
             },
         };
+        
+        [SerializeField] protected BuildingCostSO _buildingCost;
         
         [field: SerializeField] public BuildingType BuildingType { get; set; }
         
@@ -101,5 +105,7 @@ namespace Game.Buildings.BuildingsType
         {
             return _unitCounts.ContainsKey(unitType) ? _unitCounts[unitType] : 0;
         }
+        
+        public BuildingCostSO GetBuildingCost() => _buildingCost;
     }
 }
