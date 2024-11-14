@@ -21,7 +21,7 @@ namespace Game.Units
         
         [field: SerializeField] public int MaxMovementPoints { get; set; }
         
-        [field: SerializeField] public int CurrentMovementPoints { get; private set; }
+        [field: SerializeField] public int CurrentMovementPoints { get; set; }
         
         [field: SerializeField] public float MinDamage { get; set; }
         

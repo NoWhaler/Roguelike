@@ -26,6 +26,8 @@ namespace Game.Units.Controller
         private UnitsPool _enemyPoolPrefab;
         private Dictionary<UnitType, Unit> _unitPrefabs;
 
+        public event Action<Unit> OnUnitHired;
+
         [Inject]
         private void Constructor(GameTurnController gameTurnController, HexGridController hexGridController,
             DiContainer diContainer,
@@ -95,19 +97,6 @@ namespace Game.Units.Controller
             }
         }
         
-        public void RegisterUnit(Unit unit)
-        {
-            switch (unit.UnitTeamType)
-            {
-                case UnitTeamType.Player:
-                    _playerUnits.Add(unit);
-                    break;
-                case UnitTeamType.Enemy:
-                    _enemyUnits.Add(unit);
-                    break;
-            }
-        }
-        
         public void UnregisterUnit(Unit unit)
         {
             if (unit.UnitTeamType == UnitTeamType.Player)
@@ -148,6 +137,9 @@ namespace Game.Units.Controller
 
             SetupUnit(unit, targetHex, UnitTeamType.Player);
             _playerUnits.Add(unit);
+            
+            OnUnitHired?.Invoke(unit);
+            
             return unit;
         }
 

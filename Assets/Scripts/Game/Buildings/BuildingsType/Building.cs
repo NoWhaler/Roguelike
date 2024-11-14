@@ -70,7 +70,7 @@ namespace Game.Buildings.BuildingsType
         
         protected abstract void SetupActions();
         
-        public List<IBuildingAction> GetAvailableActions()
+        public virtual List<IBuildingAction> GetAvailableActions()
         {
             return _availableActions;
         }

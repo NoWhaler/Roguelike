@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Core.TurnBasedSystem;
+using Game.Buildings.BuildingsType;
 using Game.Buildings.Interfaces;
+using Game.Hex;
+using UnityEngine;
 using Zenject;
 
 namespace Game.Buildings.Controller
@@ -13,11 +16,16 @@ namespace Game.Buildings.Controller
         private List<IHireUnit> _unitsHiringBuildings = new List<IHireUnit>();
 
         private GameTurnController _gameTurnController;
+
+        private DiContainer _diContainer;
+
+        public event Action<Building> OnBuildingPlaced;
         
         [Inject]
-        private void Constructor(GameTurnController gameTurnController)
+        private void Constructor(GameTurnController gameTurnController, DiContainer diContainer)
         {
             _gameTurnController = gameTurnController;
+            _diContainer = diContainer;
         }
 
         public void Initialize()
@@ -36,6 +44,17 @@ namespace Game.Buildings.Controller
             {
                 resourcesProductionBuilding.ProduceResources();
             }
+        }
+
+        public Building SpawnBuilding(Building buildingPrefab, HexModel targetHex)
+        {
+            var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(buildingPrefab,
+                new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 2.5f, targetHex.HexPosition.z),
+                Quaternion.identity, targetHex.transform);
+            
+            OnBuildingPlaced?.Invoke(newBuilding);
+
+            return newBuilding;
         }
         
         public void RegisterProductionBuilding(IProduceResource building)
@@ -56,6 +75,16 @@ namespace Game.Buildings.Controller
         public void UnregisterHiringBuilding(IHireUnit building)
         {
             _unitsHiringBuildings.Remove(building);
+        }
+
+        public List<IProduceResource> GetProducingBuildings()
+        {
+            return _resourcesProductionBuildings;
+        }
+        
+        public List<IHireUnit> GetHiringBuildings()
+        {
+            return _unitsHiringBuildings;
         }
     }
 }

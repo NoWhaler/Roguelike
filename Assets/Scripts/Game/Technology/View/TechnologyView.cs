@@ -3,18 +3,23 @@ using Game.Technology.Controller;
 using Game.Technology.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
 namespace Game.Technology.View
 {
-    public class TechnologyView: MonoBehaviour
+    public class TechnologyView: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private TMP_Text _turnsLeftText;
 
         [SerializeField] private Button _technologyButton;
 
         [SerializeField] private Image _checkMark;
+
+        [SerializeField] private Image _description;
+
+        [SerializeField] private TMP_Text _descriptionText;
 
         private GameTurnController _gameTurnController;
 
@@ -44,6 +49,7 @@ namespace Game.Technology.View
         public void SetTechnology(TechnologyModel technologyModel)
         {
             _technology = technologyModel;
+            _descriptionText.text = $"{_technology.Name}\n{_technology.Description}";
             UpdateView();   
         }
         
@@ -60,9 +66,16 @@ namespace Game.Technology.View
             _technologiesController.StartTechnology(_technology);
         }
 
-        private void CancelTechnology()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            
+            _description.enabled = true;
+            _descriptionText.enabled = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _description.enabled = false;
+            _descriptionText.enabled = false;
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Game.UI.UIGameplayScene.TechnologyPanel
             _closeButton.onClick.RemoveListener(HidePanel);
         }
 
-        public void ShowTechnologies()
+        private void ShowTechnologies()
         {
             foreach (var tech in _technologiesController.GetAllTechnologies().Values)
             {
@@ -66,6 +66,7 @@ namespace Game.UI.UIGameplayScene.TechnologyPanel
         public void ShowPanel()
         {
             gameObject.SetActive(true);
+            ShowTechnologies();
         }
 
         private void HidePanel()

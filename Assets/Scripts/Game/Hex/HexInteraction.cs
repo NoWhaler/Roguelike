@@ -6,6 +6,7 @@ using Game.Buildings.Controller;
 using Game.Buildings.Interfaces;
 using Game.Pathfinding;
 using Game.ProductionResources.Controller;
+using Game.Technology.Controller;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.SelectedEntityInformation;
 using Game.UI.UIGameplayScene.SelectionHandling;
@@ -50,6 +51,8 @@ namespace Game.Hex
         private UISelectedEntityView _uiSelectedEntityView;
 
         private ResourcesController _resourcesController;
+
+        private TechnologiesController _technologiesController;
         
         private DiContainer _diContainer;
         
@@ -60,7 +63,8 @@ namespace Game.Hex
             DiContainer diContainer, UIBuildingsActionPanel uiBuildingsActionPanel,
             BuildingsController buildingsController, HexGridController hexGridController,
             UnitsController unitsController, UISelectedEntityView uiSelectedEntityView,
-            PathfindingController pathfindingController, ResourcesController resourcesController)
+            PathfindingController pathfindingController, ResourcesController resourcesController,
+            TechnologiesController technologiesController)
         {
             _hexMouseDetector = hexMouseDetector;
             _uiSelectionHandler = uiSelectionHandler;
@@ -253,11 +257,9 @@ namespace Game.Hex
         private void PlaceBuilding(HexModel hexModel)
         {
             var buildingCost = _currentUISelectedBuilding.GetBuildingCost();
+
+            var newBuilding = _buildingsController.SpawnBuilding(_currentUISelectedBuilding, hexModel);
             
-            var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(_currentUISelectedBuilding,
-                new Vector3(hexModel.HexPosition.x, hexModel.HexPosition.y + 2.5f, hexModel.HexPosition.z),
-                Quaternion.identity, hexModel.transform);
- 
             foreach (var resourceCost in buildingCost.ResourceCosts)
             {
                 _resourcesController.DeductResource(resourceCost.ResourceType, resourceCost.Amount);

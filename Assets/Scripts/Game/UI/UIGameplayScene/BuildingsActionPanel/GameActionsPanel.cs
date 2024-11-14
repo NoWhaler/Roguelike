@@ -59,7 +59,6 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
         private void OpenTechPanel()
         {
             _technologyPanel.ShowPanel();
-            _technologyPanel.ShowTechnologies();
         }
 
         private void OpenSettingsPanel()
