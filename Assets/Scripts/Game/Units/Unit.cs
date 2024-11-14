@@ -42,6 +42,7 @@ namespace Game.Units
             HasAttackedThisTurn = false;
             
             _unitView.Initialize(UnitTeamType);
+            _unitView.UpdateHealthBar(CurrentHealth, MaxHealth);
         }
         
         public void ResetMovementPoints()
@@ -64,7 +65,7 @@ namespace Game.Units
         {
             if (HasAttackedThisTurn) return 0;
             
-            var damage = Random.Range(MinDamage, MaxDamage);
+            var damage = Mathf.RoundToInt(Random.Range(MinDamage, MaxDamage));
             
             HasAttackedThisTurn = true;
             return damage;
@@ -73,6 +74,7 @@ namespace Game.Units
         public void TakeDamage(float damage)
         {
             CurrentHealth -= damage;
+            _unitView.UpdateHealthBar(CurrentHealth, MaxHealth);
             if (CurrentHealth <= 0)
             {
                 DisableUnit();
