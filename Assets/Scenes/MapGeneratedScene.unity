@@ -3836,6 +3836,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b7394b62ce44aeca0b9ca33937ec53f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lumberPrefab: {fileID: -605197930766264148, guid: 05cb1d09f45fe6b4a93ea8794c535be2, type: 3}
+  _quarryPrefab: {fileID: 5536479630683843768, guid: 22266bb2f96deb74d95f9aef1a41514e, type: 3}
+  _farmPrefab: {fileID: 2706768580352138931, guid: 07acd24afdcf78a478fb9600fd0099b4, type: 3}
+  _mainBuildingPrefab: {fileID: 3018552823459245806, guid: 2e17137becda7d8489ba8f9fde64217b, type: 3}
+  _towerPrafab: {fileID: 8810985697288284306, guid: 471f2eb2c7d3a1649959875412e0e622, type: 3}
+  _watchTowerPrefab: {fileID: -5930899499177539339, guid: 2151464808dae804a8b26096fd122f57, type: 3}
+  _wallPrefab: {fileID: -5292319869865864392, guid: 2edea6e1a3b5fff4d93621363007fb10, type: 3}
+  _housePrefab: {fileID: -2235936806254069056, guid: 60effff033883724d8a581695e2e9041, type: 3}
+  _buildingsPool: {fileID: 2919351178295379384, guid: b0179ccceacf12741b6523dce445e57d, type: 3}
 --- !u!4 &904577378
 Transform:
   m_ObjectHideFlags: 0

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Core.Builder;
+using Core.ObjectPooling.Pools;
 using Core.Services;
 using Core.TurnBasedSystem;
 using Game.Buildings.BuildingsType;
+using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
 using Game.Hex;
 using UnityEngine;
@@ -13,6 +15,8 @@ namespace Game.Buildings.Controller
 {
     public class BuildingsController: IInitializable, IDisposable
     {
+        private readonly Dictionary<BuildingType, BuildingsPool> _playerUnitPools = new();
+        
         private List<IProduceResource> _resourcesProductionBuildings = new List<IProduceResource>();
 
         private List<IHireUnit> _unitsHiringBuildings = new List<IHireUnit>();
@@ -23,25 +27,65 @@ namespace Game.Buildings.Controller
 
         private DiContainer _diContainer;
 
+        private BuildingsPool _buildingsPoolPrefab;
+        
+        private Dictionary<BuildingType, Building> _buildingPrefabs;
+        
         public event Action<Building> OnBuildingPlaced;
 
         [Inject]
         private void Constructor(GameTurnController gameTurnController,
-            BuildingsConfigurationsService buildingsConfigurationsService, DiContainer diContainer)
+            BuildingsConfigurationsService buildingsConfigurationsService, DiContainer diContainer,
+            [Inject(Id = "BuildingsPool")] BuildingsPool buildingsPool,
+            [Inject(Id = BuildingType.MainBuilding)] Building mainBuilding,
+            [Inject(Id = BuildingType.WatchTower)] Building watchTower,
+            [Inject(Id = BuildingType.Tower)] Building tower,
+            [Inject(Id = BuildingType.Farm)] Building farm,
+            [Inject(Id = BuildingType.Wall)] Building wall,
+            [Inject(Id = BuildingType.House)] Building house,
+            [Inject(Id = BuildingType.Lumber)] Building lumber,
+            [Inject(Id = BuildingType.Quarry)] Building quarry)
         {
             _gameTurnController = gameTurnController;
             _buildingsConfigurationsService = buildingsConfigurationsService;
             _diContainer = diContainer;
+
+            _buildingsPoolPrefab = buildingsPool;
+            
+            _buildingPrefabs = new Dictionary<BuildingType, Building>
+            {
+                { BuildingType.Farm, farm},
+                { BuildingType.Lumber, lumber},
+                { BuildingType.Quarry, quarry},
+                { BuildingType.House, house},
+                { BuildingType.MainBuilding, mainBuilding},
+                { BuildingType.WatchTower, watchTower},
+                { BuildingType.Tower, tower},
+                { BuildingType.Wall, wall}
+            };
         }
 
         public void Initialize()
         {
             _gameTurnController.OnTurnEnded += AddResourcesFromBuildings;
+            InitializePool();
         }
 
         public void Dispose()
         {
             _gameTurnController.OnTurnEnded -= AddResourcesFromBuildings;
+        }
+
+        private void InitializePool()
+        {
+            foreach (BuildingType unitType in System.Enum.GetValues(typeof(BuildingType)))
+            {
+                var buildingsPool = _diContainer.InstantiatePrefabForComponent<BuildingsPool>(_buildingsPoolPrefab);
+                buildingsPool.name = $"BuildingsPool_{unitType}";
+                buildingsPool.ObjectPrefab = _buildingPrefabs[unitType];
+                _playerUnitPools[unitType] = buildingsPool;
+                buildingsPool.InitPool();
+            }
         }
 
         private void AddResourcesFromBuildings()
@@ -52,11 +96,20 @@ namespace Game.Buildings.Controller
             }
         }
 
-        public Building SpawnBuilding(Building buildingPrefab, HexModel targetHex)
+        public Building SpawnBuilding(BuildingType buildingType, HexModel targetHex)
         {
-            var building = _diContainer.InstantiatePrefabForComponent<Building>(buildingPrefab,
-                new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 2.5f, targetHex.HexPosition.z),
-                Quaternion.identity, targetHex.transform);
+            if (!_playerUnitPools.TryGetValue(buildingType, out var pool))
+            {
+                Debug.LogError($"No pool found for player unit type: {buildingType}");
+                return null;
+            }
+
+            var building = pool.Get();
+            if (building == null)
+            {
+                Debug.LogWarning($"Pool for player unit type {buildingType} is empty");
+                return null;
+            }
 
             var config = _buildingsConfigurationsService.GetConfig(building.BuildingType);
             

@@ -258,7 +258,7 @@ namespace Game.Hex
         {
             var buildingCost = _currentUISelectedBuilding.GetBuildingCost();
 
-            var newBuilding = _buildingsController.SpawnBuilding(_currentUISelectedBuilding, hexModel);
+            var newBuilding = _buildingsController.SpawnBuilding(_currentUISelectedBuilding.BuildingType, hexModel);
             
             foreach (var resourceCost in buildingCost.ResourceCosts)
             {

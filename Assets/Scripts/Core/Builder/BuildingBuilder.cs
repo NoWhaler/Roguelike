@@ -41,6 +41,7 @@ namespace Core.Builder
         {
             _building.CurrentHex = hex;
             hex.CurrentBuilding = _building;
+            _building.gameObject.SetActive(true);
             _building.transform.position = new Vector3(hex.HexPosition.x, hex.HexPosition.y + 2.5f, hex.HexPosition.z);
             return this;
         }

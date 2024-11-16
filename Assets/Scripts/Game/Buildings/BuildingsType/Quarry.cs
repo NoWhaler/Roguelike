@@ -15,13 +15,6 @@ namespace Game.Buildings.BuildingsType
         {
             _resourcesController.AddResource(ResourceType, ResourceAmountProduction);
         }
-        
-        public override void Initialize()
-        {
-            base.Initialize();
-            // ResourceType = ResourceType.Stone;
-            // ResourceAmountProduction = 6;
-        }
 
         protected override void SetupActions()
         {

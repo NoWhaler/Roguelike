@@ -16,13 +16,6 @@ namespace Game.Buildings.BuildingsType
             _resourcesController.AddResource(ResourceType, ResourceAmountProduction);
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-            // ResourceType = ResourceType.Wood;
-            // ResourceAmountProduction = 4;
-        }
-
         protected override void SetupActions()
         {
             _availableActions.Add(new ResearchAction("Efficient Logging", 250, 1, _researchesController, this));
