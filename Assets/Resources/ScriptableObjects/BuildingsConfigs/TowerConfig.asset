@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20480b180ffc450ab53211d112a5d1be, type: 3}
+  m_Name: TowerConfig
+  m_EditorClassIdentifier: 
+  <BuildingType>k__BackingField: 5
+  <MaxHealth>k__BackingField: 500
+  <RevealFogOfWarRange>k__BackingField: 0
+  <BuildingCost>k__BackingField: {fileID: 11400000, guid: 016949677585edb45a8e99d64d4c8840, type: 2}

@@ -2,6 +2,7 @@ using Game.Hex;
 using Game.Units.Controller;
 using Game.Units.Enum;
 using Game.Units.View;
+using ScriptableObjects;
 using UnityEngine;
 using Zenject;
 
@@ -14,7 +15,7 @@ namespace Game.Units
         [field: SerializeField] public UnitTeamType UnitTeamType { get; set; }
         
         [SerializeField] private UnitView _unitView;
-        
+
         [field: SerializeField] public float MaxHealth { get; set; }
         
         [field: SerializeField] public float CurrentHealth { get; set; }

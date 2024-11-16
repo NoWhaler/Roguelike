@@ -124,13 +124,13 @@ MonoBehaviour:
   <UnitType>k__BackingField: 2
   <UnitTeamType>k__BackingField: 0
   _unitView: {fileID: 7973047162490067367}
-  <MaxHealth>k__BackingField: 45
+  <MaxHealth>k__BackingField: 0
   <CurrentHealth>k__BackingField: 0
-  <MaxMovementPoints>k__BackingField: 3
+  <MaxMovementPoints>k__BackingField: 0
   <CurrentMovementPoints>k__BackingField: 0
-  <MinDamage>k__BackingField: 10
-  <MaxDamage>k__BackingField: 15
-  <AttackRange>k__BackingField: 3
+  <MinDamage>k__BackingField: 0
+  <MaxDamage>k__BackingField: 0
+  <AttackRange>k__BackingField: 0
   <HasAttackedThisTurn>k__BackingField: 0
 --- !u!1001 &2672684614152421953
 PrefabInstance:

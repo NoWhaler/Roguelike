@@ -264,8 +264,8 @@ namespace Game.Hex
             {
                 _resourcesController.DeductResource(resourceCost.ResourceType, resourceCost.Amount);
             }
-            
-            hexModel.SetBuilding(ref newBuilding);
+
+            newBuilding.CurrentHex = hexModel;
              
             switch (newBuilding)
             {

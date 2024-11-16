@@ -66,17 +66,5 @@ namespace Game.Hex
         {
             return CurrentBuilding == null && CurrentUnit == null;
         }
-
-        public void SetBuilding(ref Building building)
-        {
-            CurrentBuilding = building;
-            CurrentBuilding.Initialize(this);
-        }
-
-        public void SetUnit(ref Unit unit)
-        {
-            CurrentUnit = unit;
-            CurrentUnit.Initialize();
-        }
     }
 }

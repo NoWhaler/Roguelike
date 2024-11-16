@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Core.Builder;
 using Core.ObjectPooling.Pools;
+using Core.Services;
 using Core.TurnBasedSystem;
 using Game.Hex;
 using Game.Units.Enum;
@@ -20,6 +22,8 @@ namespace Game.Units.Controller
         private GameTurnController _gameTurnController;
         private HexGridController _hexGridController;
 
+        private UnitsConfigurationsService _unitsConfigurationsService;
+
         private DiContainer _diContainer;
         
         private UnitsPool _playerPoolPrefab;
@@ -30,7 +34,7 @@ namespace Game.Units.Controller
 
         [Inject]
         private void Constructor(GameTurnController gameTurnController, HexGridController hexGridController,
-            DiContainer diContainer,
+            UnitsConfigurationsService unitsConfigurationsService, DiContainer diContainer,
             [Inject(Id = "PlayerPool")] UnitsPool playerPoolPrefab,
             [Inject(Id = "EnemyPool")] UnitsPool enemyPoolPrefab,
             [Inject(Id = UnitType.Archer)] Unit archerPrefab,
@@ -40,6 +44,7 @@ namespace Game.Units.Controller
         {
             _gameTurnController = gameTurnController;
             _hexGridController = hexGridController;
+            _unitsConfigurationsService = unitsConfigurationsService;
             _diContainer = diContainer;
             
             _playerPoolPrefab = playerPoolPrefab;
@@ -135,7 +140,18 @@ namespace Game.Units.Controller
                 return null;
             }
 
-            SetupUnit(unit, targetHex, UnitTeamType.Player);
+            var config = _unitsConfigurationsService.GetConfig(unitType);
+            
+            unit = new UnitBuilder(unit, config)
+                .WithHealth()
+                .WithDamage()
+                .WithType()
+                .WithAttackRange()
+                .WithMovementPoints()
+                .WithTeam(UnitTeamType.Player)
+                .AtPosition(targetHex)
+                .Build();
+            
             _playerUnits.Add(unit);
             
             OnUnitHired?.Invoke(unit);
@@ -157,8 +173,19 @@ namespace Game.Units.Controller
                 Debug.LogWarning($"Pool for enemy unit type {unitType} is empty");
                 return null;
             }
+            
+            var config = _unitsConfigurationsService.GetConfig(unitType);
 
-            SetupUnit(unit, targetHex, UnitTeamType.Enemy);
+            unit = new UnitBuilder(unit, config)
+                .WithHealth()
+                .WithDamage()
+                .WithType()
+                .WithAttackRange()
+                .WithMovementPoints()
+                .WithTeam(UnitTeamType.Enemy)
+                .AtPosition(targetHex)
+                .Build();
+            
             _enemyUnits.Add(unit);
             return unit;
         }

@@ -16,11 +16,11 @@ namespace Game.Buildings.BuildingsType
             _resourcesController.AddResource(ResourceType, ResourceAmountProduction);
         }
 
-        public override void Initialize(HexModel hexModel)
+        public override void Initialize()
         {
-            base.Initialize(hexModel);
-            ResourceType = ResourceType.Wood;
-            ResourceAmountProduction = 4;
+            base.Initialize();
+            // ResourceType = ResourceType.Wood;
+            // ResourceAmountProduction = 4;
         }
 
         protected override void SetupActions()

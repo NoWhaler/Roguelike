@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a78e8250e84f34b5fbb22e0e4e6f23, type: 3}
+  m_Name: FarmConfig
+  m_EditorClassIdentifier: 
+  <BuildingType>k__BackingField: 1
+  <MaxHealth>k__BackingField: 100
+  <RevealFogOfWarRange>k__BackingField: 0
+  <BuildingCost>k__BackingField: {fileID: 11400000, guid: 016949677585edb45a8e99d64d4c8840, type: 2}
+  <ResourceType>k__BackingField: 0
+  <ResourceAmountProduction>k__BackingField: 5

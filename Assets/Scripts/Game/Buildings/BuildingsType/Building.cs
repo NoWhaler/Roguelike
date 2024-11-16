@@ -43,7 +43,7 @@ namespace Game.Buildings.BuildingsType
         
         [field: SerializeField] public int RevealFogOfWarRange { get; set; }
         
-        public HexModel CurrentHex { get; private set; }
+        public HexModel CurrentHex { get; set; }
 
         private Collider _buildingCollider;
         
@@ -61,10 +61,9 @@ namespace Game.Buildings.BuildingsType
             _resourcesController = resourcesController;
         }
 
-        public virtual void Initialize(HexModel hexModel)
+        public virtual void Initialize()
         {
             CurrentHealth = MaxHealth;
-            CurrentHex = hexModel;
             SetupActions();
         }
         

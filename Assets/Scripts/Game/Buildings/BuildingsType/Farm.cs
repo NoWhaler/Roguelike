@@ -1,5 +1,4 @@
 using Game.Buildings.Interfaces;
-using Game.Hex;
 using Game.ProductionResources.Enum;
 using UnityEngine;
 
@@ -16,11 +15,11 @@ namespace Game.Buildings.BuildingsType
             _resourcesController.AddResource(ResourceType, ResourceAmountProduction);
         }
         
-        public override void Initialize(HexModel hexModel)
+        public override void Initialize()
         {
-            base.Initialize(hexModel);
-            ResourceType = ResourceType.Food;
-            ResourceAmountProduction = 10;
+            base.Initialize();
+            // ResourceType = ResourceType.Food;
+            // ResourceAmountProduction = 10;
         }
         
         protected override void SetupActions()

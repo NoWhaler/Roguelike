@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Core.Builder;
+using Core.Services;
 using Core.TurnBasedSystem;
 using Game.Buildings.BuildingsType;
 using Game.Buildings.Interfaces;
@@ -17,14 +19,18 @@ namespace Game.Buildings.Controller
 
         private GameTurnController _gameTurnController;
 
+        private BuildingsConfigurationsService _buildingsConfigurationsService;
+
         private DiContainer _diContainer;
 
         public event Action<Building> OnBuildingPlaced;
-        
+
         [Inject]
-        private void Constructor(GameTurnController gameTurnController, DiContainer diContainer)
+        private void Constructor(GameTurnController gameTurnController,
+            BuildingsConfigurationsService buildingsConfigurationsService, DiContainer diContainer)
         {
             _gameTurnController = gameTurnController;
+            _buildingsConfigurationsService = buildingsConfigurationsService;
             _diContainer = diContainer;
         }
 
@@ -48,13 +54,22 @@ namespace Game.Buildings.Controller
 
         public Building SpawnBuilding(Building buildingPrefab, HexModel targetHex)
         {
-            var newBuilding = _diContainer.InstantiatePrefabForComponent<Building>(buildingPrefab,
+            var building = _diContainer.InstantiatePrefabForComponent<Building>(buildingPrefab,
                 new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 2.5f, targetHex.HexPosition.z),
                 Quaternion.identity, targetHex.transform);
-            
-            OnBuildingPlaced?.Invoke(newBuilding);
 
-            return newBuilding;
+            var config = _buildingsConfigurationsService.GetConfig(building.BuildingType);
+            
+            building = new BuildingBuilder(building, config)
+                .WithHealth()
+                .WithType()
+                .WithFogOfWarRange()
+                .AtPosition(targetHex)
+                .Build();
+            
+            OnBuildingPlaced?.Invoke(building);
+
+            return building;
         }
         
         public void RegisterProductionBuilding(IProduceResource building)
