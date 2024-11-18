@@ -23,9 +23,9 @@ namespace Core.Builder
             return this;
         }
 
-        public UnitBuilder WithTeam(UnitTeamType teamType)
+        public UnitBuilder WithTeam(TeamOwner teamOwner)
         {
-            _unit.UnitTeamType = teamType;
+            _unit.TeamOwner = teamOwner;
             return this;
         }
 

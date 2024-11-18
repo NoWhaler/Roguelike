@@ -1,6 +1,7 @@
 using Core.TurnBasedSystem;
 using Game.UI.UIGameplayScene.Settings;
 using Game.UI.UIGameplayScene.TechnologyPanel;
+using Game.Units.Enum;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +36,7 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
             _openSettingsButton.onClick.AddListener(OpenSettingsPanel);
             
             _gameTurnController.OnTurnChanged += UpdateDayText;
+            _gameTurnController.OnTurnOwnerChanged += UpdateTurnOwnerUI;
         }
 
         private void OnDisable()
@@ -45,9 +47,14 @@ namespace Game.UI.UIGameplayScene.BuildingsActionPanel
             
             _gameTurnController.OnTurnChanged -= UpdateDayText;
         }
-
+        private void UpdateTurnOwnerUI(TeamOwner turnOwner)
+        {
+            _endTurnButton.interactable = turnOwner == TeamOwner.Player;
+        }
+        
         private void EndTurn()
         {
+            Debug.Log("Player turn ended");
             _gameTurnController.EndTurn();
         }
 

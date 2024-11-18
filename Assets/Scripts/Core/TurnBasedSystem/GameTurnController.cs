@@ -5,6 +5,8 @@ using Game.Technology.Controller;
 using Game.Technology.Model;
 using Game.UI.UIGameplayScene.BuildingsActionPanel;
 using Game.UI.UIGameplayScene.TechnologyPanel;
+using Game.Units.Enum;
+using UnityEngine;
 using Zenject;
 
 namespace Core.TurnBasedSystem
@@ -13,8 +15,12 @@ namespace Core.TurnBasedSystem
     {
         public event Action OnTurnEnded;
         public event Action<int> OnTurnChanged;
-
+        public event Action OnEnemyTurnStarted;
+        public event Action<TeamOwner> OnTurnOwnerChanged;
+        
         private int _currentTurn = 1;
+        
+        private TeamOwner _currentTurnOwner = TeamOwner.Player;
         
         private List<IBuildingAction> _activeActions = new List<IBuildingAction>();
 
@@ -43,9 +49,30 @@ namespace Core.TurnBasedSystem
         
         public void EndTurn()
         {
-            _currentTurn++;
-            OnTurnChanged?.Invoke(_currentTurn);
-
+            if (_currentTurnOwner == TeamOwner.Player)
+            {
+                _currentTurnOwner = TeamOwner.Enemy;
+                Debug.Log("Enemy turn started");
+                OnTurnOwnerChanged?.Invoke(_currentTurnOwner);
+                OnEnemyTurnStarted?.Invoke();
+            }
+            else
+            {
+                _currentTurnOwner = TeamOwner.Player;
+                Debug.Log("Player turn started");
+                _currentTurn++;
+                
+                ProcessActiveEffects();
+                UpdateUI();
+                
+                OnTurnOwnerChanged?.Invoke(_currentTurnOwner);
+                OnTurnChanged?.Invoke(_currentTurn);
+                OnTurnEnded?.Invoke();
+            }
+        }
+        
+        private void ProcessActiveEffects()
+        {
             for (int i = _activeActions.Count - 1; i >= 0; i--)
             {
                 var action = _activeActions[i];
@@ -67,11 +94,13 @@ namespace Core.TurnBasedSystem
                     _technologiesController.CompleteTechnology(activeTechnology);
                 }
             }
-
+        }
+        
+        private void UpdateUI()
+        {
             _buildingActionPanel.UpdateActionViews();
             _technologyPanel.UpdateTechViews();
             _buildingActionPanel.Hide();
-            OnTurnEnded?.Invoke();
         }
         
         public void AddActiveBuildingAction(IBuildingAction action)

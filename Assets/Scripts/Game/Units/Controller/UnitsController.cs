@@ -104,11 +104,11 @@ namespace Game.Units.Controller
         
         public void UnregisterUnit(Unit unit)
         {
-            if (unit.UnitTeamType == UnitTeamType.Player)
+            if (unit.TeamOwner == TeamOwner.Player)
             {
                 _playerUnits.Remove(unit);
             }
-            else if (unit.UnitTeamType == UnitTeamType.Enemy)
+            else if (unit.TeamOwner == TeamOwner.Enemy)
             {
                 _enemyUnits.Remove(unit);
             }
@@ -148,7 +148,7 @@ namespace Game.Units.Controller
                 .WithType()
                 .WithAttackRange()
                 .WithMovementPoints()
-                .WithTeam(UnitTeamType.Player)
+                .WithTeam(TeamOwner.Player)
                 .AtPosition(targetHex)
                 .Build();
             
@@ -182,7 +182,7 @@ namespace Game.Units.Controller
                 .WithType()
                 .WithAttackRange()
                 .WithMovementPoints()
-                .WithTeam(UnitTeamType.Enemy)
+                .WithTeam(TeamOwner.Enemy)
                 .AtPosition(targetHex)
                 .Build();
             
@@ -192,11 +192,11 @@ namespace Game.Units.Controller
         
         public void ReturnUnitToPool(Unit unit)
         {
-            var pools = unit.UnitTeamType == UnitTeamType.Player ? _playerUnitPools : _enemyUnitPools;
+            var pools = unit.TeamOwner == TeamOwner.Player ? _playerUnitPools : _enemyUnitPools;
             
             if (pools.TryGetValue(unit.UnitType, out var pool))
             {
-                if (unit.UnitTeamType == UnitTeamType.Player)
+                if (unit.TeamOwner == TeamOwner.Player)
                 {
                     _playerUnits.Remove(unit);
                 }
@@ -214,12 +214,12 @@ namespace Game.Units.Controller
             }
         }
 
-        private void SetupUnit(Unit unit, HexModel targetHex, UnitTeamType teamType)
+        private void SetupUnit(Unit unit, HexModel targetHex, TeamOwner teamOwner)
         {
             unit.gameObject.SetActive(true);
             unit.transform.position = new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 5f, 
                 targetHex.HexPosition.z);
-            unit.UnitTeamType = teamType;
+            unit.TeamOwner = teamOwner;
             unit.CurrentHex = targetHex;
             targetHex.CurrentUnit = unit;
             unit.Initialize();
@@ -257,8 +257,8 @@ namespace Game.Units.Controller
                             bool canTraverse = neighbor.CurrentUnit == null;
 
                             if (neighbor.CurrentBuilding != null || (neighbor.CurrentUnit != null &&
-                                                                     neighbor.CurrentUnit.UnitTeamType ==
-                                                                     UnitTeamType.Enemy)) 
+                                                                     neighbor.CurrentUnit.TeamOwner ==
+                                                                     TeamOwner.Enemy)) 
                             {
                                 reachableNotEmptyHexes.Add(neighbor);
                                 continue;
@@ -291,7 +291,7 @@ namespace Game.Units.Controller
                 foreach (var hex in hexesInRange)
                 {
                     if (hex.IsVisible && (hex.CurrentUnit == null || 
-                        (hex.CurrentUnit != null && hex.CurrentUnit.UnitTeamType != unit.UnitTeamType)))
+                        (hex.CurrentUnit != null && hex.CurrentUnit.TeamOwner != unit.TeamOwner)))
                     {
                         attackableHexes.Add(hex);
                     }
@@ -302,7 +302,7 @@ namespace Game.Units.Controller
             foreach (var hex in currentPosAttackHexes)
             {
                 if (hex.IsVisible && (hex.CurrentUnit == null || 
-                    (hex.CurrentUnit != null && hex.CurrentUnit.UnitTeamType != unit.UnitTeamType)))
+                    (hex.CurrentUnit != null && hex.CurrentUnit.TeamOwner != unit.TeamOwner)))
                 {
                     attackableHexes.Add(hex);
                 }

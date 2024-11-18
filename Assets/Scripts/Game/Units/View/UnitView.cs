@@ -14,11 +14,11 @@ namespace Game.Units.View
         
         private Color _playerColor = Color.green;
         
-        public void Initialize(UnitTeamType teamType)
+        public void Initialize(TeamOwner teamOwner)
         {
             if (_unitIndicator != null)
             {
-                _unitIndicator.color = teamType == UnitTeamType.Player ? _playerColor : _enemyColor;
+                _unitIndicator.color = teamOwner == TeamOwner.Player ? _playerColor : _enemyColor;
             }
         }
         

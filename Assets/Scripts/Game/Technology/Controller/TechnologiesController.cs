@@ -65,7 +65,7 @@ namespace Game.Technology.Controller
         
         private void ApplyStoredBuffsToUnit(Unit unit)
         {
-            if (unit.UnitTeamType != UnitTeamType.Player) return;
+            if (unit.TeamOwner != TeamOwner.Player) return;
             
             unit.MinDamage += _currentBuffs.UnitDamageBonus;
             unit.MaxDamage += _currentBuffs.UnitDamageBonus;

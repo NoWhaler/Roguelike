@@ -12,7 +12,7 @@ namespace Game.Units
     {
         [field: SerializeField] public UnitType UnitType { get; set; }
         
-        [field: SerializeField] public UnitTeamType UnitTeamType { get; set; }
+        [field: SerializeField] public TeamOwner TeamOwner { get; set; }
         
         [SerializeField] private UnitView _unitView;
 
@@ -42,7 +42,7 @@ namespace Game.Units
             CurrentMovementPoints = MaxMovementPoints;
             HasAttackedThisTurn = false;
             
-            _unitView.Initialize(UnitTeamType);
+            _unitView.Initialize(TeamOwner);
             _unitView.UpdateHealthBar(CurrentHealth, MaxHealth);
         }
         

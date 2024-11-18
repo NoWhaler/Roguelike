@@ -146,7 +146,7 @@ namespace Game.Hex
             if (!hexModel.IsVisible) return;
 
             if (_currentSelectedUnit != null && _currentSelectedUnit.CurrentHex != null && !_isUnitMoving &&
-                _currentSelectedUnit.UnitTeamType != UnitTeamType.Enemy) 
+                _currentSelectedUnit.TeamOwner != TeamOwner.Enemy) 
             {
                 ClearPathHighlight();
                 _currentPath = _pathfindingController.FindPath(_currentSelectedUnit.CurrentHex, hexModel);
@@ -185,7 +185,7 @@ namespace Game.Hex
                 else if (hexModel.CurrentUnit != null)
                 {
                     if (_currentSelectedUnit != null && 
-                        hexModel.CurrentUnit.UnitTeamType != _currentSelectedUnit.UnitTeamType &&
+                        hexModel.CurrentUnit.TeamOwner != _currentSelectedUnit.TeamOwner &&
                         _attackableHexes.Contains(hexModel))
                     {
                         await HandleCombat(_currentSelectedUnit, hexModel.CurrentUnit);
