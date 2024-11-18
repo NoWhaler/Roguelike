@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.TurnBasedSystem;
 using Game.Hex;
 using Game.Spawners.Models;
 using Game.Units;
 using Game.Units.Controller;
+using Game.WorldGeneration.Biomes.Enum;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -60,34 +62,32 @@ namespace Game.Spawners.Controllers
         private void SpawnEnemyWave()
         {
             var allHexes = _hexGridController.GetAllHexes();
-            var emptyHexes = new List<HexModel>();
-            
-            foreach (var hex in allHexes.Values)
-            {
-                if (hex.CurrentUnit == null)
-                {
-                    emptyHexes.Add(hex);
-                }
-            }
-            
-            if (emptyHexes.Count == 0) return;
-            
-            HexModel centerHex = emptyHexes[Random.Range(0, emptyHexes.Count)];
-            
-            var spawnArea = _hexGridController.GetHexesInRadius(centerHex, 2);
-            var availableSpawnHexes = spawnArea.FindAll(hex => hex.CurrentUnit == null);
-            
+            var playerBuildings = allHexes.Values
+                .Where(hex => hex.CurrentBuilding != null )
+                .ToList();
+
+            if (playerBuildings.Count == 0) return;
+
+            HexModel buildingHex = playerBuildings[Random.Range(0, playerBuildings.Count)];
+            BiomeType targetBiome = buildingHex.BiomeType;
+
+            var spawnArea = _hexGridController.GetHexesInRadius(buildingHex, 2)
+                .Where(hex => hex.BiomeType == targetBiome && hex.CurrentUnit == null && hex.CurrentBuilding == null)
+                .ToList();
+
+            if (spawnArea.Count == 0) return;
+
             int unitsToSpawn = Random.Range(_enemySpawnerModel.MinUnitsPerWave, _enemySpawnerModel.MaxUnitsPerWave + 1);
-            unitsToSpawn = Mathf.Min(unitsToSpawn, availableSpawnHexes.Count);
-            
+            unitsToSpawn = Mathf.Min(unitsToSpawn, spawnArea.Count);
+
             for (int i = 0; i < unitsToSpawn; i++)
             {
-                if (availableSpawnHexes.Count == 0) break;
-                
-                int spawnIndex = Random.Range(0, availableSpawnHexes.Count);
-                HexModel spawnHex = availableSpawnHexes[spawnIndex];
-                availableSpawnHexes.RemoveAt(spawnIndex);
-                
+                if (spawnArea.Count == 0) break;
+
+                int spawnIndex = Random.Range(0, spawnArea.Count);
+                HexModel spawnHex = spawnArea[spawnIndex];
+                spawnArea.RemoveAt(spawnIndex);
+
                 Unit unitPrefab = _enemySpawnerModel.EnemyUnitPrefabs[Random.Range(0, _enemySpawnerModel.EnemyUnitPrefabs.Length)];
                 _unitsController.SpawnEnemyUnit(unitPrefab.UnitType, spawnHex);
             }

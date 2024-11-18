@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Buildings.Controller;
 using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
 using Game.Buildings.Struct;
@@ -53,18 +54,31 @@ namespace Game.Buildings.BuildingsType
 
         protected ResourcesController _resourcesController;
 
+        private BuildingsController _buildingsController;
+
         [Inject]
         private void Constructor(ResourcesController resourcesController,
-            ResearchController researchesController)
+            ResearchController researchesController, BuildingsController buildingsController)
         {
             _researchesController = researchesController;
             _resourcesController = resourcesController;
+            _buildingsController = buildingsController;
         }
 
         public virtual void Initialize()
         {
             CurrentHealth = MaxHealth;
             SetupActions();
+        }
+        
+        
+        public void TakeDamage(float damage)
+        {
+            CurrentHealth -= damage;
+            if (CurrentHealth <= 0)
+            {
+                DisableBuilding();
+            }
         }
         
         protected abstract void SetupActions();
@@ -106,5 +120,10 @@ namespace Game.Buildings.BuildingsType
         }
         
         public BuildingCostSO GetBuildingCost() => _buildingCost;
+
+        private void DisableBuilding()
+        {
+            _buildingsController.ReturnBuildingToPool(this);
+        }
     }
 }

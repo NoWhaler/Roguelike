@@ -312,7 +312,7 @@ namespace Game.Hex
                     
                     _isUnitMoving = true;
                     ClearPathHighlight();
-                    await MoveUnitAlongPath(attackingUnit, movementPath);
+                    await _unitsController.MoveUnitAlongPath(attackingUnit, movementPath);
                     _isUnitMoving = false;
                 }
             }
@@ -322,7 +322,7 @@ namespace Game.Hex
             ClearAllSelections();
         }
          
-        private async UniTaskVoid MoveSelectedUnit(HexModel targetHex)
+        private async UniTask MoveSelectedUnit(HexModel targetHex)
         {
             if (_highlightedHexes.Contains(targetHex))
             {
@@ -332,8 +332,11 @@ namespace Game.Hex
                 {
                     _isUnitMoving = true;
                     ClearPathHighlight();
-                    await MoveUnitAlongPath(_currentSelectedUnit, path);
+                    await _unitsController.MoveUnitAlongPath(_currentSelectedUnit, path);
                     _isUnitMoving = false;
+                    
+                    ClearAllSelections();
+                    _uiSelectedEntityView.UpdateSelectedEntityInfo();
                 }
                 else
                 {
@@ -393,53 +396,6 @@ namespace Game.Hex
         {
             List<HexModel> neighbors = _hexGridController.GetNeighbors(sourceHex);
             return neighbors.Contains(targetHex);
-        }
-        
-        private async UniTask MoveUnitAlongPath(Unit unit, List<HexModel> path)
-        {
-            foreach (var hex in path.Skip(1))
-            {
-                await MoveUnitToHex(unit, hex);
-                _uiSelectedEntityView.UpdateSelectedEntityInfo();
-                if (unit.CurrentMovementPoints == 0)
-                    break;
-            }
-            ClearHighlights();
-            ClearPathHighlight();
-            _currentSelectedUnit = null;
-            _uiSelectionHandler.ClearSelection();
-        }
-
-        private async UniTask MoveUnitToHex(Unit unit, HexModel targetHex)
-        {
-            Vector3 startPosition = unit.transform.position;
-            Vector3 endPosition = new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 5f, targetHex.HexPosition.z);
-            float moveDuration = 0.3f;
-
-            float elapsedTime = 0f;
-            while (elapsedTime < moveDuration)
-            {
-                unit.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / moveDuration);
-                elapsedTime += Time.deltaTime;
-                await UniTask.Yield();
-            }
-
-            unit.Move(targetHex, 1);
-
-            var targetHexCurrentBuilding = targetHex.CurrentBuilding;
-            
-            if (targetHexCurrentBuilding != null)
-            {
-                targetHex.CurrentUnit = null;
-                
-                targetHexCurrentBuilding.IncreaseUnitCount(unit.UnitType);
-                _buildingsActionPanel.SetUnitCount(ref targetHexCurrentBuilding);
-                _unitsController.UnregisterUnit(unit);
-                
-                unit.DisableUnit();
-                
-                ClearAllSelections();
-            }
         }
     }
 }

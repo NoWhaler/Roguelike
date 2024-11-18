@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Builder;
 using Core.ObjectPooling.Pools;
 using Core.Services;
 using Core.TurnBasedSystem;
+using Cysharp.Threading.Tasks;
+using Game.Buildings.BuildingsType;
 using Game.Hex;
 using Game.Units.Enum;
 using UnityEngine;
@@ -29,6 +32,8 @@ namespace Game.Units.Controller
         private UnitsPool _playerPoolPrefab;
         private UnitsPool _enemyPoolPrefab;
         private Dictionary<UnitType, Unit> _unitPrefabs;
+        
+        private const float MOVE_DURATION = 0.3f;
 
         public event Action<Unit> OnUnitHired;
 
@@ -213,17 +218,6 @@ namespace Game.Units.Controller
                 Debug.LogError($"No pool found for unit type: {unit.UnitType}");
             }
         }
-
-        private void SetupUnit(Unit unit, HexModel targetHex, TeamOwner teamOwner)
-        {
-            unit.gameObject.SetActive(true);
-            unit.transform.position = new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 5f, 
-                targetHex.HexPosition.z);
-            unit.TeamOwner = teamOwner;
-            unit.CurrentHex = targetHex;
-            targetHex.CurrentUnit = unit;
-            unit.Initialize();
-        }
         
         public HashSet<HexModel> GetAvailableHexes(Unit unit)
         {
@@ -239,11 +233,14 @@ namespace Game.Units.Controller
             {
                 var (currentHex, remainingMovement) = queue.Dequeue();
 
-                if (currentHex.CurrentBuilding != null)
+                if (currentHex != unit.CurrentHex && (
+                    (currentHex.CurrentBuilding != null) ||
+                    (currentHex.CurrentUnit != null && currentHex.CurrentUnit.TeamOwner != unit.TeamOwner)))
                 {
                     reachableNotEmptyHexes.Add(currentHex);
+                    continue;
                 }
-                else
+                if (currentHex.CurrentUnit == null || currentHex == unit.CurrentHex)
                 {
                     reachableHexes.Add(currentHex);
                 }
@@ -254,13 +251,13 @@ namespace Game.Units.Controller
                     {
                         if (!visited.Contains(neighbor) && neighbor.IsVisible)
                         {
-                            bool canTraverse = neighbor.CurrentUnit == null;
-
-                            if (neighbor.CurrentBuilding != null || (neighbor.CurrentUnit != null &&
-                                                                     neighbor.CurrentUnit.TeamOwner ==
-                                                                     TeamOwner.Enemy)) 
+                            bool canTraverse = neighbor.CurrentUnit == null || neighbor == unit.CurrentHex;
+                            
+                            if (neighbor.CurrentBuilding != null || 
+                                (neighbor.CurrentUnit != null && neighbor.CurrentUnit.TeamOwner != unit.TeamOwner))
                             {
                                 reachableNotEmptyHexes.Add(neighbor);
+                                visited.Add(neighbor);
                                 continue;
                             }
 
@@ -278,6 +275,51 @@ namespace Game.Units.Controller
             reachableHexes.UnionWith(reachableNotEmptyHexes);
             
             return reachableHexes;
+        }
+        
+        public async UniTask MoveUnitWithAnimation(Unit unit, HexModel targetHex, int moveCost)
+        {
+            if (unit == null || targetHex == null) return;
+    
+            var previousHex = unit.CurrentHex;
+            previousHex.CurrentUnit = null;
+    
+            Vector3 startPosition = unit.transform.position;
+            Vector3 endPosition = new Vector3(targetHex.HexPosition.x, targetHex.HexPosition.y + 5f, targetHex.HexPosition.z);
+            
+            float elapsedTime = 0f;
+            while (elapsedTime < MOVE_DURATION)
+            {
+                unit.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / MOVE_DURATION);
+                elapsedTime += Time.deltaTime;
+                await UniTask.Yield();
+            }
+    
+            unit.transform.position = endPosition;
+    
+            unit.Move(targetHex, moveCost);
+            targetHex.CurrentUnit = unit;
+    
+            var targetHexCurrentBuilding = targetHex.CurrentBuilding;
+            if (targetHexCurrentBuilding != null)
+            {
+                targetHex.CurrentUnit = null;
+                targetHexCurrentBuilding.IncreaseUnitCount(unit.UnitType);
+                UnregisterUnit(unit);
+                unit.DisableUnit();
+            }
+        }
+    
+        public async UniTask MoveUnitAlongPath(Unit unit, List<HexModel> path)
+        {
+            if (unit == null || path == null || path.Count <= 1) return;
+    
+            foreach (var hex in path.Skip(1))
+            {
+                await MoveUnitWithAnimation(unit, hex, 1);
+                if (unit.CurrentMovementPoints <= 0 || hex.CurrentBuilding != null)
+                    break;
+            }
         }
         
         public HashSet<HexModel> GetAttackableHexes(Unit unit)
@@ -347,6 +389,8 @@ namespace Game.Units.Controller
         
         public void ProcessCombat(Unit attackingUnit, Unit defendingUnit)
         {
+            Debug.Log($"Attacker {attackingUnit.UnitType} deal damage to {defendingUnit.UnitType}");
+            
             float damage = attackingUnit.Attack();
             defendingUnit.TakeDamage(damage);
             
@@ -356,6 +400,16 @@ namespace Game.Units.Controller
             {
                 UnregisterUnit(defendingUnit);
             }
+        }
+        
+        public void ProcessBuildingAttack(Unit attackingUnit, Building defendingBuilding)
+        {
+            Debug.Log($"Attacker {attackingUnit.UnitType} deal damage to {defendingBuilding.BuildingType}");
+            
+            float damage = attackingUnit.Attack();
+            defendingBuilding.TakeDamage(damage);
+            
+            attackingUnit.SetMovementPointsToZero();
         }
     }
 }

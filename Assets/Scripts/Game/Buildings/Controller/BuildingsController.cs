@@ -15,7 +15,7 @@ namespace Game.Buildings.Controller
 {
     public class BuildingsController: IInitializable, IDisposable
     {
-        private readonly Dictionary<BuildingType, BuildingsPool> _playerUnitPools = new();
+        private readonly Dictionary<BuildingType, BuildingsPool> _buildingsPools = new();
         
         private List<IProduceResource> _resourcesProductionBuildings = new List<IProduceResource>();
 
@@ -83,7 +83,7 @@ namespace Game.Buildings.Controller
                 var buildingsPool = _diContainer.InstantiatePrefabForComponent<BuildingsPool>(_buildingsPoolPrefab);
                 buildingsPool.name = $"BuildingsPool_{unitType}";
                 buildingsPool.ObjectPrefab = _buildingPrefabs[unitType];
-                _playerUnitPools[unitType] = buildingsPool;
+                _buildingsPools[unitType] = buildingsPool;
                 buildingsPool.InitPool();
             }
         }
@@ -98,7 +98,7 @@ namespace Game.Buildings.Controller
 
         public Building SpawnBuilding(BuildingType buildingType, HexModel targetHex)
         {
-            if (!_playerUnitPools.TryGetValue(buildingType, out var pool))
+            if (!_buildingsPools.TryGetValue(buildingType, out var pool))
             {
                 Debug.LogError($"No pool found for player unit type: {buildingType}");
                 return null;
@@ -123,6 +123,29 @@ namespace Game.Buildings.Controller
             OnBuildingPlaced?.Invoke(building);
 
             return building;
+        }
+        
+        
+        public void ReturnBuildingToPool(Building building)
+        {
+            if (!_buildingsPools.TryGetValue(building.BuildingType, out var pool))
+            {
+                Debug.LogError($"No pool found for building type: {building.BuildingType}");
+                return;
+            }
+
+            switch (building)
+            {
+                case IProduceResource produceResource:
+                    UnregisterProductionBuilding(produceResource);
+                    break;
+                case IHireUnit hireUnit:
+                    UnregisterHiringBuilding(hireUnit);
+                    break;
+            }
+
+            pool.ReturnToPool(building);
+            building.gameObject.SetActive(false);
         }
         
         public void RegisterProductionBuilding(IProduceResource building)
