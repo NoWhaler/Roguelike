@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace Game.WorldGeneration.RTT.Models
 {
-    public class RRTAlgorithModel : MonoBehaviour
+    public class RRTAlgorithmModel : MonoBehaviour
     {
         [field: SerializeField] public Vector3 CenterPoint { get; set; }
         [field: SerializeField] public float StepSize { get; set; }

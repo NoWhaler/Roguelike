@@ -24,11 +24,15 @@ namespace Game.ProductionResources.Controller
         };
         
         private ResourcesPanel _resourcesPanel;
+
+        private DiContainer _diContainer;
         
         [Inject]
-        private void Constructor(ResourcesPanel resourcesPanel)
+        private void Constructor(ResourcesPanel resourcesPanel,
+            DiContainer diContainer)
         {
             _resourcesPanel = resourcesPanel;
+            _diContainer = diContainer;
         }
         
         public void Initialize()

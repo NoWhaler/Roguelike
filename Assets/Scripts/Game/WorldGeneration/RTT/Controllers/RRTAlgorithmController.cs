@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.ProductionResources.Enum;
 using Game.WorldGeneration.Biomes;
 using Game.WorldGeneration.Biomes.Enum;
 using Game.WorldGeneration.Nodes;
@@ -17,7 +18,7 @@ namespace Game.WorldGeneration.RTT.Controllers
         
         private HexagonalTerrainMeshGeneratorController _hexagonalTerrainMeshGenerator;
 
-        private RRTAlgorithModel _rrtAlgorithmModel;
+        private RRTAlgorithmModel _rrtAlgorithmModel;
 
         private VoronoiBiomeDistributor _voronoiBiomeDistributor;
 
@@ -29,7 +30,7 @@ namespace Game.WorldGeneration.RTT.Controllers
         
         [Inject]
         private void Constructor(DiContainer diContainer,
-            RRTAlgorithModel rrtAlgorithmModel, VoronoiBiomeDistributor voronoiBiomeDistributor,
+            RRTAlgorithmModel rrtAlgorithmModel, VoronoiBiomeDistributor voronoiBiomeDistributor,
             VoronoiTextureGenerator voronoiTextureGenerator,
             HexagonalTerrainMeshGeneratorController hexagonalTerrainMeshGeneratorController)
         {
@@ -48,16 +49,72 @@ namespace Game.WorldGeneration.RTT.Controllers
         
         private void InitializeBiomes()
         {
+            var desert = new Biome("Desert", BiomeType.Desert, new Color(1f, 0.84f, 0.4f), 3);
+            desert.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Stone, 1, 3f), 
+                new BiomeResourceInfo(ResourceType.Food, 1, 4f)    
+            });
+
+            var grassland = new Biome("Grassland", BiomeType.Grassland, new Color(0.5f, 0.8f, 0.3f), 3);
+            grassland.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Food, 1, 2f),   
+                new BiomeResourceInfo(ResourceType.Wood, 1, 3f)    
+            });
+
+            var forest = new Biome("Forest", BiomeType.Forest, new Color(0.13f, 0.55f, 0.13f), 3);
+            forest.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Wood, 1, 2f),
+                new BiomeResourceInfo(ResourceType.Food, 1, 3f)
+            });
+
+            var tundra = new Biome("Tundra", BiomeType.Tundra, new Color(0.8f, 0.9f, 0.95f), 2);
+            tundra.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Stone, 1, 3f),
+                new BiomeResourceInfo(ResourceType.Food, 1, 5f)
+            });
+
+            var swamp = new Biome("Swamp", BiomeType.Swamp, new Color(0.4f, 0.3f, 0.2f), 2);
+            swamp.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Wood, 1, 2f),
+                new BiomeResourceInfo(ResourceType.Food, 1, 3f)
+            });
+
+            var savanna = new Biome("Savanna", BiomeType.Savanna, new Color(0.96f, 0.64f, 0.38f), 2);
+            savanna.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Food, 1, 2f),
+                new BiomeResourceInfo(ResourceType.Wood, 1, 4f)
+            });
+
+            var jungle = new Biome("Jungle", BiomeType.Jungle, new Color(0f, 0.4f, 0f), 2);
+            jungle.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Wood, 1, 2f),
+                new BiomeResourceInfo(ResourceType.Food, 1, 2f)
+            });
+
+            var mountain = new Biome("Mountain", BiomeType.Mountain, new Color(0.5f, 0.5f, 0.5f), 2);
+            mountain.SetResourceInfo(new List<BiomeResourceInfo> 
+            {
+                new BiomeResourceInfo(ResourceType.Stone, 1, 2f),
+                new BiomeResourceInfo(ResourceType.Food, 1, 6f) 
+            });
+
             _rrtAlgorithmModel.Biomes = new List<Biome>
             {
-                new Biome("Desert", BiomeType.Desert, new Color(1f, 0.84f, 0.4f), 3),
-                new Biome("Grassland", BiomeType.Grassland, new Color(0.5f, 0.8f, 0.3f), 3),
-                new Biome("Forest", BiomeType.Forest, new Color(0.13f, 0.55f, 0.13f), 3),
-                new Biome("Tundra", BiomeType.Tundra, new Color(0.8f, 0.9f, 0.95f), 2),
-                new Biome("Swamp", BiomeType.Swamp, new Color(0.4f, 0.3f, 0.2f), 2),
-                new Biome("Savanna", BiomeType.Savanna, new Color(0.96f, 0.64f, 0.38f), 2),
-                new Biome("Jungle", BiomeType.Jungle, new Color(0f, 0.4f, 0f), 2),
-                new Biome("Mountain", BiomeType.Mountain, new Color(0.5f, 0.5f, 0.5f), 2)
+                desert,     
+                grassland,  
+                forest,     
+                tundra,     
+                swamp,      
+                savanna,    
+                jungle,     
+                mountain    
             };
         }
 

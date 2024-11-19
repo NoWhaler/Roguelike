@@ -7,6 +7,7 @@ namespace Core.Lifetime.Installer
     {
         public override void InstallBindings()
         {
+            Container.BindInterfacesAndSelfTo<GameEntryPoint>().AsSingle();
             Container.BindInterfacesAndSelfTo<ResearchesInitialization>().AsSingle();
             Container.BindInterfacesAndSelfTo<TechnologiesInitialization>().AsSingle();
         }

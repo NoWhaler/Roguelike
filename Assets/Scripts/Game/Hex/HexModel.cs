@@ -1,4 +1,5 @@
 using Game.Buildings.BuildingsType;
+using Game.ProductionResources.Enum;
 using Game.Units;
 using Game.WorldGeneration.Biomes.Enum;
 using UnityEngine;
@@ -30,6 +31,8 @@ namespace Game.Hex
         [field: SerializeField] public Building CurrentBuilding { get; set; }
 
         [field: SerializeField] public Unit CurrentUnit { get; set; }
+        
+        public ResourceType? Resource { get; private set; }
 
         public void SetLogicalCoordinates(int q, int r, int s)
         {
@@ -65,6 +68,11 @@ namespace Game.Hex
         public bool IsHexEmpty()
         {
             return CurrentBuilding == null && CurrentUnit == null;
+        }
+        
+        public void SetResource(ResourceType? resourceType)
+        {
+            Resource = resourceType;
         }
     }
 }
