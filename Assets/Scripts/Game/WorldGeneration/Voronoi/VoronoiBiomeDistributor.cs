@@ -25,7 +25,7 @@ namespace Game.WorldGeneration.Voronoi
 
             foreach (var biome in biomes)
             {
-                for (int i = 0; i < biome.CellCount; i++)
+                for (int i = 0; i < biome.BiomeInstancesCount; i++)
                 {
                     Vector2 seedPoint = new Vector2(random.Next(0, width), random.Next(0, height));
                     cells.Add(new BiomeCell(seedPoint, biome));

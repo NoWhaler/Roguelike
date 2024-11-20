@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Game.Hex;
 using Game.Hex.Struct;
+using Game.ProductionResources;
+using Game.ProductionResources.Controller;
 using Game.WorldGeneration.Biomes.Enum;
 using Game.WorldGeneration.ChunkGeneration.Model;
 using Game.WorldGeneration.Nodes;
@@ -16,17 +18,19 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         private HexagonalTerrainMeshGeneratorModel _hexagonalTerrainMeshGeneratorModel;
         private RRTAlgorithmModel _rrtAlgorithmModel;
         private HexGridController _hexGridController;
+        private ResourcesController _resourcesController;
         private Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk> _chunks;
 
         private DiContainer _diContainer;
         
         [Inject]
         private void Constructor(HexagonalTerrainMeshGeneratorModel hexagonalTerrainMeshGeneratorModel, 
-            HexGridController hexGridController, RRTAlgorithmModel rrtAlgorithmModel, DiContainer diContainer)
+            HexGridController hexGridController, RRTAlgorithmModel rrtAlgorithmModel, ResourcesController resourcesController, DiContainer diContainer)
         {
             _hexagonalTerrainMeshGeneratorModel = hexagonalTerrainMeshGeneratorModel;
             _rrtAlgorithmModel = rrtAlgorithmModel;
             _hexGridController = hexGridController;
+            _resourcesController = resourcesController;
             _diContainer = diContainer;
             _chunks = new Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk>();
         }
@@ -42,6 +46,21 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                     Vector2Int chunkCoord = new Vector2Int(x, y);
                     GenerateChunk(chunkCoord, nodes);
                 }
+            }
+            
+            Dictionary<BiomeType, List<HexModel>> hexesByBiome = new Dictionary<BiomeType, List<HexModel>>();
+            foreach (var hex in _hexGridController.GetAllHexes().Values)
+            {
+                if (!hexesByBiome.ContainsKey(hex.BiomeType))
+                {
+                    hexesByBiome[hex.BiomeType] = new List<HexModel>();
+                }
+                hexesByBiome[hex.BiomeType].Add(hex);
+            }
+        
+            foreach (var kvp in hexesByBiome)
+            {
+                GenerateResources(kvp.Value, kvp.Key);
             }
         }
         
@@ -69,22 +88,6 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
 
             RenderChunkObject(chunk, ref chunkObject);
             _chunks[chunkCoord] = chunk;
-            
-            Dictionary<BiomeType, List<HexModel>> hexesByBiome = new Dictionary<BiomeType, List<HexModel>>();
-                
-            foreach (var hex in _hexGridController.GetAllHexes().Values)
-            {
-                if (!hexesByBiome.ContainsKey(hex.BiomeType))
-                {
-                    hexesByBiome[hex.BiomeType] = new List<HexModel>();
-                }
-                hexesByBiome[hex.BiomeType].Add(hex);
-            }
-        
-            foreach (var kvp in hexesByBiome)
-            {
-                GenerateResources(kvp.Value, kvp.Key);
-            }
         }
         
         private Vector3 CalculateHexPosition(int x, int y, float offsetX, float offsetZ)
@@ -257,40 +260,97 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         {
             var biome = _rrtAlgorithmModel.Biomes.Find(b => b.BiomeType == biomeType);
             if (biome?.Resources == null) return;
-        
-            foreach (var resourceInfo in biome.Resources)
+
+            var biomeInstances = GroupHexesByConnectedRegions(hexesInBiome);
+
+            foreach (var instanceHexes in biomeInstances)
             {
-                int resourcesPlaced = 0;
-                List<HexModel> availableHexes = new List<HexModel>(hexesInBiome);
-                
-                while (resourcesPlaced < resourceInfo.Count && availableHexes.Count > 0)
+                foreach (var resourceInfo in biome.Resources)
                 {
-                    int randomIndex = Random.Range(0, availableHexes.Count);
-                    HexModel selectedHex = availableHexes[randomIndex];
-                    
-                    bool isSuitable = true;
-                    foreach (var hex in hexesInBiome)
+                    int resourcesToPlace = resourceInfo.Count; 
+                    List<HexModel> availableHexes = new List<HexModel>(instanceHexes);
+
+                    int resourcesPlaced = 0;
+                    while (resourcesPlaced < resourcesToPlace && availableHexes.Count > 0)
                     {
-                        if (hex.Resource == resourceInfo.ResourceType)
+                        int randomIndex = Random.Range(0, availableHexes.Count);
+                        HexModel selectedHex = availableHexes[randomIndex];
+
+                        if (selectedHex.Resource == null)
                         {
-                            float distance = Vector3.Distance(selectedHex.HexPosition, hex.HexPosition);
-                            if (distance < resourceInfo.MinDistanceBetweenSame)
+                            selectedHex.SetResource(resourceInfo.ResourceType);
+                            var resourcePrefab = _resourcesController.GetResourcePrefab(resourceInfo.ResourceType);
+                            Vector3 spawnPosition = selectedHex.HexPosition + Vector3.up * 0.5f;
+                            _diContainer.InstantiatePrefabForComponent<ResourceDeposit>(
+                                resourcePrefab,
+                                spawnPosition,
+                                Quaternion.identity,
+                                selectedHex.transform
+                            );
+                            resourcesPlaced++;
+                        }
+
+                        availableHexes.RemoveAt(randomIndex);
+                    }
+                }
+            }
+        }
+
+        private List<List<HexModel>> GroupHexesByConnectedRegions(List<HexModel> hexes)
+        {
+            List<List<HexModel>> instances = new List<List<HexModel>>();
+            HashSet<HexModel> visitedHexes = new HashSet<HexModel>();
+
+            foreach (var hex in hexes)
+            {
+                if (!visitedHexes.Contains(hex))
+                {
+                    List<HexModel> currentInstance = new List<HexModel>();
+                    Queue<HexModel> queue = new Queue<HexModel>();
+                    
+                    queue.Enqueue(hex);
+                    visitedHexes.Add(hex);
+
+                    while (queue.Count > 0)
+                    {
+                        var currentHex = queue.Dequeue();
+                        currentInstance.Add(currentHex);
+
+                        var neighbors = GetNeighboringHexes(currentHex, hexes);
+                        foreach (var neighbor in neighbors)
+                        {
+                            if (!visitedHexes.Contains(neighbor))
                             {
-                                isSuitable = false;
-                                break;
+                                queue.Enqueue(neighbor);
+                                visitedHexes.Add(neighbor);
                             }
                         }
                     }
-                    
-                    if (isSuitable)
-                    {
-                        selectedHex.SetResource(resourceInfo.ResourceType);
-                        resourcesPlaced++;
-                    }
-                    
-                    availableHexes.RemoveAt(randomIndex);
+
+                    instances.Add(currentInstance);
                 }
             }
+
+            return instances;
+        }
+
+        private List<HexModel> GetNeighboringHexes(HexModel hex, List<HexModel> allHexes)
+        {
+            List<HexModel> neighbors = new List<HexModel>();
+            float neighborDistance = _hexagonalTerrainMeshGeneratorModel.HexRadius * 2f;
+
+            foreach (var potentialNeighbor in allHexes)
+            {
+                if (potentialNeighbor == hex) continue;
+
+                float distance = Vector3.Distance(hex.HexPosition, potentialNeighbor.HexPosition);
+                if (distance <= neighborDistance * 1.1f)
+                {
+                    neighbors.Add(potentialNeighbor);
+                }
+            }
+
+            return neighbors;
         }
 
         private void RenderChunkObject(HexagonalTerrainMeshGeneratorModel.HexChunk chunk, ref HexTerrainChunkModel hexTerrainChunkModel)

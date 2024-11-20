@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Hex;
 using Game.ProductionResources.Enum;
 using Game.UI.UIGameplayScene.UIResourcesPanel;
 using UnityEngine;
@@ -23,16 +24,27 @@ namespace Game.ProductionResources.Controller
             }
         };
         
+        private Dictionary<ResourceType, ResourceDeposit> _resourcesDepositPrefabs;
+        
         private ResourcesPanel _resourcesPanel;
 
-        private DiContainer _diContainer;
+        private HexGridController _hexGridController;
         
         [Inject]
         private void Constructor(ResourcesPanel resourcesPanel,
-            DiContainer diContainer)
+            DiContainer diContainer,
+            [Inject(Id = ResourceType.Wood)] ResourceDeposit wood,
+            [Inject(Id = ResourceType.Stone)] ResourceDeposit stone,
+            [Inject(Id = ResourceType.Food)] ResourceDeposit food)
         {
             _resourcesPanel = resourcesPanel;
-            _diContainer = diContainer;
+
+            _resourcesDepositPrefabs = new Dictionary<ResourceType, ResourceDeposit>()
+            {
+                { ResourceType.Food , food},
+                { ResourceType.Stone , stone},
+                { ResourceType.Wood , wood}
+            };
         }
         
         public void Initialize()
@@ -52,6 +64,11 @@ namespace Game.ProductionResources.Controller
                 _resources[resourceType] += amount;
                 _resourcesPanel.UpdateResourcesAmount();
             }
+        }
+        
+        public ResourceDeposit GetResourcePrefab(ResourceType resourceType)
+        {
+           return _resourcesDepositPrefabs.GetValueOrDefault(resourceType);
         }
 
         public int GetResourceAmount(ResourceType resourceType)

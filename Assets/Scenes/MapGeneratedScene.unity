@@ -6161,6 +6161,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _resourcesPanel: {fileID: 209661638}
+  _woodResourceDeposit: {fileID: 3446826785458217541, guid: 8613e02dd93c9714a991ef70c72ff556, type: 3}
+  _stoneResourceDeposit: {fileID: 426362302837070968, guid: 3c77aff54c4dc384d8d4572b7360e1af, type: 3}
+  _foodResourceDeposit: {fileID: 9065480812364392997, guid: f4745cdda5eebea4099a90927ec7b68b, type: 3}
 --- !u!4 &1693866739
 Transform:
   m_ObjectHideFlags: 0

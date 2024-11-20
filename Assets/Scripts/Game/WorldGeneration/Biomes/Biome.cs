@@ -14,7 +14,8 @@ namespace Game.WorldGeneration.Biomes
         [field: SerializeField] public BiomeType BiomeType { get; private set; }
         
         [field: SerializeField] public Color Color { get; private set; }
-        [field: SerializeField] public int CellCount { get; private set; }
+        
+        [field: SerializeField] public int BiomeInstancesCount { get; private set; }
         
         public List<BiomeResourceInfo> Resources { get; private set; }
         
@@ -23,12 +24,12 @@ namespace Game.WorldGeneration.Biomes
             Resources = resources;
         }
 
-        public Biome(string name, BiomeType biomeType, Color color, int cellCount)
+        public Biome(string name, BiomeType biomeType, Color color, int biomeInstancesCount)
         {
             Name = name;
             BiomeType = biomeType;
             Color = color;
-            CellCount = cellCount;
+            BiomeInstancesCount = biomeInstancesCount;
         }
     }
     
@@ -36,13 +37,11 @@ namespace Game.WorldGeneration.Biomes
     {
         public ResourceType ResourceType { get; private set; }
         public int Count { get; private set; }
-        public float MinDistanceBetweenSame { get; private set; }
 
-        public BiomeResourceInfo(ResourceType resourceType, int count, float minDistanceBetweenSame)
+        public BiomeResourceInfo(ResourceType resourceType, int count)
         {
             ResourceType = resourceType;
             Count = count;
-            MinDistanceBetweenSame = minDistanceBetweenSame;
         }
     }
 }
