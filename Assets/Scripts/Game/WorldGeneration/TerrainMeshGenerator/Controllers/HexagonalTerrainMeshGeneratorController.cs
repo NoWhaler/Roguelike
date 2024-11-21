@@ -208,7 +208,7 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             
             hexObject.BiomeType = biomeType;
             
-            hexObject.SetFog(true);
+            // hexObject.SetFog(true);
             
             hexObject.SetLogicalCoordinates(logicalCoords.Q, logicalCoords.R, logicalCoords.S);
 
@@ -276,17 +276,18 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                         int randomIndex = Random.Range(0, availableHexes.Count);
                         HexModel selectedHex = availableHexes[randomIndex];
 
-                        if (selectedHex.Resource == null)
+                        if (selectedHex.ResourceDeposit == null)
                         {
-                            selectedHex.SetResource(resourceInfo.ResourceType);
                             var resourcePrefab = _resourcesController.GetResourcePrefab(resourceInfo.ResourceType);
-                            Vector3 spawnPosition = selectedHex.HexPosition + Vector3.up * 0.5f;
-                            _diContainer.InstantiatePrefabForComponent<ResourceDeposit>(
+                            Vector3 spawnPosition = selectedHex.HexPosition + Vector3.up * 1f;
+                            var resourceDeposit = _diContainer.InstantiatePrefabForComponent<ResourceDeposit>(
                                 resourcePrefab,
                                 spawnPosition,
                                 Quaternion.identity,
                                 selectedHex.transform
                             );
+
+                            selectedHex.ResourceDeposit = resourceDeposit;
                             resourcesPlaced++;
                         }
 

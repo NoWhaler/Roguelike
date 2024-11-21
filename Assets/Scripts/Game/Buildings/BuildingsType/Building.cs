@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Game.Buildings.Controller;
 using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
-using Game.Buildings.Struct;
 using Game.Hex;
 using Game.ProductionResources.Controller;
 using Game.Researches.Controller;
@@ -45,6 +44,8 @@ namespace Game.Buildings.BuildingsType
         [field: SerializeField] public int RevealFogOfWarRange { get; set; }
         
         public HexModel CurrentHex { get; set; }
+        
+        [SerializeField] private MeshRenderer _meshRenderer;
 
         private Collider _buildingCollider;
         
@@ -124,6 +125,11 @@ namespace Game.Buildings.BuildingsType
         private void DisableBuilding()
         {
             _buildingsController.ReturnBuildingToPool(this);
+        }
+        
+        public void UpdateMeshVisibility(bool isVisible)
+        {
+            _meshRenderer.enabled = isVisible;
         }
     }
 }

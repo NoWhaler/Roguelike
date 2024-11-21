@@ -36,6 +36,8 @@ namespace Game.Units
 
         [Inject] private UnitsController _unitsController;
 
+        [SerializeField] private MeshRenderer _meshRenderer;
+
         public void Initialize()
         {
             CurrentHealth = MaxHealth;
@@ -97,6 +99,11 @@ namespace Game.Units
         public void DisableUnit()
         {
             _unitsController.ReturnUnitToPool(this);
+        }
+
+        public void UpdateMeshVisibility(bool isVisible)
+        {
+            _meshRenderer.enabled = isVisible;
         }
     }
 }

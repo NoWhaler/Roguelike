@@ -256,6 +256,15 @@ namespace Game.Hex
  
         private void PlaceBuilding(HexModel hexModel)
         {
+            if (_currentUISelectedBuilding is IProduceResource productionBuilding)
+            {
+                if (!IsValidResourceDepositForBuilding(hexModel, productionBuilding))
+                {
+                    Debug.Log($"Cannot place {_currentUISelectedBuilding.BuildingType} here - requires matching resource deposit");
+                    return;
+                }
+            }
+            
             var buildingCost = _currentUISelectedBuilding.GetBuildingCost();
 
             var newBuilding = _buildingsController.SpawnBuilding(_currentUISelectedBuilding.BuildingType, hexModel);
@@ -281,6 +290,16 @@ namespace Game.Hex
             RevealFogOfWar(nearestCells);
             
             _currentSelectedBuilding = null;
+        }
+        
+        private bool IsValidResourceDepositForBuilding(HexModel hexModel, IProduceResource productionBuilding)
+        {
+            if (hexModel.ResourceDeposit == null)
+            {
+                return false;
+            }
+
+            return hexModel.ResourceDeposit.ResourceType == productionBuilding.ResourceType;
         }
          
         private void UpdateBuildingActionPanel()

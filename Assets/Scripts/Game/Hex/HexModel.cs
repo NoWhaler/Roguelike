@@ -1,4 +1,5 @@
 using Game.Buildings.BuildingsType;
+using Game.ProductionResources;
 using Game.ProductionResources.Enum;
 using Game.Units;
 using Game.WorldGeneration.Biomes.Enum;
@@ -32,8 +33,8 @@ namespace Game.Hex
 
         [field: SerializeField] public Unit CurrentUnit { get; set; }
         
-        public ResourceType? Resource { get; private set; }
-
+        [field: SerializeField] public ResourceDeposit ResourceDeposit { get; set; }
+        
         public void SetLogicalCoordinates(int q, int r, int s)
         {
             Q = q;
@@ -50,6 +51,8 @@ namespace Game.Hex
         {
             IsVisible = !isEnabled;
             _fogRenderer.enabled = isEnabled;
+            
+            UpdateEntitiesVisibility(!isEnabled);
         }
 
         public void SetUnitRangeHighlight(bool isHighlighted)
@@ -70,9 +73,22 @@ namespace Game.Hex
             return CurrentBuilding == null && CurrentUnit == null;
         }
         
-        public void SetResource(ResourceType? resourceType)
+        private void UpdateEntitiesVisibility(bool isVisible)
         {
-            Resource = resourceType;
+            if (CurrentBuilding != null)
+            {
+                CurrentBuilding.UpdateMeshVisibility(isVisible);
+            }
+
+            if (CurrentUnit != null)
+            {
+                CurrentUnit.UpdateMeshVisibility(isVisible);
+            }
+
+            if (ResourceDeposit != null)
+            {
+                ResourceDeposit.UpdateMeshVisibility(isVisible);
+            }
         }
     }
 }

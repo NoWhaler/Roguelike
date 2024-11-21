@@ -123,3 +123,4 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 2000
   <CurrentHealth>k__BackingField: 0
   <RevealFogOfWarRange>k__BackingField: 0
+  _meshRenderer: {fileID: 3080610287268007062}

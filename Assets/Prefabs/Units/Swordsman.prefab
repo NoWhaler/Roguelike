@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <UnitType>k__BackingField: 1
-  <UnitTeamType>k__BackingField: 0
+  <TeamOwner>k__BackingField: 0
   _unitView: {fileID: 2285216538079323485}
   <MaxHealth>k__BackingField: 0
   <CurrentHealth>k__BackingField: 0
@@ -132,6 +132,7 @@ MonoBehaviour:
   <MaxDamage>k__BackingField: 0
   <AttackRange>k__BackingField: 0
   <HasAttackedThisTurn>k__BackingField: 0
+  _meshRenderer: {fileID: 6535652180730023672}
 --- !u!1001 &6053968253872373435
 PrefabInstance:
   m_ObjectHideFlags: 0

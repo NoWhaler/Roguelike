@@ -97,3 +97,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ResourceType>k__BackingField: 1
+  _meshRenderer: {fileID: 7614299877795014527}

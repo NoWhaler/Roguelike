@@ -41,6 +41,11 @@ namespace Core.Lifetime
                 return;
             }
 
+            foreach (var hex in hexGrid.Values)
+            {
+                hex.SetFog(true);
+            }
+            
             var selectedRegion = SelectRandomRegion(allGrasslandRegions);
             var startingHex = SelectStartingHex(selectedRegion);
 
