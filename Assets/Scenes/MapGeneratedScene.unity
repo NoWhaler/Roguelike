@@ -3702,19 +3702,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CenterPoint>k__BackingField: {x: 0, y: 0, z: 0}
   <StepSize>k__BackingField: 12
-  <Radius>k__BackingField: 250
-  <MinDistance>k__BackingField: 8
-  <Iterations>k__BackingField: 450
+  <Radius>k__BackingField: 450
+  <MinDistance>k__BackingField: 9
+  <Iterations>k__BackingField: 650
   <NodePrefab>k__BackingField: {fileID: -4567914681832355564, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
   <EdgePrefab>k__BackingField: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
   <Seed>k__BackingField: 2970
   <TextureResolution>k__BackingField: 64
   <VoronoiMaterial>k__BackingField: {fileID: 2100000, guid: c93a38de06a6038429b64731ca304d62, type: 2}
   <VoronoiRelaxationIterations>k__BackingField: 10
-  <ChunksPerSide>k__BackingField: 3
+  <ChunksPerSide>k__BackingField: 7
   <Biomes>k__BackingField: []
-  <IsDisplayingVoronoi>k__BackingField: 1
-  <IsDisplaingRRT>k__BackingField: 1
+  <IsDisplayingVoronoi>k__BackingField: 0
+  <IsDisplaingRRT>k__BackingField: 0
 --- !u!4 &889457317
 Transform:
   m_ObjectHideFlags: 0
@@ -7231,7 +7231,7 @@ Transform:
   m_GameObject: {fileID: 2109332563}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7250,7 +7250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <HexRadius>k__BackingField: 7
-  <HexagonsPerChunkSide>k__BackingField: 5
+  <HexagonsPerChunkSide>k__BackingField: 7
   <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: 5497467680f43f74d9497023edbd89f5, type: 2}
   <HexWidth>k__BackingField: 0
   <HexHeight>k__BackingField: 0

@@ -8,13 +8,13 @@ namespace Game.WorldGeneration.Biomes
     public class BiomeCell
     {
         public Vector2 SeedPoint { get; set; }
-        public Biome BiomeType { get; set; }
+        public Biome Biome { get; set; }
         public List<Vector2> Points { get; set; }
 
-        public BiomeCell(Vector2 seedPoint, Biome biomeType)
+        public BiomeCell(Vector2 seedPoint, Biome biome)
         {
             SeedPoint = seedPoint;
-            BiomeType = biomeType;
+            Biome = biome;
             Points = new List<Vector2>();
         }
     }

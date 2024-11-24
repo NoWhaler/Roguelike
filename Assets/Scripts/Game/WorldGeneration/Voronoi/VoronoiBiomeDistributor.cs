@@ -143,7 +143,7 @@ namespace Game.WorldGeneration.Voronoi
                 if (distance < minDistance)
                 {
                     minDistance = distance;
-                    closestBiome = cell.BiomeType;
+                    closestBiome = cell.Biome;
                 }
             }
 

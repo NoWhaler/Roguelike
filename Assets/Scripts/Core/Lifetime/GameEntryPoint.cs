@@ -37,13 +37,13 @@ namespace Core.Lifetime
             
             if (allGrasslandRegions.Count == 0)
             {
-                Debug.LogError("No grassland regions found");
+                // Debug.LogError("No grassland regions found");
                 return;
             }
 
             foreach (var hex in hexGrid.Values)
             {
-                hex.SetFog(true);
+                hex.SetFog(false);
             }
             
             var selectedRegion = SelectRandomRegion(allGrasslandRegions);

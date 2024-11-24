@@ -19,18 +19,24 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         private RRTAlgorithmModel _rrtAlgorithmModel;
         private HexGridController _hexGridController;
         private ResourcesController _resourcesController;
+        private IslandBoundaryController _islandBoundaryController;
         private Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk> _chunks;
 
         private DiContainer _diContainer;
-        
+
         [Inject]
-        private void Constructor(HexagonalTerrainMeshGeneratorModel hexagonalTerrainMeshGeneratorModel, 
-            HexGridController hexGridController, RRTAlgorithmModel rrtAlgorithmModel, ResourcesController resourcesController, DiContainer diContainer)
+        private void Constructor(HexagonalTerrainMeshGeneratorModel hexagonalTerrainMeshGeneratorModel,
+            HexGridController hexGridController, RRTAlgorithmModel rrtAlgorithmModel,
+            ResourcesController resourcesController, DiContainer diContainer)
         {
             _hexagonalTerrainMeshGeneratorModel = hexagonalTerrainMeshGeneratorModel;
             _rrtAlgorithmModel = rrtAlgorithmModel;
             _hexGridController = hexGridController;
             _resourcesController = resourcesController;
+            _islandBoundaryController = new IslandBoundaryController(
+                    rrtAlgorithmModel.CenterPoint,
+                    rrtAlgorithmModel.Radius * 0.8f
+                );
             _diContainer = diContainer;
             _chunks = new Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk>();
         }
@@ -99,6 +105,11 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         
         private void GenerateHexagonMesh(HexagonalTerrainMeshGeneratorModel.HexChunk chunk, Vector3 center, Color color, BiomeType biomeType)
         {
+            if (!_islandBoundaryController.IsWithinBoundary(center))
+            {
+                return;
+            }
+            
             int vertexOffset = chunk.Vertices.Count;
             
             Matrix4x4 uvRotation = Matrix4x4.TRS(

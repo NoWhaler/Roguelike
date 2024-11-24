@@ -24,6 +24,8 @@ namespace Game.WorldGeneration.RTT.Controllers
 
         private VoronoiTextureGenerator _voronoiTextureGenerator;
 
+        private IslandBoundaryController _islandBoundary;
+        
         private readonly List<NodeModel> _nodeModels = new List<NodeModel>();
         
         private List<GameObject> _visualObjects = new();
@@ -39,6 +41,11 @@ namespace Game.WorldGeneration.RTT.Controllers
             _voronoiBiomeDistributor = voronoiBiomeDistributor;
             _voronoiTextureGenerator = voronoiTextureGenerator;
             _hexagonalTerrainMeshGenerator = hexagonalTerrainMeshGeneratorController;
+            
+            _islandBoundary = new IslandBoundaryController(
+                    rrtAlgorithmModel.CenterPoint,
+                    rrtAlgorithmModel.Radius * 0.8f
+                );
         }
         
         public void Initialize()
@@ -133,10 +140,11 @@ namespace Game.WorldGeneration.RTT.Controllers
 
             List<Node> nodes = GenerateRRT(_rrtAlgorithmModel.CenterPoint, _rrtAlgorithmModel.Radius, _rrtAlgorithmModel.StepSize,
                 _rrtAlgorithmModel.MinDistance, _rrtAlgorithmModel.Iterations);
-            List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(_rrtAlgorithmModel.TextureResolution,
-                _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
             
-            VisualizeRRTWithBiomes(nodes, biomeCells);
+            // List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(_rrtAlgorithmModel.TextureResolution,
+                // _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
+            
+            // VisualizeRRTWithBiomes(nodes, biomeCells);
             
             _hexagonalTerrainMeshGenerator.GenerateChunks(_nodeModels, _rrtAlgorithmModel.ChunksPerSide);
 
@@ -214,27 +222,116 @@ namespace Game.WorldGeneration.RTT.Controllers
             _visualObjects.Clear();
         }
         
-        
         private List<Node> GenerateRRT(Vector3 startPoint, float radius, float stepSize, float minDistance, int desiredNodeCount)
         {
             List<Node> nodes = new List<Node>();
+            List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(
+                _rrtAlgorithmModel.TextureResolution,
+                _rrtAlgorithmModel.TextureResolution,
+                _rrtAlgorithmModel.Seed,
+                _rrtAlgorithmModel.Biomes,
+                _rrtAlgorithmModel.VoronoiRelaxationIterations
+            );
+
+            HashSet<int> coveredBiomeCells = new HashSet<int>();
+            
             nodes.Add(new Node(startPoint, -1));
 
-            while (nodes.Count < desiredNodeCount)
+            List<Vector3> targetPositions = new List<Vector3>();
+            Dictionary<Vector3, int> targetToBiomeIndex = new Dictionary<Vector3, int>();
+            
+            for (int i = 0; i < biomeCells.Count; i++)
             {
-                Vector3 randomPoint = GetRandomPointWithinRadius(startPoint, radius);
-
-                Node nearestNode = FindNearestNode(nodes, randomPoint);
-
-                Vector3 direction = (randomPoint - nearestNode.Position).normalized;
-                Vector3 newPosition = nearestNode.Position + direction * stepSize;
-
-                if (IsFarEnoughFromExistingNodes(nodes, newPosition, minDistance))
+                var cell = biomeCells[i];
+                Vector2 worldPos = new Vector2(
+                    (cell.SeedPoint.x / _rrtAlgorithmModel.TextureResolution) * (radius * 2) + (startPoint.x - radius),
+                    (cell.SeedPoint.y / _rrtAlgorithmModel.TextureResolution) * (radius * 2) + (startPoint.z - radius)
+                );
+                Vector3 targetPos = new Vector3(worldPos.x, 0, worldPos.y);
+                
+                if (_islandBoundary.IsWithinBoundary(targetPos))
                 {
-                    nodes.Add(new Node(newPosition, nodes.IndexOf(nearestNode)));
+                    targetPositions.Add(targetPos);
+                    targetToBiomeIndex[targetPos] = i;
                 }
             }
 
+            int failedAttempts = 0;
+            int maxFailedAttempts = 1000;
+            float branchProbability = 0.8f;
+
+            while (nodes.Count < desiredNodeCount && failedAttempts < maxFailedAttempts)
+            {
+                bool growTowardsTarget = Random.value < 0.9f;
+                Vector3 targetPoint;
+                int? targetBiomeIndex = null;
+
+                if (growTowardsTarget && targetPositions.Count > 0)
+                {
+                    int randomIndex = Random.Range(0, targetPositions.Count);
+                    targetPoint = targetPositions[randomIndex];
+                    if (targetToBiomeIndex.ContainsKey(targetPoint))
+                    {
+                        targetBiomeIndex = targetToBiomeIndex[targetPoint];
+                    }
+                }
+                else
+                {
+                    targetPoint = GetRandomPointWithinRadius(startPoint, radius);
+                }
+
+                Node nearestNode = FindNearestNode(nodes, targetPoint);
+                
+                if (Random.value < branchProbability)
+                {
+                    nearestNode = nodes[0];
+                }
+
+                Vector3 direction = (targetPoint - nearestNode.Position).normalized;
+                Vector3 newPosition = nearestNode.Position + direction * stepSize;
+
+                if (_islandBoundary.IsWithinBoundary(newPosition) && 
+                    IsFarEnoughFromExistingNodes(nodes, newPosition, minDistance))
+                {
+                    nodes.Add(new Node(newPosition, nodes.IndexOf(nearestNode)));
+                    
+                    for (int i = targetPositions.Count - 1; i >= 0; i--)
+                    {
+                        if (Vector3.Distance(newPosition, targetPositions[i]) < minDistance * 2)
+                        {
+                            if (targetToBiomeIndex.ContainsKey(targetPositions[i]))
+                            {
+                                coveredBiomeCells.Add(targetToBiomeIndex[targetPositions[i]]);
+                            }
+                            targetPositions.RemoveAt(i);
+                        }
+                    }
+                    
+                    failedAttempts = 0;
+                }
+                else
+                {
+                    failedAttempts++;
+                }
+            }
+
+            List<BiomeType> uncoveredBiomes = new List<BiomeType>();
+            for (int i = 0; i < biomeCells.Count; i++)
+            {
+                if (!coveredBiomeCells.Contains(i))
+                {
+                    uncoveredBiomes.Add(biomeCells[i].Biome.BiomeType);
+                }
+            }
+
+            Debug.Log($"Generated {nodes.Count} nodes, covered {coveredBiomeCells.Count}/{biomeCells.Count} biome cells");
+            if (uncoveredBiomes.Count > 0)
+            {
+                Debug.LogWarning($"Uncovered biomes: {string.Join(", ", uncoveredBiomes)}");
+            }
+
+            VisualizeRRTWithBiomes(nodes, biomeCells);
+            
             return nodes;
         }
 
@@ -270,9 +367,18 @@ namespace Game.WorldGeneration.RTT.Controllers
 
         private Vector3 GetRandomPointWithinRadius(Vector3 center, float radius)
         {
-            Vector2 randomPoint2D = Random.insideUnitCircle * radius;
-            return new Vector3(randomPoint2D.x, 0, randomPoint2D.y) + center;
+            Vector3 point;
+            int maxAttempts = 100;
+            int attempts = 0;
+            
+            do
+            {
+                Vector2 randomPoint2D = Random.insideUnitCircle * radius;
+                point = new Vector3(randomPoint2D.x, 0, randomPoint2D.y) + center;
+                attempts++;
+            } while (!_islandBoundary.IsWithinBoundary(point) && attempts < maxAttempts);
+            
+            return point;
         }
-
     }
 }
