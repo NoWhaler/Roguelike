@@ -15,7 +15,7 @@ namespace Game.WorldGeneration.Biomes
         
         [field: SerializeField] public Color Color { get; private set; }
         
-        [field: SerializeField] public int BiomeInstancesCount { get; private set; }
+        [field: SerializeField] public int BiomeIndex { get; private set; }
         
         public List<BiomeResourceInfo> Resources { get; private set; }
         
@@ -24,12 +24,12 @@ namespace Game.WorldGeneration.Biomes
             Resources = resources;
         }
 
-        public Biome(string name, BiomeType biomeType, Color color, int biomeInstancesCount)
+        public Biome(string name, BiomeType biomeType, Color color, int biomeIndex)
         {
             Name = name;
             BiomeType = biomeType;
             Color = color;
-            BiomeInstancesCount = biomeInstancesCount;
+            BiomeIndex = biomeIndex;
         }
     }
     

@@ -1109,22 +1109,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 891a13bde98a4833afa7542347f8b3fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <SeedValue>k__BackingField: 181
-  <ChunksPerSide>k__BackingField: 4
+  <SeedValue>k__BackingField: 171
+  <ChunksPerSide>k__BackingField: 3
   <ChunkSize>k__BackingField: 64
   <NoiseScale>k__BackingField: 30
   <Octaves>k__BackingField: 4
   <Persistence>k__BackingField: 0.5
   <Lacunarity>k__BackingField: 2
-  <HeightMultiplier>k__BackingField: 25
+  <HeightMultiplier>k__BackingField: 0
   <CoastlineSmoothPasses>k__BackingField: 15
   <SmoothNormalsPasses>k__BackingField: 5
   <WorleyNoiseScale>k__BackingField: 30
   <LakeThreshold>k__BackingField: 0
   <MinLakeSize>k__BackingField: 1
   <LakeMergeDistance>k__BackingField: 1
-  <DiamondSquareRoughness>k__BackingField: 0.9
-  <SimplexWeight>k__BackingField: 0.15
+  <DiamondSquareRoughness>k__BackingField: 1
+  <SimplexWeight>k__BackingField: 0
   <WorleyWeight>k__BackingField: 0
   <DiamondSquareWeight>k__BackingField: 0.85
   <FalloffRadius>k__BackingField: 0.55
@@ -4593,6 +4593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
+  - {fileID: 904577377}
   - {fileID: 580164588}
   - {fileID: 2053202021}
   - {fileID: 1862220367}
@@ -4606,7 +4607,6 @@ MonoBehaviour:
   - {fileID: 609900126}
   - {fileID: 1784315942}
   - {fileID: 1860123574}
-  - {fileID: 904577377}
   - {fileID: 1067452820}
   - {fileID: 1693866738}
   - {fileID: 1066132989}

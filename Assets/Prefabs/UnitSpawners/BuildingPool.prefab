@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ObjectPrefab>k__BackingField: {fileID: 0}
-  _poolSize: 50
+  _poolSize: 150

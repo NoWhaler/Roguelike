@@ -11,6 +11,8 @@ namespace Game.WorldGeneration.Nodes
         
         public BiomeType BiomeType { get; set; }
         
+        public int BiomeIndex { get; set; }
+        
         public Renderer NodeRenderer { get; set; }
 
         private void OnEnable()

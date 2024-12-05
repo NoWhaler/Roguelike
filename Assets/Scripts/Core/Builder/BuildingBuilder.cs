@@ -1,7 +1,7 @@
 using Game.Buildings.BuildingsType;
-using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
 using Game.Hex;
+using Game.Units.Enum;
 using ScriptableObjects;
 using UnityEngine;
 
@@ -21,6 +21,12 @@ namespace Core.Builder
         public BuildingBuilder WithType()
         {
             _building.BuildingType = _config.BuildingType;
+            return this;
+        }
+        
+        public BuildingBuilder WithTeam(TeamOwner teamOwner)
+        {
+            _building.BuildingOwner = teamOwner;
             return this;
         }
 

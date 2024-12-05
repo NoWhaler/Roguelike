@@ -8,6 +8,7 @@ using Game.Buildings.BuildingsType;
 using Game.Buildings.Enum;
 using Game.Buildings.Interfaces;
 using Game.Hex;
+using Game.Units.Enum;
 using UnityEngine;
 using Zenject;
 
@@ -96,7 +97,7 @@ namespace Game.Buildings.Controller
             }
         }
 
-        public Building SpawnBuilding(BuildingType buildingType, HexModel targetHex)
+        public Building SpawnBuilding(BuildingType buildingType, HexModel targetHex, TeamOwner teamOwner = TeamOwner.Player)
         {
             if (!_buildingsPools.TryGetValue(buildingType, out var pool))
             {
@@ -116,6 +117,7 @@ namespace Game.Buildings.Controller
             building = new BuildingBuilder(building, config)
                 .WithHealth()
                 .WithType()
+                .WithTeam(teamOwner)
                 .WithFogOfWarRange()
                 .AtPosition(targetHex)
                 .Build();
@@ -124,7 +126,6 @@ namespace Game.Buildings.Controller
 
             return building;
         }
-        
         
         public void ReturnBuildingToPool(Building building)
         {

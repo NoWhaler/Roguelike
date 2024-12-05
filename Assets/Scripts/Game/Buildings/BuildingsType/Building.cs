@@ -37,6 +37,8 @@ namespace Game.Buildings.BuildingsType
         
         [field: SerializeField] public BuildingType BuildingType { get; set; }
         
+        [field: SerializeField] public TeamOwner BuildingOwner { get; set; }
+        
         [field: SerializeField] public float MaxHealth { get; set; }
         
         [field: SerializeField] public float CurrentHealth { get; set; }

@@ -9,7 +9,6 @@ namespace Core.Lifetime.Initialization
     {
         private ResearchController _researchController;
         
-        // TODO Replace all data to separate file and load it
         private Dictionary<BuildingType, List<string>> _allPossibleResearch = new Dictionary<BuildingType, List<string>>
         {
             {

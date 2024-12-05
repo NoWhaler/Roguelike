@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.ProductionResources.Enum;
 using Game.WorldGeneration.Biomes;
 using Game.WorldGeneration.Biomes.Enum;
@@ -56,73 +57,108 @@ namespace Game.WorldGeneration.RTT.Controllers
         
         private void InitializeBiomes()
         {
-            var desert = new Biome("Desert", BiomeType.Desert, new Color(1f, 0.84f, 0.4f), 3);
-            desert.SetResourceInfo(new List<BiomeResourceInfo> 
-            {
-                new BiomeResourceInfo(ResourceType.Stone, 1), 
-                new BiomeResourceInfo(ResourceType.Food, 1)    
-            });
+            int currentIndex = 0;
+            var biomes = new List<Biome>();
 
-            var grassland = new Biome("Grassland", BiomeType.Grassland, new Color(0.5f, 0.8f, 0.3f), 3);
-            grassland.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 3; i++)
             {
-                new BiomeResourceInfo(ResourceType.Food, 1),   
-                new BiomeResourceInfo(ResourceType.Wood, 1)    
-            });
+                var desert = new Biome("Desert", BiomeType.Desert, new Color(1f, 0.84f, 0.4f), currentIndex);
+                desert.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Stone, 1), 
+                    new BiomeResourceInfo(ResourceType.Food, 1)    
+                });
+                biomes.Add(desert);
+                currentIndex++;
+            }
 
-            var forest = new Biome("Forest", BiomeType.Forest, new Color(0.13f, 0.55f, 0.13f), 3);
-            forest.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 3; i++)
             {
-                new BiomeResourceInfo(ResourceType.Wood, 1),
-                new BiomeResourceInfo(ResourceType.Food, 1)
-            });
+                var grassland = new Biome("Grassland", BiomeType.Grassland, new Color(0.5f, 0.8f, 0.3f), currentIndex);
+                grassland.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Food, 1),   
+                    new BiomeResourceInfo(ResourceType.Wood, 1)    
+                });
+                biomes.Add(grassland);
+                currentIndex++;
+            }
 
-            var tundra = new Biome("Tundra", BiomeType.Tundra, new Color(0.8f, 0.9f, 0.95f), 2);
-            tundra.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 3; i++)
             {
-                new BiomeResourceInfo(ResourceType.Stone, 1),
-                new BiomeResourceInfo(ResourceType.Food, 1)
-            });
+                var forest = new Biome("Forest", BiomeType.Forest, new Color(0.13f, 0.55f, 0.13f), currentIndex);
+                forest.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Wood, 1),
+                    new BiomeResourceInfo(ResourceType.Food, 1)
+                });
+                biomes.Add(forest);
+                currentIndex++;
+            }
 
-            var swamp = new Biome("Swamp", BiomeType.Swamp, new Color(0.4f, 0.3f, 0.2f), 2);
-            swamp.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 2; i++)
             {
-                new BiomeResourceInfo(ResourceType.Wood, 1),
-                new BiomeResourceInfo(ResourceType.Food, 1)
-            });
+                var tundra = new Biome("Tundra", BiomeType.Tundra, new Color(0.8f, 0.9f, 0.95f), currentIndex);
+                tundra.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Stone, 1),
+                    new BiomeResourceInfo(ResourceType.Food, 1)
+                });
+                biomes.Add(tundra);
+                currentIndex++;
+            }
 
-            var savanna = new Biome("Savanna", BiomeType.Savanna, new Color(0.96f, 0.64f, 0.38f), 2);
-            savanna.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 2; i++)
             {
-                new BiomeResourceInfo(ResourceType.Food, 1),
-                new BiomeResourceInfo(ResourceType.Wood, 1)
-            });
+                var swamp = new Biome("Swamp", BiomeType.Swamp, new Color(0.4f, 0.3f, 0.2f), currentIndex);
+                swamp.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Wood, 1),
+                    new BiomeResourceInfo(ResourceType.Food, 1)
+                });
+                biomes.Add(swamp);
+                currentIndex++;
+            }
 
-            var jungle = new Biome("Jungle", BiomeType.Jungle, new Color(0f, 0.4f, 0f), 2);
-            jungle.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 2; i++)
             {
-                new BiomeResourceInfo(ResourceType.Wood, 1),
-                new BiomeResourceInfo(ResourceType.Food, 1)
-            });
+                var savanna = new Biome("Savanna", BiomeType.Savanna, new Color(0.96f, 0.64f, 0.38f), currentIndex);
+                savanna.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Food, 1),
+                    new BiomeResourceInfo(ResourceType.Wood, 1)
+                });
+                biomes.Add(savanna);
+                currentIndex++;
+            }
 
-            var mountain = new Biome("Mountain", BiomeType.Mountain, new Color(0.5f, 0.5f, 0.5f), 2);
-            mountain.SetResourceInfo(new List<BiomeResourceInfo> 
+            for (int i = 0; i < 2; i++)
             {
-                new BiomeResourceInfo(ResourceType.Stone, 1),
-                new BiomeResourceInfo(ResourceType.Food, 1) 
-            });
+                var jungle = new Biome("Jungle", BiomeType.Jungle, new Color(0f, 0.4f, 0f), currentIndex);
+                jungle.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Wood, 1),
+                    new BiomeResourceInfo(ResourceType.Food, 1)
+                });
+                biomes.Add(jungle);
+                currentIndex++;
+            }
 
-            _rrtAlgorithmModel.Biomes = new List<Biome>
+            for (int i = 0; i < 2; i++)
             {
-                desert,     
-                grassland,  
-                forest,     
-                tundra,     
-                swamp,      
-                savanna,    
-                jungle,     
-                mountain    
-            };
+                var mountain = new Biome("Mountain", BiomeType.Mountain, new Color(0.5f, 0.5f, 0.5f), currentIndex);
+                mountain.SetResourceInfo(new List<BiomeResourceInfo> 
+                {
+                    new BiomeResourceInfo(ResourceType.Stone, 1),
+                    new BiomeResourceInfo(ResourceType.Food, 1) 
+                });
+                biomes.Add(mountain);
+                currentIndex++;
+            }
+
+            _rrtAlgorithmModel.Biomes = biomes;
+            
+            Debug.Log($"Total biomes created: {biomes.Count} with indices from 0 to {currentIndex - 1}");
         }
 
         private void GenerateAndVisualizeRRTWithBiomes()
@@ -140,11 +176,6 @@ namespace Game.WorldGeneration.RTT.Controllers
 
             List<Node> nodes = GenerateRRT(_rrtAlgorithmModel.CenterPoint, _rrtAlgorithmModel.Radius, _rrtAlgorithmModel.StepSize,
                 _rrtAlgorithmModel.MinDistance, _rrtAlgorithmModel.Iterations);
-            
-            // List<BiomeCell> biomeCells = _voronoiBiomeDistributor.GenerateVoronoiBiomes(_rrtAlgorithmModel.TextureResolution,
-                // _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
-            
-            // VisualizeRRTWithBiomes(nodes, biomeCells);
             
             _hexagonalTerrainMeshGenerator.GenerateChunks(_nodeModels, _rrtAlgorithmModel.ChunksPerSide);
 
@@ -191,6 +222,7 @@ namespace Game.WorldGeneration.RTT.Controllers
                 nodeObj.NodeRenderer.material.color = nodeColor;
                 nodeObj.NodeColor = nodeColor;
                 nodeObj.BiomeType = biome.BiomeType;
+                nodeObj.BiomeIndex = biome.BiomeIndex;
 
                 _nodeModels.Add(nodeObj);
 
@@ -212,7 +244,7 @@ namespace Game.WorldGeneration.RTT.Controllers
 
             Debug.Log($"Generated {nodes.Count} nodes in {_rrtAlgorithmModel.Biomes.Count} biomes");
         }
-
+        
         private void ClearVisualization()
         {
             foreach (GameObject obj in _visualObjects)

@@ -25,7 +25,6 @@ namespace Game.Buildings.Installer
         {
             Container.BindInterfacesAndSelfTo<BuildingsController>().AsSingle();
 
-
             Container.Bind<Building>()
                 .WithId(BuildingType.MainBuilding)
                 .FromInstance(_mainBuildingPrefab);

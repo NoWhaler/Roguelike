@@ -1,6 +1,5 @@
 using Game.Buildings.BuildingsType;
 using Game.ProductionResources;
-using Game.ProductionResources.Enum;
 using Game.Units;
 using Game.WorldGeneration.Biomes.Enum;
 using UnityEngine;
@@ -19,6 +18,8 @@ namespace Game.Hex
         
         [field: SerializeField] public BiomeType BiomeType { get; set; }
         
+        [field: SerializeField] public int BiomeIndex { get; set; } = -1;
+        
         [SerializeField] private SpriteRenderer _hexOutlineImage;
 
         [SerializeField] private SpriteRenderer _unitRangeHighlight;
@@ -26,8 +27,6 @@ namespace Game.Hex
         [SerializeField] private SpriteRenderer _unitPathHighlight;
 
         [SerializeField] private SpriteRenderer _fogRenderer;   
-        
-        [field: SerializeField] public int HexIndex { get; set; }
         
         [field: SerializeField] public Building CurrentBuilding { get; set; }
 

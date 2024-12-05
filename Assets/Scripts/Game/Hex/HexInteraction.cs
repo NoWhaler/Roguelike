@@ -319,7 +319,8 @@ namespace Game.Hex
         private async UniTask HandleCombat(Unit attackingUnit, Unit targetUnit)
         {
             int attackRange = attackingUnit.AttackRange;
-            int currentDistance = _pathfindingController.CalculatePathDistance(attackingUnit.CurrentHex, targetUnit.CurrentHex);
+            int currentDistance =
+                _pathfindingController.CalculatePathDistance(attackingUnit.CurrentHex, targetUnit.CurrentHex);
             
             if (currentDistance > attackRange)
             {
