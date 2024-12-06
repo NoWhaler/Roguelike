@@ -157,8 +157,6 @@ namespace Game.WorldGeneration.RTT.Controllers
             }
 
             _rrtAlgorithmModel.Biomes = biomes;
-            
-            Debug.Log($"Total biomes created: {biomes.Count} with indices from 0 to {currentIndex - 1}");
         }
 
         private void GenerateAndVisualizeRRTWithBiomes()

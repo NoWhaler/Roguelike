@@ -12,8 +12,6 @@ namespace Core.Lifetime
 {
     public class GameEntryPoint: IInitializable
     {
-        private Random _random;
-
         private HexGridController _hexGridController;
         private BuildingsController _buildingsController;
         
@@ -22,7 +20,6 @@ namespace Core.Lifetime
         {
             _hexGridController = hexGridController;
             _buildingsController = buildingsController;
-            _random = new Random();
         }
         
         public void Initialize()
@@ -35,47 +32,42 @@ namespace Core.Lifetime
             var hexGrid = _hexGridController.GetAllHexes();
             var allGrasslandRegions = FindConnectedGrasslandRegions(hexGrid);
             
-            if (allGrasslandRegions.Count == 0)
-            {
-                // Debug.LogError("No grassland regions found");
-                return;
-            }
-
-            foreach (var hex in hexGrid.Values)
-            {
-                hex.SetFog(false);
-            }
-            
-            var selectedRegion = SelectRandomRegion(allGrasslandRegions);
+            var selectedRegion = SelectBestStartingRegion(allGrasslandRegions);
             var startingHex = SelectStartingHex(selectedRegion);
 
-            foreach (var hex in selectedRegion)
-            {
-                hex.SetFog(false);
-            }
-
+            RevealRegionFog(selectedRegion);
             _buildingsController.SpawnBuilding(BuildingType.MainBuilding, startingHex);
         }
-
+        
         private List<List<HexModel>> FindConnectedGrasslandRegions(Dictionary<(int, int, int), HexModel> hexGrid)
         {
             var regions = new List<List<HexModel>>();
             var visitedHexes = new HashSet<HexModel>();
 
-            foreach (var hex in hexGrid.Values)
+            var grasslandGroups = hexGrid.Values
+                .Where(hex => hex.BiomeType == BiomeType.Grassland)
+                .GroupBy(hex => (hex.BiomeType, hex.BiomeIndex));
+
+            foreach (var group in grasslandGroups)
             {
-                if (hex.BiomeType == BiomeType.Grassland && !visitedHexes.Contains(hex))
+                foreach (var hex in group)
                 {
-                    var region = new List<HexModel>();
-                    FloodFillGrassland(hex, region, visitedHexes);
-                    regions.Add(region);
+                    if (!visitedHexes.Contains(hex))
+                    {
+                        var region = new List<HexModel>();
+                        FloodFillGrasslandInstance(hex, region, visitedHexes);
+                        if (region.Count > 0)
+                        {
+                            regions.Add(region);
+                        }
+                    }
                 }
             }
 
             return regions;
         }
 
-        private void FloodFillGrassland(HexModel startHex, List<HexModel> region, HashSet<HexModel> visitedHexes)
+        private void FloodFillGrasslandInstance(HexModel startHex, List<HexModel> region, HashSet<HexModel> visitedHexes)
         {
             var hexesToCheck = new Queue<HexModel>();
             hexesToCheck.Enqueue(startHex);
@@ -89,7 +81,9 @@ namespace Core.Lifetime
 
                 foreach (var neighbor in neighbors)
                 {
-                    if (!visitedHexes.Contains(neighbor) && neighbor.BiomeType == BiomeType.Grassland)
+                    if (!visitedHexes.Contains(neighbor) && 
+                        neighbor.BiomeType == startHex.BiomeType && 
+                        neighbor.BiomeIndex == startHex.BiomeIndex)
                     {
                         visitedHexes.Add(neighbor);
                         region.Add(neighbor);
@@ -99,10 +93,12 @@ namespace Core.Lifetime
             }
         }
 
-        private List<HexModel> SelectRandomRegion(List<List<HexModel>> regions)
+        private List<HexModel> SelectBestStartingRegion(List<List<HexModel>> regions)
         {
-            int randomIndex = _random.Next(regions.Count);
-            return regions[randomIndex];
+            return regions
+                .OrderByDescending(r => r.Count)
+                .ThenBy(r => Vector3.Distance(CalculateRegionCenter(r), Vector3.zero))
+                .First();
         }
 
         private HexModel SelectStartingHex(List<HexModel> region)
@@ -118,6 +114,14 @@ namespace Core.Lifetime
                 0,
                 region.Average(h => h.HexPosition.z)
             );
+        }
+
+        private void RevealRegionFog(List<HexModel> region)
+        {
+            foreach (var hex in region)
+            {
+                hex.SetFog(false);
+            }
         }
     }
 }

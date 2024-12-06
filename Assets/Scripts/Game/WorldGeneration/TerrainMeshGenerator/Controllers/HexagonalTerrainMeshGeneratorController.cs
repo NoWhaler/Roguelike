@@ -241,7 +241,7 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             hexObject.BiomeType = biomeType;
             hexObject.BiomeIndex = closestNode.BiomeIndex;
             
-            // hexObject.SetFog(true);
+            hexObject.SetFog(true);
             
             hexObject.SetLogicalCoordinates(logicalCoords.Q, logicalCoords.R, logicalCoords.S);
 
