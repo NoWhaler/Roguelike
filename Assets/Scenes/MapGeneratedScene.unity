@@ -4607,7 +4607,6 @@ MonoBehaviour:
   - {fileID: 609900126}
   - {fileID: 1784315942}
   - {fileID: 1860123574}
-  - {fileID: 1067452820}
   - {fileID: 1693866738}
   - {fileID: 1066132989}
   - {fileID: 198189488}
@@ -4619,6 +4618,7 @@ MonoBehaviour:
   - {fileID: 367375974}
   - {fileID: 350676278}
   - {fileID: 1205550936}
+  - {fileID: 1067452820}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -5132,7 +5132,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1211384676}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
