@@ -18,7 +18,8 @@ namespace Game.Buildings.Installer
         [SerializeField] private Building _watchTowerPrefab;
         [SerializeField] private Building _wallPrefab;
         [SerializeField] private Building _housePrefab;
-
+        [SerializeField] private Building _holyAltarPrefab;
+        
         [SerializeField] private BuildingsPool _buildingsPool;
         
         public override void InstallBindings()
@@ -49,6 +50,9 @@ namespace Game.Buildings.Installer
             Container.Bind<Building>()
                 .WithId(BuildingType.Wall)
                 .FromInstance(_wallPrefab);
+            Container.Bind<Building>()
+                .WithId(BuildingType.HolyAltar)
+                .FromInstance(_holyAltarPrefab);
             
             
             Container.Bind<BuildingsPool>()

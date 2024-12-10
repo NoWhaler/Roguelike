@@ -26,6 +26,8 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         private BuildingsController _buildingsController;
         private IslandBoundaryController _islandBoundaryController;
         private Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk> _chunks;
+        
+        private const int MIN_BIOMES_DISTANCE = 3;
 
         private DiContainer _diContainer;
 
@@ -60,21 +62,24 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                 }
             }
             
-            Dictionary<(BiomeType, int), List<HexModel>> hexesByBiomeInstance = new Dictionary<(BiomeType, int), List<HexModel>>();
-            foreach (var hex in _hexGridController.GetAllHexes().Values)
-            {
-                var key = (hex.BiomeType, hex.BiomeIndex);
-                if (!hexesByBiomeInstance.ContainsKey(key))
-                {
-                    hexesByBiomeInstance[key] = new List<HexModel>();
-                }
-                hexesByBiomeInstance[key].Add(hex);
-            }
+            var hexesByBiomeInstance = _hexGridController.GetAllHexes().Values
+                .GroupBy(hex => (hex.BiomeType, hex.BiomeIndex))
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            GenerateStartingPositions(hexesByBiomeInstance);
 
             foreach (var kvp in hexesByBiomeInstance)
             {
-                GenerateResources(kvp.Value, kvp.Key.Item1);
-                PlaceNeutralHouse(kvp.Value);
+                var biomeCells = kvp.Value;
+                
+                bool containsMainBuilding = biomeCells.Any(hex => hex.CurrentBuilding?.BuildingType == BuildingType.MainBuilding);
+                
+                GenerateResources(biomeCells, kvp.Key.Item1);
+                
+                if (!containsMainBuilding)
+                {
+                    PlaceNeutralHouses(biomeCells);
+                }
             }
         }
         
@@ -289,41 +294,6 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             return hexTerrainChunkModel;
         }
         
-        private void GenerateResources(List<HexModel> hexesInBiomeInstance, BiomeType biomeType)
-        {
-            var biome = _rrtAlgorithmModel.Biomes.Find(b => b.BiomeType == biomeType);
-            if (biome?.Resources == null) return;
-
-            foreach (var resourceInfo in biome.Resources)
-            {
-                var availableHexes = hexesInBiomeInstance
-                    .Where(hex => hex.CurrentBuilding == null && hex.ResourceDeposit == null)
-                    .ToList();
-
-                int resourcesToPlace = resourceInfo.Count;
-                int resourcesPlaced = 0;
-
-                while (resourcesPlaced < resourcesToPlace && availableHexes.Count > 0)
-                {
-                    int randomIndex = Random.Range(0, availableHexes.Count);
-                    HexModel selectedHex = availableHexes[randomIndex];
-
-                    var resourcePrefab = _resourcesController.GetResourcePrefab(resourceInfo.ResourceType);
-                    Vector3 spawnPosition = selectedHex.HexPosition + Vector3.up * 1f;
-                    var resourceDeposit = _diContainer.InstantiatePrefabForComponent<ResourceDeposit>(
-                        resourcePrefab,
-                        spawnPosition,
-                        Quaternion.identity,
-                        selectedHex.transform
-                    );
-
-                    selectedHex.ResourceDeposit = resourceDeposit;
-                    resourcesPlaced++;
-                    availableHexes.RemoveAt(randomIndex);
-                }
-            }
-        }
-
         private void RenderChunkObject(HexagonalTerrainMeshGeneratorModel.HexChunk chunk, ref HexTerrainChunkModel hexTerrainChunkModel)
         {
             Mesh mesh = new Mesh
@@ -373,6 +343,236 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
                 }
             }
             _chunks.Clear();
+        }
+        
+        
+        private void GenerateStartingPositions(Dictionary<(BiomeType, int), List<HexModel>> hexesByBiomeInstance)
+        {
+            var grasslandRegions = hexesByBiomeInstance
+                .Where(kvp => kvp.Key.Item1 == BiomeType.Grassland)
+                .SelectMany(kvp => FindConnectedRegions(kvp.Value))
+                .Where(region => region.Count >= 15)
+                .ToList();
+
+            if (grasslandRegions.Count == 0) return;
+
+            var playerRegion = SelectBestStartingRegion(grasslandRegions);
+            var playerStartHex = SelectStartingHex(playerRegion);
+            _buildingsController.SpawnBuilding(BuildingType.MainBuilding, playerStartHex, TeamOwner.Player);
+            RevealRegionFog(playerRegion);
+
+            var enemyRegions = FindPotentialEnemyBaseRegions(hexesByBiomeInstance, playerStartHex);
+            if (enemyRegions.Count > 0)
+            {
+                var enemyRegion = SelectEnemyBaseRegion(enemyRegions, playerStartHex);
+                var enemyStartHex = SelectStartingHex(enemyRegion);
+                _buildingsController.SpawnBuilding(BuildingType.MainBuilding, enemyStartHex, TeamOwner.Enemy);
+            }
+        }
+
+        private List<List<HexModel>> FindConnectedRegions(List<HexModel> hexes)
+        {
+            var regions = new List<List<HexModel>>();
+            var visited = new HashSet<HexModel>();
+
+            foreach (var hex in hexes)
+            {
+                if (!visited.Contains(hex))
+                {
+                    var region = new List<HexModel>();
+                    FloodFillRegion(hex, region, visited);
+                    if (region.Count > 0)
+                    {
+                        regions.Add(region);
+                    }
+                }
+            }
+
+            return regions;
+        }
+
+        private void FloodFillRegion(HexModel startHex, List<HexModel> region, HashSet<HexModel> visited)
+        {
+            var queue = new Queue<HexModel>();
+            queue.Enqueue(startHex);
+            visited.Add(startHex);
+            region.Add(startHex);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                foreach (var neighbor in _hexGridController.GetNeighbors(current))
+                {
+                    if (!visited.Contains(neighbor) && 
+                        neighbor.BiomeType == startHex.BiomeType && 
+                        neighbor.BiomeIndex == startHex.BiomeIndex)
+                    {
+                        visited.Add(neighbor);
+                        region.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
+
+        private List<List<HexModel>> FindPotentialEnemyBaseRegions(
+            Dictionary<(BiomeType, int), List<HexModel>> hexesByBiomeInstance, 
+            HexModel playerStartHex)
+        {
+            var enemyRegions = new List<List<HexModel>>();
+            var validBiomes = hexesByBiomeInstance
+                .Where(kvp => kvp.Key.Item1 != BiomeType.Mountain && 
+                            kvp.Key.Item1 != BiomeType.Swamp)
+                .SelectMany(kvp => FindConnectedRegions(kvp.Value))
+                .Where(region => region.Count >= 15)
+                .ToList();
+
+            foreach (var region in validBiomes)
+            {
+                if (IsSafeDistanceFromPlayer(region, playerStartHex))
+                {
+                    enemyRegions.Add(region);
+                }
+            }
+
+            return enemyRegions;
+        }
+
+        private bool IsSafeDistanceFromPlayer(List<HexModel> region, HexModel playerStartHex)
+        {
+            var centerHex = SelectStartingHex(region);
+            var visited = new HashSet<HexModel>();
+            var queue = new Queue<HexModel>();
+            queue.Enqueue(playerStartHex);
+            visited.Add(playerStartHex);
+
+            int biomeTransitions = 0;
+            var currentBiomeType = playerStartHex.BiomeType;
+            var currentBiomeIndex = playerStartHex.BiomeIndex;
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                
+                if (current == centerHex) 
+                    return biomeTransitions >= MIN_BIOMES_DISTANCE;
+
+                foreach (var neighbor in _hexGridController.GetNeighbors(current))
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                        
+                        if (neighbor.BiomeType != currentBiomeType || 
+                            neighbor.BiomeIndex != currentBiomeIndex)
+                        {
+                            biomeTransitions++;
+                            currentBiomeType = neighbor.BiomeType;
+                            currentBiomeIndex = neighbor.BiomeIndex;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void GenerateResources(List<HexModel> hexesInBiomeInstance, BiomeType biomeType)
+        {
+            var biome = _rrtAlgorithmModel.Biomes.Find(b => b.BiomeType == biomeType);
+            if (biome?.Resources == null) return;
+
+            var availableHexes = hexesInBiomeInstance
+                .Where(hex => hex.CurrentBuilding == null && 
+                            hex.ResourceDeposit == null)
+                .ToList();
+
+            foreach (var resourceInfo in biome.Resources)
+            {
+                int resourcesToPlace = resourceInfo.Count;
+                int resourcesPlaced = 0;
+
+                while (resourcesPlaced < resourcesToPlace && availableHexes.Count > 0)
+                {
+                    int randomIndex = Random.Range(0, availableHexes.Count);
+                    HexModel selectedHex = availableHexes[randomIndex];
+
+                    var resourcePrefab = _resourcesController.GetResourcePrefab(resourceInfo.ResourceType);
+                    Vector3 spawnPosition = selectedHex.HexPosition + Vector3.up * 1f;
+                    var resourceDeposit = _diContainer.InstantiatePrefabForComponent<ResourceDeposit>(
+                        resourcePrefab,
+                        spawnPosition,
+                        Quaternion.identity,
+                        selectedHex.transform
+                    );
+
+                    selectedHex.ResourceDeposit = resourceDeposit;
+                    resourcesPlaced++;
+                    availableHexes.RemoveAt(randomIndex);
+                }
+            }
+        }
+
+        private void PlaceNeutralHouses(List<HexModel> hexesInBiomeInstance)
+        {
+            var availableHexes = hexesInBiomeInstance
+                .Where(hex => hex.CurrentBuilding == null && 
+                            hex.ResourceDeposit == null)
+                .ToList();
+
+            if (availableHexes.Count > 0)
+            {
+                int randomIndex = Random.Range(0, availableHexes.Count);
+                var selectedHex = availableHexes[randomIndex];
+                _buildingsController.SpawnBuilding(BuildingType.House, selectedHex, TeamOwner.Neutral);
+            }
+        }
+
+
+        private List<HexModel> SelectBestStartingRegion(List<List<HexModel>> regions)
+        {
+            return regions
+                .OrderByDescending(r => r.Count)
+                .ThenBy(r => Vector3.Distance(CalculateRegionCenter(r), Vector3.zero))
+                .First();
+        }
+
+        private HexModel SelectStartingHex(List<HexModel> region)
+        {
+            var center = CalculateRegionCenter(region);
+            return region.OrderBy(hex => Vector3.Distance(hex.HexPosition, center)).First();
+        }
+
+        private Vector3 CalculateRegionCenter(List<HexModel> region)
+        {
+            return new Vector3(
+                region.Average(h => h.HexPosition.x),
+                0,
+                region.Average(h => h.HexPosition.z)
+            );
+        }
+
+        private void RevealRegionFog(List<HexModel> region)
+        {
+            foreach (var hex in region)
+            {
+                hex.SetFog(false);
+            }
+        }
+
+        private List<HexModel> SelectEnemyBaseRegion(List<List<HexModel>> validRegions, HexModel playerStartHex)
+        {
+            return validRegions
+                .OrderByDescending(r => CalculateRegionScore(r, playerStartHex))
+                .First();
+        }
+
+        private float CalculateRegionScore(List<HexModel> region, HexModel playerStartHex)
+        {
+            var centerHex = SelectStartingHex(region);
+            float distance = Vector3.Distance(centerHex.HexPosition, playerStartHex.HexPosition);
+            return distance * region.Count;
         }
     }
 }

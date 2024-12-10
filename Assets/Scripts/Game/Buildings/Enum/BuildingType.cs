@@ -9,7 +9,8 @@ namespace Game.Buildings.Enum
         Quarry,
         Tower,
         Wall,
-        WatchTower
+        WatchTower,
+        HolyAltar
         // Barrack
     }
 }

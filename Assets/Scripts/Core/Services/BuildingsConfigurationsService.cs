@@ -19,7 +19,9 @@ namespace Core.Services
             [Inject(Id = BuildingType.Tower)] BuildingConfigSO towerConfig,
             [Inject(Id = BuildingType.House)] BuildingConfigSO houseConfig,
             [Inject(Id = BuildingType.WatchTower)] BuildingConfigSO watchTowerConfig,
-            [Inject(Id = BuildingType.Wall)] BuildingConfigSO wallConfig)
+            [Inject(Id = BuildingType.Wall)] BuildingConfigSO wallConfig,
+            [Inject(Id = BuildingType.HolyAltar)] BuildingConfigSO holyAltarConfig
+            )
         {
             _buildingConfigs[BuildingType.Lumber] = lumberConfig;
             _buildingConfigs[BuildingType.Quarry] = quarryConfig;
@@ -29,6 +31,7 @@ namespace Core.Services
             _buildingConfigs[BuildingType.House] = houseConfig;
             _buildingConfigs[BuildingType.WatchTower] = watchTowerConfig;
             _buildingConfigs[BuildingType.Wall] = wallConfig;
+            _buildingConfigs[BuildingType.HolyAltar] = holyAltarConfig;
         }
 
         public T GetConfig<T>(BuildingType buildingType) where T : BuildingConfigSO

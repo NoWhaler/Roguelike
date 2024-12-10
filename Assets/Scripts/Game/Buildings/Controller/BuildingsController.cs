@@ -45,7 +45,8 @@ namespace Game.Buildings.Controller
             [Inject(Id = BuildingType.Wall)] Building wall,
             [Inject(Id = BuildingType.House)] Building house,
             [Inject(Id = BuildingType.Lumber)] Building lumber,
-            [Inject(Id = BuildingType.Quarry)] Building quarry)
+            [Inject(Id = BuildingType.Quarry)] Building quarry,
+            [Inject(Id = BuildingType.HolyAltar)] Building altar)
         {
             _gameTurnController = gameTurnController;
             _buildingsConfigurationsService = buildingsConfigurationsService;
@@ -62,7 +63,8 @@ namespace Game.Buildings.Controller
                 { BuildingType.MainBuilding, mainBuilding},
                 { BuildingType.WatchTower, watchTower},
                 { BuildingType.Tower, tower},
-                { BuildingType.Wall, wall}
+                { BuildingType.Wall, wall},
+                { BuildingType.HolyAltar , altar}
             };
         }
 
@@ -119,6 +121,7 @@ namespace Game.Buildings.Controller
                 .WithType()
                 .WithTeam(teamOwner)
                 .WithFogOfWarRange()
+                .WithAltarProtectionRange()
                 .AtPosition(targetHex)
                 .Build();
             

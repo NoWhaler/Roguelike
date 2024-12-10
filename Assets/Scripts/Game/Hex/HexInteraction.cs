@@ -287,7 +287,9 @@ namespace Game.Hex
             }
 
             List<HexModel> nearestCells = _hexGridController.GetHexesInRadius(hexModel, newBuilding.RevealFogOfWarRange);
+            List<HexModel> nearestAltarCells = _hexGridController.GetHexesInRadius(hexModel, newBuilding.ProtectionRadius);
             RevealFogOfWar(nearestCells);
+            SetAltarDefence(nearestAltarCells);
             
             _currentSelectedBuilding = null;
         }
@@ -313,6 +315,14 @@ namespace Game.Hex
             foreach (var cell in cells)
             {
                 cell.SetFog(false);
+            }
+        }
+
+        private void SetAltarDefence(List<HexModel> cells)
+        {
+            foreach (var cell in cells)
+            {
+                cell.SetAltarDefence(true);
             }
         }
         

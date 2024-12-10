@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20480b180ffc450ab53211d112a5d1be, type: 3}
-  m_Name: MainBuildingConfig
+  m_Name: HolyAltarConfig
   m_EditorClassIdentifier: 
-  <BuildingType>k__BackingField: 0
-  <MaxHealth>k__BackingField: 1500
+  <BuildingType>k__BackingField: 7
+  <MaxHealth>k__BackingField: 150
   <RevealFogOfWarRange>k__BackingField: 0
   <ProtectionRadius>k__BackingField: 4
   <BuildingCost>k__BackingField: {fileID: 11400000, guid: 016949677585edb45a8e99d64d4c8840, type: 2}

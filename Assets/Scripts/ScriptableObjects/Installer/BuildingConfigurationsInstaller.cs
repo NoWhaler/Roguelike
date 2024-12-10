@@ -17,6 +17,7 @@ namespace ScriptableObjects.Installer
         [SerializeField] private BuildingConfigSO _watchTowerConfig;
         [SerializeField] private BuildingConfigSO _houseConfig;
         [SerializeField] private BuildingConfigSO _wallConfig;
+        [SerializeField] private BuildingConfigSO _holyAltarConfig;
 
         public override void InstallBindings()
         {
@@ -52,6 +53,9 @@ namespace ScriptableObjects.Installer
                 .WithId(BuildingType.Wall)
                 .FromInstance(_wallConfig);
 
+            Container.Bind<BuildingConfigSO>()
+                .WithId(BuildingType.HolyAltar)
+                .FromInstance(_holyAltarConfig);
         }    
     }
 }

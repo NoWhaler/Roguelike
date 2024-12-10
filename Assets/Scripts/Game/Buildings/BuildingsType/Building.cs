@@ -43,7 +43,9 @@ namespace Game.Buildings.BuildingsType
         
         [field: SerializeField] public float CurrentHealth { get; set; }
         
-        [field: SerializeField] public int RevealFogOfWarRange { get; set; }
+        public int RevealFogOfWarRange { get; set; }
+        
+        public int ProtectionRadius { get; set; }
         
         public HexModel CurrentHex { get; set; }
         

@@ -43,6 +43,12 @@ namespace Core.Builder
             return this;
         }
 
+        public BuildingBuilder WithAltarProtectionRange()
+        {
+            _building.ProtectionRadius = _config.ProtectionRadius;
+            return this;
+        }
+        
         public BuildingBuilder AtPosition(HexModel hex)
         {
             _building.CurrentHex = hex;

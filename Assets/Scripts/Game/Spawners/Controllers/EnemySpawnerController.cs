@@ -63,7 +63,7 @@ namespace Game.Spawners.Controllers
         {
             var allHexes = _hexGridController.GetAllHexes();
             var playerBuildings = allHexes.Values
-                .Where(hex => hex.CurrentBuilding != null )
+                .Where(hex => hex.CurrentBuilding != null)
                 .ToList();
 
             if (playerBuildings.Count == 0) return;
@@ -72,7 +72,11 @@ namespace Game.Spawners.Controllers
             BiomeType targetBiome = buildingHex.BiomeType;
 
             var spawnArea = _hexGridController.GetHexesInRadius(buildingHex, 2)
-                .Where(hex => hex.BiomeType == targetBiome && hex.CurrentUnit == null && hex.CurrentBuilding == null)
+                .Where(hex => 
+                    hex.BiomeType == targetBiome && 
+                    hex.CurrentUnit == null && 
+                    hex.CurrentBuilding == null &&
+                    !hex.IsProtectedByAltar)
                 .ToList();
 
             if (spawnArea.Count == 0) return;

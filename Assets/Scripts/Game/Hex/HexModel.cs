@@ -16,6 +16,8 @@ namespace Game.Hex
 
         [field: SerializeField] public bool IsVisible { get; private set; }
         
+        [field: SerializeField] public bool IsProtectedByAltar { get; set; }
+        
         [field: SerializeField] public BiomeType BiomeType { get; set; }
         
         [field: SerializeField] public int BiomeIndex { get; set; } = -1;
@@ -52,6 +54,11 @@ namespace Game.Hex
             _fogRenderer.enabled = isEnabled;
             
             UpdateEntitiesVisibility(!isEnabled);
+        }
+
+        public void SetAltarDefence(bool isEnabled)
+        {
+            IsProtectedByAltar = isEnabled;
         }
 
         public void SetUnitRangeHighlight(bool isHighlighted)
