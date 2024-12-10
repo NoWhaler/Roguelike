@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20480b180ffc450ab53211d112a5d1be, type: 3}
   m_Name: HolyAltarConfig
   m_EditorClassIdentifier: 
-  <BuildingType>k__BackingField: 7
+  <BuildingType>k__BackingField: 8
   <MaxHealth>k__BackingField: 150
   <RevealFogOfWarRange>k__BackingField: 0
   <ProtectionRadius>k__BackingField: 4
