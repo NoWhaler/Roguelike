@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.TurnBasedSystem;
+using Game.Buildings.Controller;
 using Game.Hex;
 using Game.Spawners.Models;
 using Game.Units;
@@ -17,24 +18,30 @@ namespace Game.Spawners.Controllers
     public class EnemySpawnerController: IInitializable, IDisposable
     {
         private EnemySpawnerModel _enemySpawnerModel;
-        
         private HexGridController _hexGridController;
         private GameTurnController _gameTurnController;
         private UnitsController _unitsController;
-
+        private BuildingsController _buildingsController;
+        
         private int _nextWaveTurn;
         
         private const int MIN_SPAWN_DISTANCE = 2;
         private const int MAX_SPAWN_DISTANCE = 10;
+        private const float CURSE_SPAWN_MULTIPLIER = 0.2f;
+        private const float MAX_CURSE_MULTIPLIER = 3f;
 
         [Inject]
-        private void Constructor(EnemySpawnerModel enemySpawnerModel, HexGridController hexGridController,
-            GameTurnController gameTurnController, UnitsController unitsController)
+        private void Constructor(EnemySpawnerModel enemySpawnerModel, 
+            HexGridController hexGridController,
+            GameTurnController gameTurnController, 
+            UnitsController unitsController,
+            BuildingsController buildingsController)
         {
             _enemySpawnerModel = enemySpawnerModel;
             _hexGridController = hexGridController;
             _gameTurnController = gameTurnController;
             _unitsController = unitsController;
+            _buildingsController = buildingsController;
         }
 
         public void Initialize()
@@ -50,8 +57,24 @@ namespace Game.Spawners.Controllers
         
         private void SetNextWaveTurn()
         {
-            int turnsUntilNextWave = Random.Range(_enemySpawnerModel.MinTurnsBetweenWaves, _enemySpawnerModel.MaxTurnsBetweenWaves + 1);
-            _nextWaveTurn = _gameTurnController.GetCurrentTurn() + turnsUntilNextWave;
+            float curseMultiplier = CalculateCurseMultiplier();
+            int baseTurns = Random.Range(_enemySpawnerModel.MinTurnsBetweenWaves, 
+                _enemySpawnerModel.MaxTurnsBetweenWaves + 1);
+            
+            int adjustedTurns = Mathf.Max(1, Mathf.RoundToInt(baseTurns / curseMultiplier));
+            _nextWaveTurn = _gameTurnController.GetCurrentTurn() + adjustedTurns;
+        }
+
+        private float CalculateCurseMultiplier()
+        {
+            var cursedHouses = _buildingsController.GetHouses()
+                .Where(h => h.CurrentCurseValue > 0 && h.BuildingOwner != TeamOwner.Player)
+                .ToList();
+
+            if (cursedHouses.Count == 0) return 1f;
+
+            float totalCurseEffect = cursedHouses.Sum(h => h.CurrentCurseValue / 100f * CURSE_SPAWN_MULTIPLIER);
+            return Mathf.Min(1f + totalCurseEffect, MAX_CURSE_MULTIPLIER);
         }
         
         private void CheckForWaveSpawn()
@@ -67,7 +90,8 @@ namespace Game.Spawners.Controllers
         {
             var allHexes = _hexGridController.GetAllHexes();
             var playerBuildings = allHexes.Values
-                .Where(hex => hex.CurrentBuilding != null && hex.CurrentBuilding.BuildingOwner == TeamOwner.Player)
+                .Where(hex => hex.CurrentBuilding != null && 
+                            hex.CurrentBuilding.BuildingOwner == TeamOwner.Player)
                 .ToList();
 
             if (playerBuildings.Count == 0) return;
@@ -93,12 +117,9 @@ namespace Game.Spawners.Controllers
                     if (validSpawnLocations.Count > 0)
                     {
                         SpawnUnitsAtLocations(validSpawnLocations);
-                        Debug.Log($"Spawning enemy wave near player building: {targetHex.CurrentBuilding.BuildingType} at {targetHex.Q},{targetHex.R},{targetHex.S}");
                         return;
                     }
                 }
-                
-                Debug.Log($"Could not spawn near {targetHex.CurrentBuilding.BuildingType}, trying next building...");
             }
             
             Debug.LogWarning("Could not find valid spawn locations near any player buildings");
@@ -124,7 +145,11 @@ namespace Game.Spawners.Controllers
 
         private void SpawnUnitsAtLocations(List<HexModel> validLocations)
         {
-            int unitsToSpawn = Random.Range(_enemySpawnerModel.MinUnitsPerWave, _enemySpawnerModel.MaxUnitsPerWave + 1);
+            float curseMultiplier = CalculateCurseMultiplier();
+            int baseUnits = Random.Range(_enemySpawnerModel.MinUnitsPerWave, 
+                _enemySpawnerModel.MaxUnitsPerWave + 1);
+            
+            int unitsToSpawn = Mathf.RoundToInt(baseUnits * curseMultiplier);
             unitsToSpawn = Mathf.Min(unitsToSpawn, validLocations.Count);
 
             var shuffledLocations = validLocations.OrderBy(x => Random.value).ToList();
@@ -132,7 +157,18 @@ namespace Game.Spawners.Controllers
             for (int i = 0; i < unitsToSpawn; i++)
             {
                 var spawnHex = shuffledLocations[i];
-                Unit unitPrefab = _enemySpawnerModel.EnemyUnitPrefabs[Random.Range(0, _enemySpawnerModel.EnemyUnitPrefabs.Length)];
+                Unit unitPrefab = _enemySpawnerModel.EnemyUnitPrefabs[Random.Range(0, 
+                    _enemySpawnerModel.EnemyUnitPrefabs.Length)];
+                
+                if (Random.value < (curseMultiplier - 1f) * 0.5f)
+                {
+                    int strongUnitIndex = Random.Range(
+                        _enemySpawnerModel.EnemyUnitPrefabs.Length / 2,
+                        _enemySpawnerModel.EnemyUnitPrefabs.Length
+                    );
+                    unitPrefab = _enemySpawnerModel.EnemyUnitPrefabs[strongUnitIndex];
+                }
+
                 _unitsController.SpawnEnemyUnit(unitPrefab.UnitType, spawnHex);
             }
         }

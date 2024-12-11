@@ -6,7 +6,7 @@ namespace Game.Buildings.BuildingsType
     public class House: Building
     {
         private const float MAX_CURSE_VALUE = 100f;
-        private const float CURSE_CHANGE_RATE = 5f;
+        private const float CURSE_CHANGE_RATE = 20f;
         private const float CURSE_THRESHOLD_POINT_OF_NO_RETURN = MAX_CURSE_VALUE;
         
         [field: SerializeField] public float CurrentCurseValue { get; private set; }

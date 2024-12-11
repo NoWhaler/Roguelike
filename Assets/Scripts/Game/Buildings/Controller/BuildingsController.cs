@@ -208,5 +208,10 @@ namespace Game.Buildings.Controller
         {
             return _unitsHiringBuildings;
         }
+        
+        public List<House> GetHouses()
+        {
+            return _houses;
+        }
     }
 }
