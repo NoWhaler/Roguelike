@@ -2553,10 +2553,10 @@ MonoBehaviour:
   - {fileID: 7857376588469115512, guid: ec3f4263398aa2542a7774e5c560e6a4, type: 3}
   - {fileID: 1857093356436449258, guid: 930bd6293b625be4baecd2a911cacd38, type: 3}
   - {fileID: 7935591976940046084, guid: 1b5d9f4230752ac40854d741446036dd, type: 3}
-  <MinUnitsPerWave>k__BackingField: 2
-  <MaxUnitsPerWave>k__BackingField: 4
-  <MinTurnsBetweenWaves>k__BackingField: 8
-  <MaxTurnsBetweenWaves>k__BackingField: 12
+  <MinUnitsPerWave>k__BackingField: 1
+  <MaxUnitsPerWave>k__BackingField: 2
+  <MinTurnsBetweenWaves>k__BackingField: 15
+  <MaxTurnsBetweenWaves>k__BackingField: 20
 --- !u!1001 &578443088
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -49,7 +49,7 @@ namespace Game.Buildings.BuildingsType
         
         public HexModel CurrentHex { get; set; }
         
-        [SerializeField] private MeshRenderer _meshRenderer;
+        [SerializeField] protected MeshRenderer _meshRenderer;
 
         private Collider _buildingCollider;
         

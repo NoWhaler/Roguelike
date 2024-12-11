@@ -22,6 +22,8 @@ namespace Game.Buildings.Controller
 
         private List<IHireUnit> _unitsHiringBuildings = new List<IHireUnit>();
 
+        private List<House> _houses = new List<House>();
+
         private GameTurnController _gameTurnController;
 
         private BuildingsConfigurationsService _buildingsConfigurationsService;
@@ -71,12 +73,14 @@ namespace Game.Buildings.Controller
         public void Initialize()
         {
             _gameTurnController.OnTurnEnded += AddResourcesFromBuildings;
+            _gameTurnController.OnTurnEnded += ProcessHouseCurses;
             InitializePool();
         }
 
         public void Dispose()
         {
             _gameTurnController.OnTurnEnded -= AddResourcesFromBuildings;
+            _gameTurnController.OnTurnEnded -= ProcessHouseCurses;
         }
 
         private void InitializePool()
@@ -127,6 +131,11 @@ namespace Game.Buildings.Controller
             
             OnBuildingPlaced?.Invoke(building);
 
+            if (building is House house)
+            {
+                RegisterHouseBuilding(house);
+            }
+
             return building;
         }
         
@@ -152,6 +161,14 @@ namespace Game.Buildings.Controller
             building.gameObject.SetActive(false);
         }
         
+        private void ProcessHouseCurses()
+        {
+            foreach (var house in _houses)
+            {
+                house.ProcessCurse();
+            }
+        }
+        
         public void RegisterProductionBuilding(IProduceResource building)
         {
             _resourcesProductionBuildings.Add(building);
@@ -170,6 +187,16 @@ namespace Game.Buildings.Controller
         public void UnregisterHiringBuilding(IHireUnit building)
         {
             _unitsHiringBuildings.Remove(building);
+        }
+        
+        public void RegisterHouseBuilding(House building)
+        {
+            _houses.Add(building);
+        }
+
+        public void UnregisterHouseBuilding(House building)
+        {
+            _houses.Remove(building);
         }
 
         public List<IProduceResource> GetProducingBuildings()

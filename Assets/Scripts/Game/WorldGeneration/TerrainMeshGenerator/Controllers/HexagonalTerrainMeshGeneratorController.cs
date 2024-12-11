@@ -27,7 +27,7 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         private IslandBoundaryController _islandBoundaryController;
         private Dictionary<Vector2Int, HexagonalTerrainMeshGeneratorModel.HexChunk> _chunks;
         
-        private const int MIN_BIOMES_DISTANCE = 3;
+        private const int MIN_BIOMES_DISTANCE = 2;
 
         private DiContainer _diContainer;
 
@@ -245,8 +245,6 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
             
             hexObject.BiomeType = biomeType;
             hexObject.BiomeIndex = closestNode.BiomeIndex;
-            
-            hexObject.SetFog(true);
             
             hexObject.SetLogicalCoordinates(logicalCoords.Q, logicalCoords.R, logicalCoords.S);
 
