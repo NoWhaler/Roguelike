@@ -515,18 +515,27 @@ namespace Game.WorldGeneration.TerrainMeshGenerator.Controllers
         private void PlaceNeutralHouses(List<HexModel> hexesInBiomeInstance)
         {
             var availableHexes = hexesInBiomeInstance
-                .Where(hex => hex.CurrentBuilding == null && 
-                            hex.ResourceDeposit == null)
+                .Where(hex => hex.CurrentBuilding == null && hex.ResourceDeposit == null)
                 .ToList();
 
-            if (availableHexes.Count > 0)
-            {
-                int randomIndex = Random.Range(0, availableHexes.Count);
-                var selectedHex = availableHexes[randomIndex];
-                _buildingsController.SpawnBuilding(BuildingType.House, selectedHex, TeamOwner.Neutral);
-            }
-        }
+            if (availableHexes.Count == 0) return;
 
+            Vector3 biomeCenter = new Vector3(
+                hexesInBiomeInstance.Average(h => h.HexPosition.x),
+                0,
+                hexesInBiomeInstance.Average(h => h.HexPosition.z)
+            );
+
+            var sortedHexes = availableHexes
+                .OrderBy(hex => Vector3.Distance(hex.HexPosition, biomeCenter))
+                .ToList();
+
+            int maxIndex = Mathf.Max(1, sortedHexes.Count / 3);
+            int randomIndex = Random.Range(0, maxIndex);
+            var selectedHex = sortedHexes[randomIndex];
+
+            _buildingsController.SpawnBuilding(BuildingType.House, selectedHex, TeamOwner.Neutral);
+        }
 
         private List<HexModel> SelectBestStartingRegion(List<List<HexModel>> regions)
         {
