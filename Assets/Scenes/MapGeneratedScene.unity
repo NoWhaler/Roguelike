@@ -3834,14 +3834,14 @@ MonoBehaviour:
   <Iterations>k__BackingField: 650
   <NodePrefab>k__BackingField: {fileID: -4567914681832355564, guid: a896b00e7a846914081a5c56aff9515a, type: 3}
   <EdgePrefab>k__BackingField: {fileID: 2703375816242319292, guid: f79ff5bf3ef9b1041b85d67d8e12ccea, type: 3}
-  <Seed>k__BackingField: 2970
+  <Seed>k__BackingField: 332211
   <TextureResolution>k__BackingField: 64
   <VoronoiMaterial>k__BackingField: {fileID: 2100000, guid: c93a38de06a6038429b64731ca304d62, type: 2}
-  <VoronoiRelaxationIterations>k__BackingField: 10
+  <VoronoiRelaxationIterations>k__BackingField: 300
   <ChunksPerSide>k__BackingField: 7
   <Biomes>k__BackingField: []
-  <IsDisplayingVoronoi>k__BackingField: 0
-  <IsDisplaingRRT>k__BackingField: 0
+  <IsDisplayingVoronoi>k__BackingField: 1
+  <IsDisplaingRRT>k__BackingField: 1
 --- !u!4 &889457317
 Transform:
   m_ObjectHideFlags: 0
@@ -5260,7 +5260,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1211384676}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}

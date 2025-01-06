@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Game.ProductionResources.Enum;
 using Game.WorldGeneration.Biomes;
 using Game.WorldGeneration.Biomes.Enum;
@@ -49,10 +50,10 @@ namespace Game.WorldGeneration.RTT.Controllers
                 );
         }
         
-        public void Initialize()
+        public async void Initialize()
         {
             InitializeBiomes();
-            GenerateAndVisualizeRRTWithBiomes();
+            await GenerateAndVisualizeRRTWithBiomes();
         }
         
         private void InitializeBiomes()
@@ -159,23 +160,41 @@ namespace Game.WorldGeneration.RTT.Controllers
             _rrtAlgorithmModel.Biomes = biomes;
         }
 
-        private void GenerateAndVisualizeRRTWithBiomes()
+        private async UniTask GenerateAndVisualizeRRTWithBiomes()
         {
+            var totalStopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var stepStopwatch = System.Diagnostics.Stopwatch.StartNew();
+
             ClearVisualization();
             
-            Texture2D voronoiTexture = _voronoiTextureGenerator.GenerateVoronoiTexture(_rrtAlgorithmModel.TextureResolution,
-                _rrtAlgorithmModel.TextureResolution, _rrtAlgorithmModel.Seed, _rrtAlgorithmModel.Biomes, _rrtAlgorithmModel.VoronoiRelaxationIterations);
-            _rrtAlgorithmModel.VoronoiMaterial.mainTexture = voronoiTexture;
+            stepStopwatch.Restart();
+            Texture2D voronoiTexture = _voronoiTextureGenerator.GenerateVoronoiTexture(
+                _rrtAlgorithmModel.TextureResolution,
+                _rrtAlgorithmModel.TextureResolution, 
+                _rrtAlgorithmModel.Seed, 
+                _rrtAlgorithmModel.Biomes, 
+                _rrtAlgorithmModel.VoronoiRelaxationIterations);
+            Debug.Log($"Voronoi texture generation took: {stepStopwatch.Elapsed.TotalSeconds:F2} seconds");
 
+            _rrtAlgorithmModel.VoronoiMaterial.mainTexture = voronoiTexture;
+            
             if (_rrtAlgorithmModel.IsDisplayingVoronoi)
             {
                 CreateDisplayQuad();
             }
 
-            List<Node> nodes = GenerateRRT(_rrtAlgorithmModel.CenterPoint, _rrtAlgorithmModel.Radius, _rrtAlgorithmModel.StepSize,
-                _rrtAlgorithmModel.MinDistance, _rrtAlgorithmModel.Iterations);
-            
-            _hexagonalTerrainMeshGenerator.GenerateChunks(_nodeModels, _rrtAlgorithmModel.ChunksPerSide);
+            stepStopwatch.Restart();
+            List<Node> nodes = GenerateRRT(
+                _rrtAlgorithmModel.CenterPoint, 
+                _rrtAlgorithmModel.Radius, 
+                _rrtAlgorithmModel.StepSize,
+                _rrtAlgorithmModel.MinDistance, 
+                _rrtAlgorithmModel.Iterations);
+            Debug.Log($"RRT generation took: {stepStopwatch.Elapsed.TotalSeconds:F2} seconds");
+
+            stepStopwatch.Restart();
+            await _hexagonalTerrainMeshGenerator.GenerateChunks(_nodeModels, _rrtAlgorithmModel.ChunksPerSide);
+            Debug.Log($"Chunk generation took: {stepStopwatch.Elapsed.TotalSeconds:F2} seconds");
 
             if (_rrtAlgorithmModel.IsDisplaingRRT) return;
             
@@ -183,6 +202,9 @@ namespace Game.WorldGeneration.RTT.Controllers
             {
                 visualObject.SetActive(false);
             }
+
+            totalStopwatch.Stop();
+            Debug.Log($"Total map generation took: {totalStopwatch.Elapsed.TotalSeconds:F2} seconds");
         }
         
         private void CreateDisplayQuad()
@@ -240,7 +262,7 @@ namespace Game.WorldGeneration.RTT.Controllers
                 }
             }
 
-            Debug.Log($"Generated {nodes.Count} nodes in {_rrtAlgorithmModel.Biomes.Count} biomes");
+            // Debug.Log($"Generated {nodes.Count} nodes in {_rrtAlgorithmModel.Biomes.Count} biomes");
         }
         
         private void ClearVisualization()
@@ -354,7 +376,7 @@ namespace Game.WorldGeneration.RTT.Controllers
                 }
             }
 
-            Debug.Log($"Generated {nodes.Count} nodes, covered {coveredBiomeCells.Count}/{biomeCells.Count} biome cells");
+            // Debug.Log($"Generated {nodes.Count} nodes, covered {coveredBiomeCells.Count}/{biomeCells.Count} biome cells");
             if (uncoveredBiomes.Count > 0)
             {
                 Debug.LogWarning($"Uncovered biomes: {string.Join(", ", uncoveredBiomes)}");
